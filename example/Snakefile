@@ -1,0 +1,38 @@
+""" How to run: change into dir: marketplace/example
+    Run using `snakemake`. 
+    For different running options, e.g., dryrun, specifying number of cores, etc., read documentation here: 
+    https://snakemake.readthedocs.io/en/v5.1.4/executable.html
+
+"""
+
+import infosys.utils as utils
+
+ABS_PATH = ''
+DATA_DIR = os.path.join(ABS_PATH, 'data')
+RES_DIR = os.path.join(ABS_PATH, 'result')
+mode='igraph'
+
+rule all:
+    input: os.path.join(RES_DIR, 'results.json')
+
+rule run_simulation:
+    input: 
+        network = os.path.join(DATA_DIR, "infosys_network.gml"),
+        configfile = os.path.join(DATA_DIR, 'config.json')
+    output: 
+        measurements = os.path.join(RES_DIR, 'results.json'),
+        tracking = os.path.join(RES_DIR, 'tracking.json.gz')
+    shell: """
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --mode {mode}
+    """
+
+rule init_net:
+    input: 
+        follower = os.path.join(DATA_DIR, 'follower_network.gml'),
+        configfile = os.path.join(DATA_DIR, 'config.json')
+        
+    output: os.path.join(DATA_DIR, "infosys_network.gml")
+
+    shell: """
+            python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile} --mode {mode}
+        """ 
