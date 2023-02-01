@@ -1,0 +1,6 @@
+.DS_Store
+.log
+.ipynb_checkpoints/
+__pycache__/
+.vs_code/
+infosys.egg-info/
