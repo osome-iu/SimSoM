@@ -19,8 +19,8 @@ def run_simulation(
 ):
     G = graphutils.init_net(**net_specs)
 
-    network = os.path.join(DATA_PATH, "infosys_network.gml")
-    G.write_gml(network)
+    network_fpath = os.path.join(DATA_PATH, "infosys_network.gml")
+    G.write(network_fpath, format="gml")
 
     n_measures = defaultdict(lambda: [])
 
@@ -28,7 +28,7 @@ def run_simulation(
     print("Start simulation ..")
     for run in range(runs):
         print("Create InfoSystem instance..")
-        follower_sys = InfoSystem(network, **infosys_specs)
+        follower_sys = InfoSystem(network_fpath, **infosys_specs)
         verbose_results = follower_sys.simulation(
             reshare_fpath=reshare_fpath.replace(".csv", f"_{run}.csv"),
             exposure_fpath=os.path.join(
@@ -77,7 +77,6 @@ infosys_specs = {
 print(os.path.dirname("example/data"))
 results = run_simulation(none_specs, infosys_specs, runs=2)
 json.dump(results, open(os.path.join("example", "results_phi2.json"), "w"))
-
 
 print("Finish saving results!")
 
