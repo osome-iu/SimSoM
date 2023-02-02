@@ -1,6 +1,6 @@
-# Vulnerabilities of the Online Public Square to Manipulation
+# SimSoM: A Simulator of Social Media
 
-This repository contains code to reproduce the results in the paper [*Vulnerabilities of the Online Public Square to Manipulation*](https://arxiv.org/abs/1907.06130) by Bao Tran Truong, Xiaodan Lou, Alessandro Flammini, and [Filippo Menczer](https://cnets.indiana.edu/fil/).
+This repository contains code to reproduce the results in the paper [*Vulnerabilities of the Online Public Square to Manipulation*](https://arxiv.org/abs/1907.06130) by [Bao Tran Truong](https://btrantruong.github.io/), Xiaodan Lou, [Alessandro Flammini](https://cnets.indiana.edu/aflammin/), and [Filippo Menczer](https://cnets.indiana.edu/fil/).
 
 ## Overview of the repo
 1. `data`: contains raw & derived datasets
@@ -15,8 +15,8 @@ This repository contains code to reproduce the results in the paper [*Vulnerabil
 - Activate virtualenv and run `pip install -e .` for the module imports to work correctly.
 
 ## Data
-Network is created from the [Replication Data for: Right and left, partisanship predicts vulnerability to misinformation](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/6CZHH5)
-Where: 
+The empiricla network is created from the [Replication Data](https://doi.org/10.7910/DVN/6CZHH5) for: [Right and left, partisanship predicts vulnerability to misinformation](https://doi.org/10.37016/mr-2020-55),
+where: 
 - `measures.tab` contains user information, i.e., one's partisanship and misinformation score. 
 - `anonymized-friends.json` is the adjacency list. 
 
