@@ -11,7 +11,7 @@ import gzip
 import datetime as dt
 import inspect
 import scipy.stats as stats
-import infosys.config_vals as configs
+import simsom.config_vals as configs
 
 ### I/O
 def write_json_compressed(fout, data):

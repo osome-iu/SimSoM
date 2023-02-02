@@ -1,7 +1,7 @@
 """
 Graph-related functions, e.g.: function create synthetic bot network and shuffle networks
 """
-import infosys.utils as utils
+import simsom.utils as utils
 import igraph as ig
 import random
 import string

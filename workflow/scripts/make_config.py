@@ -12,8 +12,8 @@
         - Default values, only change targeting 
 """
 import os
-import infosys.utils as utils
-import infosys.config_vals as configs
+import simsom.utils as utils
+import simsom.config_vals as configs
 import os
 import json
 

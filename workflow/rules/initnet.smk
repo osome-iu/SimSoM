@@ -1,5 +1,5 @@
-import infosys.utils as utils
-import infosys.final_configs as configs
+import simsom.utils as utils
+import simsom.config_vals as configs
 ABS_PATH = 'exps'
 DATA_PATH = os.path.join(ABS_PATH, "data")
 CONFIG_PATH = os.path.join(ABS_PATH, "config")

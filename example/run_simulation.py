@@ -1,8 +1,8 @@
 """
     Minimal example for running simulation
 """
-from infosys.InfoSys import InfoSystem
-import infosys.graphutils as graphutils
+from simsom.InfoSys import InfoSystem
+import simsom.graphutils as graphutils
 import json
 import numpy as np
 from collections import defaultdict

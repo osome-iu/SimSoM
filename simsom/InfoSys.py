@@ -54,8 +54,8 @@ Outputs:
             - agent2 (str): uid of the agent resharing the meme
 """
 
-from infosys.Meme import Meme
-import infosys.utils as utils
+from simsom.Meme import Meme
+import simsom.utils as utils
 import igraph as ig
 import csv
 import random

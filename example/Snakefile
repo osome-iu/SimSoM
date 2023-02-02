@@ -5,7 +5,7 @@
 
 """
 
-import infosys.utils as utils
+import simsom.utils as utils
 
 ABS_PATH = ''
 DATA_DIR = os.path.join(ABS_PATH, 'data')

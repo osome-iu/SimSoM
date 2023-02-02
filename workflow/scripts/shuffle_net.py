@@ -1,6 +1,6 @@
 """ Script to shuffle the network """
 
-from infosys.graphutils import (
+from simsom.graphutils import (
     rewire_preserve_community,
     rewire_preserve_degree,
     rewire_random,

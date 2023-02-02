@@ -1,7 +1,7 @@
 """ Script to initialize Information network based on a .json configuration file """
 
-import infosys.graphutils as graphutils
-import infosys.utils as utils
+import simsom.graphutils as graphutils
+import simsom.utils as utils
 import networkx as nx
 import sys
 import argparse

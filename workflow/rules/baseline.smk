@@ -1,4 +1,4 @@
-import infosys.utils as utils
+import simsom.utils as utils
 
 ABS_PATH = 'exps'
 DATA_PATH = os.path.join(ABS_PATH, "data")

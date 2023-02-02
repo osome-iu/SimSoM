@@ -1,7 +1,7 @@
 """ Script to run simulations """
 
-from infosys.InfoSys import InfoSystem
-import infosys.utils as utils
+from simsom.InfoSys import InfoSystem
+import simsom.utils as utils
 
 import gzip
 import sys
@@ -106,25 +106,6 @@ def main(args):
         required=False,
         help="path to .csv file containing reshare cascade info",
     )
-    # parser.add_argument(
-    #     "-e",
-    #     "--exposurefpath",
-    #     action="store",
-    #     dest="exposurefpath",
-    #     type=str,
-    #     required=False,
-    #     help="path to .csv file containing exposure cascade info",
-    # )
-    # parser.add_argument(
-    #     "-a",
-    #     "--activationfpath",
-    #     action="store",
-    #     dest="activationfpath",
-    #     type=str,
-    #     required=False,
-    #     help="path to .csv file containing agent activation info",
-    # )
-
     parser.add_argument(
         "-v",
         "--verboseoutfile",
