@@ -2,27 +2,36 @@
 
 This repository contains code to reproduce the results in the paper [*Vulnerabilities of the Online Public Square to Manipulation*](https://arxiv.org/abs/1907.06130) by Bao Tran Truong, Xiaodan Lou, Alessandro Flammini, and [Filippo Menczer](https://cnets.indiana.edu/fil/).
 
+## Overview of the repo
+1. `data`: contains raw & derived datasets
+2. `example`: contains a minimal example to start using the SimSoM model
+3. `infosys`: the package for the SimSoM model that can be imported into scripts
+4. `results`: .ipynb noteboooks to produce figures reported in the paper
+5. `workflow`: workflow files (Snakemake rules) and scripts
+
+## Environment set-up
+- This code is written and tested with **Python>=3.6** 
+- Run `conda env create -n simsom -f environment.yml` to create the environment with required packages
+- Activate virtualenv and run `pip install -e .` for the module imports to work correctly.
+
 ## Data
 Network is created from the [Replication Data for: Right and left, partisanship predicts vulnerability to misinformation](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/6CZHH5)
 Where: 
 - `measures.tab` contains user information, i.e., one's partisanship and misinformation score. 
 - `anonymized-friends.json` is the adjacency list. 
 
-[Script to create network](workflow/make_network.py)
+We reconstruct the empirical network from the above 2 files, resulting in `data/follower_network.gml`. The steps are specified in the [script to create empirical network](workflow/make_network.py)
 
-## Environment
+## Running the code
 
-Our code is based on **Python3.6+**, with **jupyter notebook**.
+Run a minimal example using `workflow/example/run_simulation.py`
 
-## Notes
+### Reproduce results from the paper:
+1. Create config files specifying parameters for simulations. 
+    - How? run `workflow/scripts/make_finalconfig.py`
+    - See `example/data/config.json` for example of a config file
+2. Run a Snakemake rule corresponding to the simulations of interest. 
+    e.g.: `workflow/rules/shuffle_network.smk` runs simulations on different shuffled version of the empirical network
 
+### Notes
 The results in the paper are based on averages across multiple simulation runs. To reproduce those results, we suggest running the simulations in parallel, for example on a cluster, since they will need a lot of memory and CPU time.
-
-## Notes on revised code:
-Activate virtualenv and run `pip install -e .` for the module imports to work correctly.
-
-Run minimal example with `workflow/example/run_simulation.py`
-
-How to multiple experiments:
-- run `workflow/scripts/make_finalconfig.py` (this creates config files for different sets of param combination you want to test)
-- run `workflow/final_rules/<exp_type>.smk` (exp_type: [strategies_beta, vary_thetabeta, etc.])
