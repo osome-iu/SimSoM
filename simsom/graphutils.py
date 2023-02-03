@@ -1,5 +1,6 @@
 """
 Graph-related functions, e.g.: function create synthetic bot network and shuffle networks
+** remember link direction is following, opposite of info spread!
 """
 import simsom.utils as utils
 import igraph as ig
@@ -7,10 +8,6 @@ import random
 import string
 import numpy as np
 from copy import deepcopy
-
-# * remember link direction is following, opposite of info spread!
-
-logger = utils.get_file_logger(also_print=True)
 
 
 def read_empirical_network(file):
@@ -145,8 +142,7 @@ def init_net(
             if random.random() < gamma:
                 n_followers += 1
         if targeting_criterion is not None:
-            # followers = utils.sample_with_prob_without_replacement(humans, n_followers, w)
-            # Use np: (vec,size,replace=False, p=P)
+            # get a sample of followers weighted by probs (WITH replacement)
             followers = np.random.choice(humans, n_followers, replace=False, p=probs)
         else:
             followers = random.sample(humans, n_followers)
@@ -198,7 +194,7 @@ def _is_ingroup(graph, edge, party=None):
     """
     Check if an edge connects 2 nodes from the same community (party).
     Make sure that graph has a 'party' attribute s.t. -1<party<1
-    For Nikolov et al. (2019) empirical follower network: 
+    For Nikolov et al. (2019) empirical follower network, every node belongs to a community: 
     Conservative: node['party'] > 0, Liberal: node['party'] < 0
     Parameters:
         - party (str): {conservative, liberal}
@@ -207,8 +203,6 @@ def _is_ingroup(graph, edge, party=None):
         - else False
     """
 
-    #     Every node belongs to a community
-    #     len([node.index for node in graph.vs if float(node['party']) == 0])
     source_com = graph.vs[edge.source]["party"]
     target_com = graph.vs[edge.target]["party"]
 

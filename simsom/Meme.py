@@ -12,7 +12,8 @@ class Meme:
         Parameters:
             - id (int): unique identifier for this message
             - is_by_bot (int): 1 if the message is by bot, else 0
-            - phi (float): range [0,1]. If phi=0, there is no engagement advantage to messages by bot.
+            - phi (float): range [0,1]. 
+            If phi=0, there is no engagement advantage to messages by bot. Meaning engagement of bot and human messages drawn from the same distribution
         """
 
         self.id = id
@@ -20,14 +21,15 @@ class Meme:
         self.phi = phi
         quality, fitness = self.get_values()
         self.quality = quality
-        self.fitness = fitness
+        self.fitness = fitness  # referred to as "engagement" in the paper
 
     def get_values(self):
-        # return (quality, fitness) values in a tuple depending on phi and bot flag
+        # return (quality, fitness) values of a message based on phi and bot flag
+        # Use inverse transform sampling to draw values from a distribution
+        # https://en.wikipedia.org/wiki/Inverse_transform_sampling
+
         u = random.random()
         exponent = 2
-        # Use inverse transform sampling to draw values from a distribution
-        #  https://en.wikipedia.org/wiki/Inverse_transform_sampling
         human_fitness = 1 - (1 - u) ** (1 / exponent)
 
         if self.is_by_bot == 1:

@@ -15,7 +15,7 @@ This repository contains code to reproduce the results in the paper [*Vulnerabil
 - Activate virtualenv and run `pip install -e .` for the module imports to work correctly.
 
 ## Data
-The empiricla network is created from the [Replication Data](https://doi.org/10.7910/DVN/6CZHH5) for: [Right and left, partisanship predicts vulnerability to misinformation](https://doi.org/10.37016/mr-2020-55),
+The empirical network is created from the [Replication Data](https://doi.org/10.7910/DVN/6CZHH5) for: [Right and left, partisanship predicts vulnerability to misinformation](https://doi.org/10.37016/mr-2020-55),
 where: 
 - `measures.tab` contains user information, i.e., one's partisanship and misinformation score. 
 - `anonymized-friends.json` is the adjacency list. 
