@@ -29,16 +29,18 @@ def run_simulation(
     for run in range(runs):
         print("Create InfoSystem instance..")
         follower_sys = InfoSystem(network_fpath, **infosys_specs)
-        verbose_results = follower_sys.simulation(
-            reshare_fpath=reshare_fpath.replace(".csv", f"_{run}.csv"),
-            exposure_fpath=os.path.join(
-                os.path.dirname(reshare_fpath), f"exposure_{run}.csv"
-            ),
-            activation_fpath=os.path.join(
-                os.path.dirname(reshare_fpath), f"activation_{run}.csv"
-            ),
-        )
-
+        if (
+            "output_cascades" in infosys_specs.keys()
+            and infosys_specs["output_cascades"] is True
+        ):
+            verbose_results = follower_sys.simulation(
+                reshare_fpath=reshare_fpath.replace(".csv", f"_{run}.csv"),
+                exposure_fpath=os.path.join(
+                    os.path.dirname(reshare_fpath), f"exposure_{run}.csv"
+                ),
+            )
+        else:
+            verbose_results = follower_sys.simulation()
         quality += [verbose_results["quality"]]
 
         # Update results over multiple simulations
@@ -67,16 +69,15 @@ none_specs = {
 
 infosys_specs = {
     "tracktimestep": True,
-    "track_forgotten": False,
     "verbose": False,
     "epsilon": EPSILON,
     "mu": 0.5,
-    "phi": 2,
+    "phi": 1,
     "alpha": 15,
 }
 print(os.path.dirname("example/data"))
 results = run_simulation(none_specs, infosys_specs, runs=2)
-json.dump(results, open(os.path.join("example", "results_phi2.json"), "w"))
+json.dump(results, open(os.path.join("example", "results.json"), "w"))
 
 print("Finish saving results!")
 
