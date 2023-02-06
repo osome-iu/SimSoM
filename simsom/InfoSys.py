@@ -71,6 +71,7 @@ class InfoSystem:
         graph_gml,
         track_forgotten=False,
         tracktimestep=True,
+        output_cascades=False,
         verbose=False,
         epsilon=0.0001,  # Don't change this value
         rho=0.8,  # Don't change this value, check note above
@@ -85,6 +86,7 @@ class InfoSystem:
         self.verbose = verbose
         self.track_forgotten = track_forgotten
         self.tracktimestep = tracktimestep
+        self.output_cascades = output_cascades
         self.quality_timestep = []
         if self.track_forgotten is True:
             # aggregate in and outflux caused by all agents
@@ -147,30 +149,23 @@ class InfoSystem:
             print(f"Graph file: {graph_gml}")
 
     # @profile
-    def simulation(self, reshare_fpath, exposure_fpath, activation_fpath):
+    def simulation(self, reshare_fpath="", exposure_fpath=""):
         """
         - reshare_fpath: path to .csv file containing reshare cascade info
         - exposure_fpath: path to .csv file containing exposure cascade info
-        - activation_fpath: path to .csv file containing agent activation info
         """
+        if self.output_cascades is True:
+            self.reshare_fpath = reshare_fpath
+            reshare_fields = ["meme_id", "timestep", "agent1", "agent2"]
+            with open(self.reshare_fpath, "w", encoding="utf-8") as f:
+                writer = csv.writer(f, delimiter=",")
+                writer.writerow(reshare_fields)
 
-        self.reshare_fpath = reshare_fpath
-        reshare_fields = ["meme_id", "timestep", "agent1", "agent2"]
-        with open(self.reshare_fpath, "w", encoding="utf-8") as f:
-            writer = csv.writer(f, delimiter=",")
-            writer.writerow(reshare_fields)
-
-        self.exposure_fpath = exposure_fpath
-        exposure_fields = ["agent_id", "meme_id", "reshared_by_agent", "timestep"]
-        with open(self.exposure_fpath, "w", encoding="utf-8") as f:
-            writer = csv.writer(f, delimiter=",")
-            writer.writerow(exposure_fields)
-
-        self.activation_fpath = activation_fpath
-        activation_fields = ["agent_id", "timestep_activated", "meme_id"]
-        with open(self.activation_fpath, "w", encoding="utf-8") as f:
-            writer = csv.writer(f, delimiter=",")
-            writer.writerow(activation_fields)
+            self.exposure_fpath = exposure_fpath
+            exposure_fields = ["agent_id", "meme_id", "reshared_by_agent", "timestep"]
+            with open(self.exposure_fpath, "w", encoding="utf-8") as f:
+                writer = csv.writer(f, delimiter=",")
+                writer.writerow(exposure_fields)
 
         while self.quality_diff > self.epsilon:
             if self.verbose:
@@ -267,9 +262,6 @@ class InfoSystem:
         agent_id = agent["uid"]
         feed = self.agent_feeds[agent_id]
 
-        self._update_activation_data(
-            agent_id, self.time_step, [meme.id for meme in feed]
-        )
         if len(feed) > 0 and random.random() > self.mu:
             # retweet a meme from feed selected on basis of its fitness
             # unpack because random choices return a list
@@ -320,7 +312,8 @@ class InfoSystem:
 
             assert len(self.agent_feeds[follower]) <= self.alpha
 
-            self._update_reshares(meme, agent_id, follower)
+            if self.output_cascades is True:
+                self._update_reshares(meme, agent_id, follower)
 
             # only track in-outflux for human agents
             if (self.track_forgotten is True) and (follower in humfollower_uids):
@@ -423,7 +416,8 @@ class InfoSystem:
         feed = self.agent_feeds[target_id]
         feed[0:0] = [meme] * n_copies
 
-        self._update_feed_data(target=target_id, meme_id=meme.id, source=source_id)
+        if self.output_cascades is True:
+            self._update_feed_data(target=target_id, meme_id=meme.id, source=source_id)
         # if self.track_forgotten is True:
         meme_influx = {"bot_in": 0, "bot_out": 0, "human_in": 0, "human_out": 0}
 
@@ -471,34 +465,9 @@ class InfoSystem:
         - source (str): uid of agent spreading the meme
         - target (str): uid of agent resharing the meme
         """
-        # ncopies of the meme on agent2's feed can be referred from source uid & theta (if bot, theta)
-        # reshare = {
-        #     "meme_id": meme.id,
-        #     "timestep": self.time_step,
-        #     "agent1": source,
-        #     "agent2": target,
-        # }
-        # self.reshares += [reshare]
         with open(self.reshare_fpath, "a", encoding="utf-8") as f:
             writer = csv.writer(f, delimiter=",")
             writer.writerow([meme.id, self.time_step, source, target])
-
-        return
-
-    def _update_activation_data(self, agent_id, timestep, meme_ids):
-        """
-        Update activation data
-        fields: "agent_id", "timestep_activated", "meme_ids"]
-        Input: 
-        - agent_id (str): uid of agent being activated
-        - timestep (int): timestep in which the agent is activate
-        - meme_ids (list): list of meme ids in the agent's feed at activation
-        """
-
-        with open(self.activation_fpath, "a", encoding="utf-8") as f:
-            writer = csv.writer(f, delimiter=",")
-            for id in meme_ids:
-                writer.writerow([agent_id, timestep, id])
 
         return
 

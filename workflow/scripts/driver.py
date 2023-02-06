@@ -26,19 +26,20 @@ def multiple_simulations(infosys_specs, times=1, reshare_fpath="reshares.csv"):
             print("Create InfoSystem instance..")
             follower_sys = InfoSystem(**infosys_specs)
             print("Start simulation ..")
-            dir = os.path.dirname(reshare_fpath)
-            exp_name = os.path.basename(reshare_fpath).split("__")[0]
-            #  make a reshare.csv file no matter what. Save to other files according to number of (multiple) runs.
-            if time > 0:
-                prefix = f"_{time}.csv"
+            if 'output_cascades' in infosys_specs.keys() and infosys_specs['output_cascades'] is True:
+                dir = os.path.dirname(reshare_fpath)
+                exp_name = os.path.basename(reshare_fpath).split("__")[0]
+                #  make a reshare.csv file no matter what. Save to other files according to number of (multiple) runs.
+                if time > 0:
+                    prefix = f"_{time}.csv"
+                else:
+                    prefix = f".csv"
+                measurements = follower_sys.simulation(
+                    reshare_fpath=reshare_fpath.replace(".csv", prefix),
+                    exposure_fpath=os.path.join(dir, f"{exp_name}__exposure{prefix}"),
+                )
             else:
-                prefix = f".csv"
-            measurements = follower_sys.simulation(
-                reshare_fpath=reshare_fpath.replace(".csv", prefix),
-                exposure_fpath=os.path.join(dir, f"{exp_name}__exposure{prefix}"),
-                activation_fpath=os.path.join(dir, f"{exp_name}__activation{prefix}"),
-            )
-
+                measurements = follower_sys.simulation()
             # Update results over multiple simulations
             for k, val in measurements.items():
                 n_measures[k] += [val]
@@ -66,8 +67,7 @@ def run_simulation(infosys_specs, reshare_fpath="reshares.csv"):
     exp_name = os.path.basename(reshare_fpath).split("__")[0]
     measurements = follower_sys.simulation(
         reshare_fpath=reshare_fpath,
-        exposure_fpath=os.path.join(dir, f"{exp_name}", "__exposure.csv"),
-        activation_fpath=os.path.join(dir, f"{exp_name}", "__activation.csv"),
+        exposure_fpath=os.path.join(dir, f"{exp_name}", "__exposure.csv")
     )
     print("average quality for follower network:", measurements["quality"])
     return measurements
@@ -144,8 +144,6 @@ def main(args):
     infile = args.infile
     outfile = args.outfile
     reshare_fpath = args.resharefpath
-    # exposure_fpath = args.exposurefpath
-    # activation_fpath = args.activationfpath
     verboseout = args.verboseoutfile
     configfile = args.config
     n_simulations = args.times
@@ -161,9 +159,7 @@ def main(args):
     nruns_measurements, verbose_tracking = multiple_simulations(
         legal_specs,
         times=int(n_simulations),
-        reshare_fpath=reshare_fpath,
-        # exposure_fpath=exposure_fpath,
-        # activation_fpath=activation_fpath,
+        reshare_fpath=reshare_fpath
     )
     # add infosys configuration
     infosys_spec.update(nruns_measurements)
