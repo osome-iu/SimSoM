@@ -11,7 +11,6 @@
     - Targeting strategies
         - Default values, only change targeting 
 """
-import os
 import simsom.utils as utils
 import simsom.config_vals as configs
 import os
@@ -42,21 +41,22 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
     ##### Networks created are used commonly across all gamma values (we don't have to re-generate network for each simulation)
     all_exps["vary_network"] = {}
 
-    for idx, beta in enumerate(configs.BETA):
-        for jdx, gamma in enumerate(configs.GAMMA):
-            for kdx, target in enumerate(configs.TARGETING):
-                cf = {"beta": beta, "gamma": gamma, "targeting_criterion": target}
-                config = utils.update_dict(cf, default_net_config)
-                config = utils.update_dict(config, default_infosys_config)
+    for jdx, gamma in enumerate(configs.GAMMA):
+        for kdx, target in enumerate(configs.TARGETING):
+            cf = {
+                "beta": configs.DEFAULT_BETA,
+                "gamma": gamma,
+                "targeting_criterion": target,
+            }
+            config = utils.update_dict(cf, default_net_config)
+            config = utils.update_dict(config, default_infosys_config)
 
-                config_name = f"{idx}{jdx}{kdx}"
-                all_exps["vary_network"][config_name] = config
+            config_name = f"{jdx}{kdx}"
+            all_exps["vary_network"][config_name] = config
 
-                save_config_to_subdir(config, config_name, saving_dir, "vary_network")
+            save_config_to_subdir(config, config_name, saving_dir, "vary_network")
 
-    assert len(all_exps["vary_network"]) == len(configs.BETA) * len(
-        configs.GAMMA
-    ) * len(configs.TARGETING)
+    assert len(all_exps["vary_network"]) == len(configs.GAMMA) * len(configs.TARGETING)
 
     ##### BASELINE #####
     all_exps["baseline"] = {}

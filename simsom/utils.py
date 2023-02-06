@@ -1,5 +1,5 @@
 """
-Provides functions to help with plotting and do statistic tests
+Utility functions to help with I/o, plotting and statistic tests
 """
 
 import numpy as np
@@ -50,22 +50,21 @@ def update_dict(adict, default_dict, fill_na=True):
 
 def netconfig2netname(config_fname, network_config):
     # Map specific args to pre-constructed network name
-    # network_config is a dict of at least 3 keys: {'beta', 'gamma', 'strategy'}
-    # structure: network_config = {'beta': 0.001, 'gamma':0.005, 'targeting_criterion': 'partisanship'}
+    # network_config is a dict of at least 3 keys: {'gamma', 'strategy'}
+    # structure: network_config = {'gamma':0.005, 'targeting_criterion': 'partisanship'}
 
     exp_configs = json.load(open(config_fname, "r"))
     EXPS = exp_configs[
         "vary_network"
     ]  # keys are name of network, format: '{betaidx}{gammaidx}{targetingidx}'
 
-    legal_vals = ["beta", "gamma", "targeting_criterion"]
+    legal_vals = ["gamma", "targeting_criterion"]
     network_config = {k: val for k, val in network_config.items() if k in legal_vals}
 
-    BETA = configs.BETA
     GAMMA = configs.GAMMA
     TARGETING = configs.TARGETING
 
-    network_fname = f"{BETA.index(network_config['beta'])}{GAMMA.index(network_config['gamma'])}{TARGETING.index(network_config['targeting_criterion'])}"
+    network_fname = f"{GAMMA.index(network_config['gamma'])}{TARGETING.index(network_config['targeting_criterion'])}"
 
     for arg_name in network_config.keys():
         assert EXPS[network_fname][arg_name] == network_config[arg_name]

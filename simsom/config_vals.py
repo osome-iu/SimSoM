@@ -20,7 +20,6 @@ ALPHA_SWIPE = [1, 2, 4, 8, 16, 32, 64, 128]
 
 ##### NETWORK INITIALIZATION (WITH BOTS) #####
 TARGETING = [None, "hubs", "partisanship", "conservative", "liberal", "misinformation"]
-BETA = sorted(list(10.0 ** (np.arange(-4, 0))) + list(5 * (10.0 ** (np.arange(-4, 0)))))
 GAMMA = sorted(list(10.0 ** (np.arange(-4, 0))))
 
 ##### EXPLORE OTHER BOT PARAMS #####
@@ -29,6 +28,7 @@ PHI_SWIPE = list(np.arange(0,1.1,0.1))
 
 infosys_default = {
     "verbose": False,
+    "output_cascades": True,
     "epsilon": DEFAULT_EPSILON,
     "rho": DEFAULT_RHO,
     "mu": DEFAULT_MU,
