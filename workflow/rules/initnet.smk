@@ -1,6 +1,7 @@
 import simsom.utils as utils
 import simsom.config_vals as configs
-ABS_PATH = 'exps'
+
+ABS_PATH = '/N/slate/baotruon/simsom_data'
 DATA_PATH = os.path.join(ABS_PATH, "data")
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
@@ -9,13 +10,13 @@ exp_type = "vary_network"
 # get network names corresponding to the strategy
 EXPS = json.load(open(config_fname,'r'))[exp_type]
 # only init networks of interest: 
-beta_idxs = [configs.BETA.index(beta) for beta in configs.BETA_SWIPE]
-gamma_jdxs = [configs.GAMMA.index(gamma) for gamma in configs.GAMMA_SWIPE]
+gamma_jdxs = [configs.GAMMA.index(gamma) for gamma in [0.001, 0.01]]
+target_idxs = [configs.TARGETING.index(target) for target in [None]]
 EXP_NOS = list(
     [
         netname
         for netname in EXPS.keys()
-        if int(netname[0]) in beta_idxs and int(netname[1]) in gamma_jdxs
+        if int(netname[0]) in gamma_jdxs and int(netname[1]) in target_idxs
     ]
 )
 mode='igraph'

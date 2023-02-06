@@ -1,6 +1,6 @@
 import simsom.utils as utils
 
-ABS_PATH = 'exps'
+ABS_PATH = '/N/slate/baotruon/simsom_data'
 DATA_PATH = os.path.join(ABS_PATH, "data")
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
@@ -10,11 +10,11 @@ exp_type = "baseline"
 EXPS = json.load(open(config_fname,'r'))[exp_type]
 EXP_NOS = list(EXPS.keys())
 
-sim_num = 3
+sim_num = 5
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'newpipeline', 'results', f'{exp_type}_{sim_num}runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'newpipeline', 'verbose', f'{exp_type}_{sim_num}runs')
+RES_DIR = os.path.join(ABS_PATH,'results', 'short', f'{exp_type}_{sim_num}runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results', 'verbose', f'{exp_type}_{sim_num}runs')
 
 rule all:
     input: 
