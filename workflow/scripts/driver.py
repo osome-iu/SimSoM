@@ -163,7 +163,9 @@ def main(args):
     args = parser.parse_args(args)
     infile = args.infile
     outfile = args.outfile
-    reshare_fpath = args.resharefpath
+    reshare_fpath = (
+        args.resharefpath if args.resharefpath is not None else "reshares.csv"
+    )
     verboseout = args.verboseoutfile
     configfile = args.config
     n_simulations = args.times

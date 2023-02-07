@@ -39,7 +39,7 @@ rule run_simulation:
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
         reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --mode {mode} --times {sim_num}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} -r {output.reshare} --config {input.configfile} --mode {mode} --times {sim_num}
     """
 
 rule init_net:
