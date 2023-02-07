@@ -22,9 +22,9 @@ EXP2NET = {exp_name: utils.netconfig2netname(config_fname, net_cf) for exp_name,
 sim_num = 1
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results', 'short', f'{exp_type}_{sim_num}runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results', 'verbose', f'{exp_type}_{sim_num}runs')
-CASCADE_DIR = os.path.join(ABS_PATH,'results', 'cascade', f'{exp_type}_{sim_num}runs')
+RES_DIR = os.path.join(ABS_PATH,'results', 'short', f'{exp_type}___{sim_num}runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results', 'verbose', f'{exp_type}___{sim_num}runs')
+CASCADE_DIR = os.path.join(ABS_PATH,'results', 'cascade', f'{exp_type}___{sim_num}runs')
 
 rule all:
     input: 
