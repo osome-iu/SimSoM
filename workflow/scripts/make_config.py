@@ -164,8 +164,10 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
             config = utils.update_dict(config, default_infosys_config)
             config["output_cascades"] = False
             config_name = f"{str(target)}{idx}"
-            all_exps["vary_gamma"][config_name] = config
-            save_config_to_subdir(config, config_name, saving_dir, "vary_gamma")
+            all_exps["vary_gamma_notracking"][config_name] = config
+            save_config_to_subdir(
+                config, config_name, saving_dir, "vary_gamma_notracking"
+            )
 
     fp = os.path.join(saving_dir, "all_configs.json")
     json.dump(all_exps, open(fp, "w"))
