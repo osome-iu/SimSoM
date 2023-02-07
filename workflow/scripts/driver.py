@@ -13,7 +13,9 @@ from collections import defaultdict
 import os
 
 
-def multiple_simulations(infosys_specs, times=1, reshare_fpath="reshares.csv"):
+def multiple_simulations(
+    infosys_specs, times=1, reshare_fpath="reshares.csv", verboseout=None
+):
     # baseline:  mu=0.5, alpha=15, beta=0.01, gamma=0.001, phi=1, theta=1
     # cascade data file name has format: f"{basedir}{exp_name}__{cascade_type}_{run_no}.csv"
     metrics = ["quality", "diversity", "discriminative_pow"]
@@ -26,7 +28,11 @@ def multiple_simulations(infosys_specs, times=1, reshare_fpath="reshares.csv"):
             print("Create InfoSystem instance..")
             follower_sys = InfoSystem(**infosys_specs)
             print("Start simulation ..")
-            if 'output_cascades' in infosys_specs.keys() and infosys_specs['output_cascades'] is True:
+            # Tracking cascade info
+            if (
+                "output_cascades" in infosys_specs.keys()
+                and infosys_specs["output_cascades"] is True
+            ):
                 dir = os.path.dirname(reshare_fpath)
                 exp_name = os.path.basename(reshare_fpath).split("__")[0]
                 #  make a reshare.csv file no matter what. Save to other files according to number of (multiple) runs.
@@ -40,9 +46,25 @@ def multiple_simulations(infosys_specs, times=1, reshare_fpath="reshares.csv"):
                 )
             else:
                 measurements = follower_sys.simulation()
+
             # Update results over multiple simulations
-            for k, val in measurements.items():
-                n_measures[k] += [val]
+            for metric in metrics:
+                n_measures[metric] += [measurements[metric]]
+
+            # Save verbose results
+            if verboseout is not None:
+                if time > 0:
+                    prefix = f"_{time}.json.gz"
+                else:
+                    prefix = f".json.gz"
+
+                verboseout_path = verboseout.replace(".json.gz", prefix)
+                specs = copy.deepcopy(infosys_specs)
+                specs.update(measurements)
+                fout = gzip.open(verboseout_path, "w")
+                utils.write_json_compressed(fout, specs)
+                # force writing out the changes
+                fout.flush()
 
         except Exception as e:
             print("Error creating InfoSystem instance of running simulation.")
@@ -52,10 +74,8 @@ def multiple_simulations(infosys_specs, times=1, reshare_fpath="reshares.csv"):
         f"average quality for follower network: {np.mean(np.array(n_measures['quality']))} pm {np.std(np.array(n_measures['quality']))}"
     )
 
-    results = {metric: n_measures[metric] for metric in metrics}
-
-    # return a short & long (more details) version of measurements
-    return results, dict(n_measures)
+    # return a short version of measurements
+    return dict(n_measures)
 
 
 def run_simulation(infosys_specs, reshare_fpath="reshares.csv"):
@@ -67,7 +87,7 @@ def run_simulation(infosys_specs, reshare_fpath="reshares.csv"):
     exp_name = os.path.basename(reshare_fpath).split("__")[0]
     measurements = follower_sys.simulation(
         reshare_fpath=reshare_fpath,
-        exposure_fpath=os.path.join(dir, f"{exp_name}", "__exposure.csv")
+        exposure_fpath=os.path.join(dir, f"{exp_name}", "__exposure.csv"),
     )
     print("average quality for follower network:", measurements["quality"])
     return measurements
@@ -156,10 +176,11 @@ def main(args):
     # avoid passing undefined keyword to InfoSys
     legal_specs = utils.remove_illegal_kwargs(infosys_spec, InfoSystem.__init__)
 
-    nruns_measurements, verbose_tracking = multiple_simulations(
+    nruns_measurements = multiple_simulations(
         legal_specs,
         times=int(n_simulations),
-        reshare_fpath=reshare_fpath
+        reshare_fpath=reshare_fpath,
+        verboseout=verboseout,
     )
     # add infosys configuration
     infosys_spec.update(nruns_measurements)
@@ -168,14 +189,6 @@ def main(args):
     fout = open(outfile, "w")
     json.dump(infosys_spec, fout)
     fout.flush()
-
-    if verboseout is not None:
-        specs = copy.deepcopy(infosys_spec)
-        specs.update(verbose_tracking)
-        fout = gzip.open(verboseout, "w")
-        utils.write_json_compressed(fout, specs)
-        # force writing out the changes
-        fout.flush()
 
 
 if __name__ == "__main__":
