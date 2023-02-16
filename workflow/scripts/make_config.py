@@ -85,7 +85,7 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
 
             config = utils.update_dict(cf, default_net_config)
             config = utils.update_dict(config, default_infosys_config)
-
+            config["output_cascades"] = False
             config_name = f"{str(target)}{idx}"
             all_exps["vary_mu"][config_name] = config
 
@@ -98,7 +98,7 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
 
             config = utils.update_dict(cf, default_net_config)
             config = utils.update_dict(config, default_infosys_config)
-
+            config["output_cascades"] = False
             config_name = f"{str(target)}{idx}"
             all_exps["vary_alpha"][config_name] = config
 
@@ -162,8 +162,6 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
 
 if __name__ == "__main__":
     ABS_PATH = "exps"
-
-    # ABS_PATH = "/N/slate/baotruon/marketplace"
 
     saving_dir = os.path.join(ABS_PATH, "config")
     make_exps(saving_dir, configs.default_net, configs.infosys_default)
