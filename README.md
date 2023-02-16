@@ -1,4 +1,4 @@
-# SimSoM: A Simulator of Social Media
+# SimSoM: A <ins>Sim</ins>ulator of <ins>So</ins>cial <ins>M</ins>edia
 
 This repository contains code to reproduce the results in the paper [*Vulnerabilities of the Online Public Square to Manipulation*](https://arxiv.org/abs/1907.06130) by [Bao Tran Truong](https://btrantruong.github.io/), Xiaodan Lou, [Alessandro Flammini](https://cnets.indiana.edu/aflammin/), and [Filippo Menczer](https://cnets.indiana.edu/fil/).
 
