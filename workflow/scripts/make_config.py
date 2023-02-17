@@ -111,10 +111,11 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
             cf = {"theta": theta, "phi": phi}
             config = utils.update_dict(cf, default_net_config)
             config = utils.update_dict(config, default_infosys_config)
+            config["output_cascades"] = False
+            config["save_memeinfo"] = False
 
             config_name = f"{idx}{jdx}"
             all_exps["vary_thetaphi"][config_name] = config
-
             save_config_to_subdir(config, config_name, saving_dir, "vary_thetaphi")
 
     all_exps["vary_thetagamma"] = {}
@@ -123,10 +124,11 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
             cf = {"theta": theta, "gamma": gamma}
             config = utils.update_dict(cf, default_net_config)
             config = utils.update_dict(config, default_infosys_config)
+            config["output_cascades"] = False
+            config["save_memeinfo"] = False
 
             config_name = f"{idx}{jdx}"
             all_exps["vary_thetagamma"][config_name] = config
-
             save_config_to_subdir(config, config_name, saving_dir, "vary_thetagamma")
 
     all_exps["vary_phigamma"] = {}
@@ -135,10 +137,11 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
             cf = {"phi": phi, "gamma": gamma}
             config = utils.update_dict(cf, default_net_config)
             config = utils.update_dict(config, default_infosys_config)
+            config["output_cascades"] = False
+            config["save_memeinfo"] = False
 
             config_name = f"{idx}{jdx}"
             all_exps["vary_phigamma"][config_name] = config
-
             save_config_to_subdir(config, config_name, saving_dir, "vary_phigamma")
 
     ##### EXPLORE BOT TARGETING STRATEGIES #####
@@ -177,5 +180,5 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
 if __name__ == "__main__":
     ABS_PATH = "/N/slate/baotruon/simsom_data"
 
-    saving_dir = os.path.join(ABS_PATH, "config")
+    saving_dir = os.path.join(ABS_PATH, "config_02172023")
     make_exps(saving_dir, configs.default_net, configs.infosys_default)
