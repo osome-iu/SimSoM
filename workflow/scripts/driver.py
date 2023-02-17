@@ -52,7 +52,7 @@ def multiple_simulations(
                 n_measures[metric] += [measurements[metric]]
 
             # Save verbose results
-            if verboseout is not None:
+            if verboseout is not None and infosys_specs["save_memeinfo"] is True:
                 if time > 0:
                     prefix = f"_{time}.json.gz"
                 else:
