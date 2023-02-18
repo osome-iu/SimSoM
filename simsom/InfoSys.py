@@ -8,6 +8,8 @@ Main class to run the simulation. Represents an Information System
 Inputs: 
     - graph_gml (str): path to igraph .graphml file
     - tracktimestep (bool): if True, track overall quality at each timestep 
+    - save_memeinfo (bool): if True, save all meme and news feeds info (popularity, mapping of feed-memes, etc. this info is still tracked if flag is False)
+    - output_cascades (bool): if True, track & save reshares and exposures to .csv files (for network viz)
     - verbose (bool): if True, print messages 
     - epsilon (float): threshold of quality difference between 2 consecutive timesteps to decide convergence. Default: 0.0001
     - rho (float): weight of the immediate past timestep's in calculating new quality. Default: 0.8
@@ -65,6 +67,7 @@ class InfoSystem:
         self,
         graph_gml,
         tracktimestep=True,
+        save_memeinfo=True,
         output_cascades=False,
         verbose=False,
         epsilon=0.0001,  # Don't change this value
@@ -79,6 +82,7 @@ class InfoSystem:
         self.network = None  # TODO: can remove this
         self.verbose = verbose
         self.tracktimestep = tracktimestep
+        self.save_memeinfo = save_memeinfo
         self.output_cascades = output_cascades
         self.quality_timestep = []
         self.epsilon = epsilon
@@ -166,29 +170,30 @@ class InfoSystem:
 
             self.update_quality()
 
-        all_feeds = (
-            self.agent_feeds
-        )  # dict of {agent['uid']:[Meme()] } each value is a list of Meme obj in the agent's feed
-
-        # b: Save feed info of agent & meme popularity
-        feeds = {}
-        for agent, memelist in all_feeds.items():
-            # convert self.agent_feed into dict of agent_uid - [meme_id]
-            feeds[agent] = [meme.id for meme in memelist]
-
         # return feeds, self.meme_popularity, self.quality
-        self.meme_dict = (
-            self._return_all_meme_info()
-        )  # need to call this before calculating tau and diversity!!
+        # Call this before calculating tau and diversity!!
+        self.meme_dict = self._return_all_meme_info()
 
         measurements = {
             "quality": self.quality,
             "diversity": self.measure_diversity(),
             "discriminative_pow": self.measure_kendall_tau(),
-            "quality_timestep": self.quality_timestep,
-            "all_memes": self.meme_dict,
-            "all_feeds": feeds,
         }
+
+        if self.save_memeinfo is True:
+            # b: Save feed info of agent & meme popularity
+            # al_feeds: dict of {agent['uid']:[Meme()] } each value is a list of Meme obj in the agent's feed
+            all_feeds = self.agent_feeds
+
+            feeds = {}
+            for agent, memelist in all_feeds.items():
+                # convert self.agent_feed into dict of agent_uid - [meme_id]
+                feeds[agent] = [meme.id for meme in memelist]
+
+            measurements["quality_timestep"] = self.quality_timestep
+            measurements["all_memes"] = self.meme_dict
+            measurements["all_feeds"] = feeds
+
         return measurements
 
     # @profile
@@ -371,6 +376,7 @@ class InfoSystem:
     def _update_feed_data(self, target, meme_id, source):
         """
         Concat news feed information to feed information at all time
+        (when flag self.output_cascades is True)
         fields: "agent_id", "meme_id", "reshared_by_agent", "timestep"]
         Input: 
         - target: agent_id (str): uid of agent being activated
@@ -387,6 +393,7 @@ class InfoSystem:
     def _update_exposure(self, feed, agent):
         """
         Update human's exposure to meme whenever an agent is activated (equivalent to logging in)
+        (when flag self.output_cascades is True)
         Input: 
         - feed (list of Meme objects): agent's news feed
         - agent (Graph vertex): agent resharing the meme
