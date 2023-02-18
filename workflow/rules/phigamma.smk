@@ -1,6 +1,6 @@
 import simsom.utils as utils
 
-ABS_PATH = 'exps'
+ABS_PATH = '/N/slate/baotruon/simsom_data'
 DATA_PATH = os.path.join(ABS_PATH, 'data')
 CONFIG_PATH = os.path.join(ABS_PATH, "config_02172023")
 
