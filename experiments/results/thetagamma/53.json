@@ -1,0 +1,52 @@
+{
+    "theta": 32,
+    "gamma": 0.1,
+    "beta": 0.05,
+    "targeting_criterion": null,
+    "verbose": false,
+    "human_network": "follower_network.gml",
+    "trackmeme": true,
+    "epsilon": 0.0001,
+    "rho": 0.8,
+    "mu": 0.5,
+    "phi": 0.0,
+    "alpha": 15,
+    "graph_gml": "/N/slate/baotruon/marketplace/data/igraph/vary_network/network_560.gml",
+    "mode": "igraph",
+    "quality": [
+        0.05321229556093654,
+        0.05292903951548829,
+        0.04837571102381443,
+        0.04220516687598483,
+        0.05269737836032922
+    ],
+    "diversity": [
+        3.739747252423257,
+        3.7001458477267177,
+        3.4183510810471915,
+        3.659472260989002,
+        3.6597493959604677
+    ],
+    "discriminative_pow": [
+        [
+            0.7177606059075605,
+            0.0
+        ],
+        [
+            0.7211632377414384,
+            0.0
+        ],
+        [
+            0.7186835777779442,
+            0.0
+        ],
+        [
+            0.719780634298927,
+            0.0
+        ],
+        [
+            0.7198517749081171,
+            0.0
+        ]
+    ]
+}
