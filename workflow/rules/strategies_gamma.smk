@@ -1,6 +1,6 @@
 import simsom.utils as utils
 
-ABS_PATH = 'exps'
+ABS_PATH = 'experiments'
 DATA_PATH = os.path.join(ABS_PATH, "data")
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
@@ -14,8 +14,8 @@ EXP2NET = {exp_name: utils.netconfig2netname(config_fname, net_cf) for exp_name,
 sim_num = 2
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results', 'short', f'strategies_{exp_type}_{sim_num}runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results', 'verbose', f'strategies_{exp_type}_{sim_num}runs')
+RES_DIR = os.path.join(ABS_PATH,'results', f'strategies_{exp_type}')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'strategies_{exp_type}')
 
 rule all:
     input: 

@@ -1,6 +1,6 @@
 import simsom.utils as utils
 
-ABS_PATH = 'exps'
+ABS_PATH = 'experiments'
 DATA_PATH = os.path.join(ABS_PATH, "data")
 
 # ! Note: Before running make sure config_main/shuffle/* exists
@@ -13,8 +13,8 @@ SHUFFLES = ['hub','community', 'all']
 GAMMAS = [0,1,2,3]
 mode='igraph'
 sim_num=3
-RES_DIR = os.path.join(ABS_PATH,'results', 'short', f'shuffle_{sim_num}runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results', 'verbose', f'shuffle_{sim_num}runs')
+RES_DIR = os.path.join(ABS_PATH,'results', f'shuffle')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'shuffle')
 
 rule all:
     input: 

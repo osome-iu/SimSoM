@@ -1,6 +1,6 @@
 import simsom.utils as utils
 
-ABS_PATH = 'exps'
+ABS_PATH = 'experiments'
 DATA_PATH = os.path.join(ABS_PATH, "data")
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
@@ -13,8 +13,8 @@ EXP_NOS = list(EXPS.keys())
 sim_num = 3
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'newpipeline', 'results', f'{exp_type}_{sim_num}runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'newpipeline', 'verbose', f'{exp_type}_{sim_num}runs')
+RES_DIR = os.path.join(ABS_PATH, 'results', f'{exp_type}')
+TRACKING_DIR = os.path.join(ABS_PATH, 'results_verbose', f'{exp_type}')
 
 rule all:
     input: 
