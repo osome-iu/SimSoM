@@ -1,6 +1,7 @@
 - `results` directory: contains outputs from running the snakemake rules in `workflow/rules`. The snakemake files provide a way to run the experiments systematically. Snakemake tracks the specified outputs and makes sure the rules don't have to rerun for existing output. 
   - Each file here contains the short result of running an experiment. It only contains values for the metrics: "quality", "diversity", "discriminative_pow". i.e., calling `workflow/scripts/driver.py` without passing the "--resharefpath" and  "--verboseoutfile" argument.
 - `experiments/plot_findings.ipynb`: produces the figures reported in the paper using the files in `results`.
+- `stylesheet.mplstyle` contains formatting settings to be shared among all plots, unless specified otherwise.
 - Files containing all meme and news feeds info (popularity, mapping of feed-memes, etc.) that are used to produce Fig.6 and Fig.7 are not included due to Github storage limit. They can be reproduce by calling the same snakemake rules while passing the respective argument to `workflow/scripts/driver.py`:
- - "--resharefpath" to track & save reshares and exposures to .csv files (for network viz) 
- - "--verboseoutfile" to save save all meme information.
+  - "--resharefpath" to track & save reshares and exposures to .csv files (for network viz) 
+  - "--verboseoutfile" to save save all meme information.
