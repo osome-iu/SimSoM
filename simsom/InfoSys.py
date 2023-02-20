@@ -12,7 +12,7 @@ Inputs:
     - output_cascades (bool): if True, track & save reshares and exposures to .csv files (for network viz)
     - verbose (bool): if True, print messages 
     - epsilon (float): threshold of quality difference between 2 consecutive timesteps to decide convergence. Default: 0.0001
-    - rho (float): weight of the immediate past timestep's in calculating new quality. Default: 0.8
+    - rho (float): weight of the previous timestep's quality in calculating new quality. Default: 0.8
     - mu (float): probability that an agent create new memes. Default: 0.5
     - phi (int): phi*0.1 is the probability that a bot meme's fitness equals 1. Default: 0
     - alpha (int): agent's feedsize. Default: 15
@@ -249,19 +249,23 @@ class InfoSystem:
         return
 
     def update_quality(self):
-        # use exponential moving average for convergence
-        # new_quality = 0.8 * self.quality + 0.2 * self.measure_average_quality()
+        """
+        Update quality using exponential moving average to ensure stable state at convergence
+        Forget the past slowly, i.e., new_quality = 0.8 * avg_quality(at t-1) + 0.2 * current_quality
+        """
         new_quality = (
             self.rho * self.quality + (1 - self.rho) * self.measure_average_quality()
-        )  # b: forget the past slowly
+        )
         self.quality_diff = (
             abs(new_quality - self.quality) / self.quality if self.quality > 0 else 0
         )
         self.quality = new_quality
 
     def measure_kendall_tau(self):
-        # calculate discriminative power of system
-        # Call only after self._return_all_meme_info() is called
+        """
+        Calculates the discriminative power of the system
+        (Invoke only after self._return_all_meme_info() is called)
+        """
 
         quality_ranked = sorted(self.meme_dict, key=lambda m: m["quality"])
         for ith, elem in enumerate(quality_ranked):
@@ -278,9 +282,9 @@ class InfoSystem:
         return tau, p_value
 
     def measure_average_quality(self):
-        # calculate average quality of memes in system
-        # count_bot=False
-        # calculate meme quality for tracked Users
+        """
+        Calculates the average quality across human memes in system
+        """
         total = 0
         count = 0
 
@@ -294,9 +298,10 @@ class InfoSystem:
         return total / count if count > 0 else 0
 
     def measure_diversity(self):
-        # calculate diversity of the system using entropy (in terms of unique memes)
-        # Call only after self._return_all_meme_info() is called
-
+        """
+        Calculates the diversity of the system using entropy (in terms of unique memes)
+        (Invoke only after self._return_all_meme_info() is called)
+        """
         humanshares = []
         for human, feed in self.agent_feeds.items():
             for meme in feed:
@@ -310,18 +315,6 @@ class InfoSystem:
         diversity = utils.entropy(hshare_pct) * -1
         # Note that (np.sum(humanshares)+np.sum(botshares)) !=self.num_memes because a meme can be shared multiple times
         return diversity
-
-    def measure_average_zero_fraction(self):
-        # calculate fraction of low-quality memes in system (for tracked User)
-        count = 0
-        zero_memes = 0
-
-        human_uids = [n["uid"] for n in self.network.vs if n["bot"] == 0]
-        for u in human_uids:
-            zero_memes += sum([1 for meme in self.agent_feeds[u] if meme.quality == 0])
-            count += len(self.agent_feeds[u])
-
-        return zero_memes / count
 
     def _add_meme_to_feed(self, target_id, meme, source_id, n_copies=1):
         """
