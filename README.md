@@ -6,7 +6,7 @@ This repository contains code to reproduce the results in the paper [*Vulnerabil
 1. `data`: contains raw & derived datasets
 2. `example`: contains a minimal example to start using the SimSoM model
 3. `simsom`: the package for the SimSoM model that can be imported into scripts
-4. `results`: .ipynb noteboooks to produce figures reported in the paper
+4. `experiments`: experiment results and .ipynb noteboooks to produce figures reported in the paper
 5. `workflow`: workflow files (Snakemake rules) and scripts
 
 ## Environment set-up
