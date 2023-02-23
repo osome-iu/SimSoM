@@ -1,3 +1,5 @@
+This directory contains the results as reported in the paper and the ipython notebook to create figures using the results. 
+
 - `results` directory: contains outputs from running the snakemake rules in `workflow/rules`. The snakemake files provide a way to run the experiments systematically. Snakemake tracks the specified outputs and makes sure the rules don't have to rerun for existing output. 
   - Each file here contains the short result of running an experiment. It only contains values for the metrics: "quality", "diversity", "discriminative_pow". i.e., calling `workflow/scripts/driver.py` without passing the "--resharefpath" and  "--verboseoutfile" argument.
 - `plot_findings.ipynb`: produces the figures reported in the paper using the files in `results`.
