@@ -4,7 +4,7 @@ Class modeling a message.
 import random
 
 
-class Meme:
+class Message:
     def __init__(self, id, is_by_bot=0, phi=0):
         """
         Initializes an instance for a message.

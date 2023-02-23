@@ -1,6 +1,6 @@
 """ Script to run simulations """
 
-from simsom.InfoSys import InfoSystem
+from simsom.model import SimSom
 import simsom.utils as utils
 
 import gzip
@@ -12,7 +12,6 @@ import copy
 from collections import defaultdict
 import os
 
-# TODO: prettify
 def multiple_simulations(
     infosys_specs, times=1, reshare_fpath="reshares.csv", verboseout=None
 ):
@@ -23,10 +22,9 @@ def multiple_simulations(
 
     print(f"Run simulation {times} times..")
     for time in range(times):
-
         try:
-            print("Create InfoSystem instance..")
-            follower_sys = InfoSystem(**infosys_specs)
+            print("Create SimSom instance..")
+            follower_sys = SimSom(**infosys_specs)
             print("Start simulation ..")
             # Tracking cascade info
             if infosys_specs["output_cascades"] is True:
@@ -64,7 +62,7 @@ def multiple_simulations(
                 fout.flush()
 
         except Exception as e:
-            print("Error creating InfoSystem instance of running simulation.")
+            print("Error creating SimSom instance of running simulation.")
             print(e)
 
     print(
@@ -77,8 +75,8 @@ def multiple_simulations(
 
 def run_simulation(infosys_specs, reshare_fpath="reshares.csv"):
     # baseline:  mu=0.5, alpha=15, beta=0.01, gamma=0.001, phi=1, theta=1
-    print("Create InfoSystem instance..")
-    follower_sys = InfoSystem(**infosys_specs)
+    print("Create SimSom instance..")
+    follower_sys = SimSom(**infosys_specs)
     print(f"Start simulation..")
     dir = os.path.dirname(reshare_fpath)
     exp_name = os.path.basename(reshare_fpath).split("__")[0]
@@ -93,7 +91,7 @@ def run_simulation(infosys_specs, reshare_fpath="reshares.csv"):
 def main(args):
     # TODO: remove mode
     parser = argparse.ArgumentParser(
-        description="run simulation on an igraph instance of InfoSystem",
+        description="run simulation on an igraph instance of SimSom",
     )
 
     parser.add_argument(
@@ -172,7 +170,7 @@ def main(args):
     infosys_spec["mode"] = args.mode
 
     # avoid passing undefined keyword to InfoSys
-    legal_specs = utils.remove_illegal_kwargs(infosys_spec, InfoSystem.__init__)
+    legal_specs = utils.remove_illegal_kwargs(infosys_spec, SimSom.__init__)
 
     nruns_measurements = multiple_simulations(
         legal_specs,

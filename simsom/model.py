@@ -53,16 +53,16 @@ Outputs:
             - agent2 (str): uid of the agent resharing the meme
 """
 
-from simsom.Meme import Meme
+from simsom import Message
 import simsom.utils as utils
 import igraph as ig
 import csv
 import random
 import numpy as np
-from collections import Counter, defaultdict
+from collections import Counter
 
-# TODO: clean up the bool variable
-class InfoSystem:
+
+class SimSom:
     def __init__(
         self,
         graph_gml,
@@ -79,7 +79,6 @@ class InfoSystem:
     ):
 
         self.graph_gml = graph_gml
-        self.network = None  # TODO: can remove this
         self.verbose = verbose
         self.tracktimestep = tracktimestep
         self.save_memeinfo = save_memeinfo
@@ -93,7 +92,6 @@ class InfoSystem:
         self.theta = theta
 
         # Keep track of number of memes globally
-        # list of dicts, contains of {"meme_id": meme.__dict__ and popularity information updated from self.meme_popularity}
         self.meme_dict = []
         self.all_memes = []  # list of Meme objects
 
@@ -105,28 +103,26 @@ class InfoSystem:
         self.time_step = 0
 
         self.meme_popularity = {}
-        # dict of popularity (all memes), structure: {"meme_id": {"is_by_bot": meme.is_by_bot, "human_shares":0, "bot_shares":0, "spread_via_agents":[]}}
-        # self.reshares = [] # deprecated
         try:
             self.network = ig.Graph.Read_GML(self.graph_gml)
-            print(self.network.summary())
+            if verbose is True:
+                print(self.network.summary())
 
             self.n_agents = self.network.vcount()
-            self.agent_feeds = {
-                agent["uid"]: [] for agent in self.network.vs
-            }  # init an empty feed for all agents
+            # init an empty feed for all agents
+            self.agent_feeds = {agent["uid"]: [] for agent in self.network.vs}
 
-            if verbose:
-                in_deg = [
-                    self.network.degree(n, mode="in") for n in self.network.vs
-                ]  # number of followers
+            if verbose is True:
+                # sanity check: calculate number of followers
+                in_deg = [self.network.degree(n, mode="in") for n in self.network.vs]
                 print("Graph Avg in deg", round(sum(in_deg) / len(in_deg), 2))
 
         except Exception as e:
+            print(
+                f"Unable to read graph file. File doesn't exist of corrupted: {graph_gml}"
+            )
             print(e)
-            print(f"Graph file: {graph_gml}")
 
-    # @profile
     def simulation(self, reshare_fpath="", exposure_fpath=""):
         """
         Driver for simulation. 
@@ -151,7 +147,6 @@ class InfoSystem:
 
         while self.quality_diff > self.epsilon:
             if self.verbose:
-                # print('time_step = {}, q = {}, diff = {}'.format(self.time_step, self.quality, self.quality_diff), flush=True)
                 print(
                     f"time_step = {self.time_step}, q = {self.quality}, diff = {self.quality_diff}, unique/human memes = {self.num_meme_unique}/{self.memes_human_feed}, all memes created={self.num_memes}",
                     flush=True,
@@ -181,8 +176,7 @@ class InfoSystem:
         }
 
         if self.save_memeinfo is True:
-            # b: Save feed info of agent & meme popularity
-            # al_feeds: dict of {agent['uid']:[Meme()] } each value is a list of Meme obj in the agent's feed
+            # Save feed info of agent & meme popularity
             all_feeds = self.agent_feeds
 
             feeds = {}
@@ -196,7 +190,6 @@ class InfoSystem:
 
         return measurements
 
-    # @profile
     def simulation_step(self):
         """
         A simulation step: An agent is chosen at random. The chosen agent can reshare or post a new message. 
@@ -208,17 +201,15 @@ class InfoSystem:
 
         if len(feed) > 0 and random.random() > self.mu:
             # retweet a meme from feed selected on basis of its fitness
-            # unpack because random choices return a list
             (meme,) = random.choices(feed, weights=[m.fitness for m in feed], k=1)
         else:
             # new meme
             self.num_meme_unique += 1
-            meme = Meme(self.num_meme_unique, is_by_bot=agent["bot"], phi=self.phi)
+            meme = Message(self.num_meme_unique, is_by_bot=agent["bot"], phi=self.phi)
 
             self.all_memes += [meme]
 
         # book keeping
-        # TODO: add forgotten memes per degree
         self._update_meme_popularity(meme, agent)
         self._update_exposure(feed, agent)
 
@@ -227,7 +218,6 @@ class InfoSystem:
         follower_uids = [n["uid"] for n in self.network.vs if n.index in follower_idxs]
 
         for follower in follower_uids:
-            # print('follower feed before:', ["{0:.2f}".format(round(m[0], 2)) for m in G.nodes[f]['feed']])
             # add meme to top of follower's feed (theta copies if poster is bot to simulate flooding)
             if agent["bot"] == 1:
                 self._add_meme_to_feed(
@@ -318,15 +308,13 @@ class InfoSystem:
 
     def _add_meme_to_feed(self, target_id, meme, source_id, n_copies=1):
         """
-        Add meme to agent's feed, update all news feed information.
+        Add meme to agent's feed, forget the oldeest if feed size exceeds self.alpha (Last in last out)
+        Update all news feed information if output_cascades is True
         Input: 
         - target_id (str): uid of agent resharing the meme -- whose feed we're adding the meme to 
-        - meme (Meme object): meme being reshared
+        - meme (Message object): meme being reshared
         - source_id (str): uid of agent spreading the meme
         """
-
-        # Insert meme to feed. Forget if feed size exceeds alpha (Last in last out)
-        # Return information about meme flow in/out of the feed
         feed = self.agent_feeds[target_id]
         feed[0:0] = [meme] * n_copies
 
@@ -334,9 +322,8 @@ class InfoSystem:
             self._update_feed_data(target=target_id, meme_id=meme.id, source=source_id)
 
         if len(feed) > self.alpha:
-            self.agent_feeds[target_id] = self.agent_feeds[target_id][
-                : self.alpha
-            ]  # we can make sure dict values reassignment is correct this way
+            # clip the agent's feed if exceeds alpha, update value of the feed in dictionary
+            self.agent_feeds[target_id] = self.agent_feeds[target_id][: self.alpha]
             # Remove memes from popularity info & all_meme list if extinct
             for meme in set(self.agent_feeds[target_id][self.alpha :]):
                 _ = self.meme_popularity.pop(meme.id, "No Key found")
@@ -345,7 +332,7 @@ class InfoSystem:
 
     def _return_all_meme_info(self):
         for meme in self.all_memes:
-            assert isinstance(meme, Meme)
+            assert isinstance(meme, Message)
         # Be careful: convert to dict to avoid infinite recursion
         memes = [meme.__dict__ for meme in self.all_memes]
         for meme_dict in memes:
@@ -356,7 +343,7 @@ class InfoSystem:
         """
         Update the reshare cascade information to a file. 
         Input: 
-        - meme (Meme object): meme being reshared
+        - meme (Message object): meme being reshared
         - source (str): uid of agent spreading the meme
         - target (str): uid of agent resharing the meme
         """
@@ -388,7 +375,7 @@ class InfoSystem:
         Update human's exposure to meme whenever an agent is activated (equivalent to logging in)
         (when flag self.output_cascades is True)
         Input: 
-        - feed (list of Meme objects): agent's news feed
+        - feed (list of Message objects): agent's news feed
         - agent (Graph vertex): agent resharing the meme
         """
         seen = []
@@ -403,10 +390,9 @@ class InfoSystem:
         """
         Update information of a meme whenever it is reshared. 
         Input: 
-        - meme (Meme object): meme being reshared
+        - meme (Message object): meme being reshared
         - agent (Graph vertex): agent resharing the meme
         """
-        # (don't use tuple! tuple doesn't support item assignment)
         if meme.id not in self.meme_popularity.keys():
             self.meme_popularity[meme.id] = {
                 "agent_id": agent["uid"],

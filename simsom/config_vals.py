@@ -1,3 +1,6 @@
+"""
+Default values and range of parameter swipe
+"""
 import numpy as np
 
 follower_network = "follower_network.gml"

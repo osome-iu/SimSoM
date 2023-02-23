@@ -2,7 +2,6 @@
 Graph-related functions, e.g.: function create synthetic bot network and shuffle networks
 ** remember link direction is following, opposite of info spread!
 """
-import simsom.utils as utils
 import igraph as ig
 import random
 import string
