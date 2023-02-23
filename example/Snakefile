@@ -1,15 +1,11 @@
 """ 
 Snakemakerule to create input and run simulation 
-input: infosys_network (using bot parameters)
-
 """
+import os
+import sys
 
-import simsom.utils as utils
-
-ABS_PATH = ''
-DATA_DIR = os.path.join(ABS_PATH, 'data')
-RES_DIR = os.path.join(ABS_PATH, 'result')
-mode='igraph'
+DATA_DIR = 'data'
+RES_DIR = 'results'
 
 rule all:
     input: os.path.join(RES_DIR, 'results.json')
@@ -22,7 +18,7 @@ rule run_simulation:
         measurements = os.path.join(RES_DIR, 'results.json'),
         tracking = os.path.join(RES_DIR, 'tracking.json.gz')
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --mode {mode}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times 1
     """
 
 rule init_net:
@@ -33,5 +29,5 @@ rule init_net:
     output: os.path.join(DATA_DIR, "infosys_network.gml")
 
     shell: """
-            python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile} --mode {mode}
+            python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile} --times 1
         """ 
