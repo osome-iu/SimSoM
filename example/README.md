@@ -1,10 +1,10 @@
 This directory contains toy data and minimal example to run the model.
 
-# .ipynb introduction
+## An introduction with .ipynb
 
 `run_simulation.ipynb`: provide the basic steps needed to run a simulation and demo some of the results. There are two other alternatives to run a simulation.
 
-# Run simulation from the command line
+## Run simulation from the command line
 
 From the root directory, call the `workflow/scripts/driver.py` script using
  ```py
@@ -17,7 +17,7 @@ In which the options are:
   - `--config`: file path specifying the parameters to run the simulation
   - `--times`: number of time to run the simulation
 
-# Run simulation using a Snakemake rule: 
+## Run simulation using a Snakemake rule: 
 
 `Snakefile` specifies the rules to create a network and run simulation by calling `workflow/scripts/init_net.py` and `workflow/scripts/driver.py`
 - from the `example` directory, run the command `snakemake -c1`
