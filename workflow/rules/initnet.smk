@@ -1,4 +1,7 @@
-import simsom.utils as utils
+"""
+Snakefile to create the information network with varying beta, gamma values and targeting strategies
+"""
+
 import simsom.config_vals as configs
 ABS_PATH = 'experiments'
 DATA_PATH = os.path.join(ABS_PATH, "data")
@@ -32,5 +35,5 @@ rule init_net:
     output: os.path.join(DATA_PATH, mode, 'vary_network', "network_{net_no}.gml")
 
     shell: """
-            python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile} --mode {mode}
+            python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile}
         """ 

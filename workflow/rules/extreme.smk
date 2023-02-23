@@ -1,4 +1,6 @@
-import simsom.utils as utils
+"""
+Snakefile to run experiments using extreme values for the bot subnetwork 
+"""
 
 ABS_PATH = 'experiments'
 DATA_PATH = os.path.join(ABS_PATH, "data")
@@ -32,7 +34,7 @@ rule run_simulation:
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --mode {mode} --times {sim_num}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
     """
 
 rule init_net:
@@ -43,5 +45,5 @@ rule init_net:
     output: os.path.join(DATA_PATH, mode, 'vary_network', "network_{net_no}.gml")
 
     shell: """
-            python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile} --mode {mode}
+            python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile}
         """ 

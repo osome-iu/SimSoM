@@ -1,5 +1,12 @@
-Snakemake rules to run simulations whose results are reported in the paper.
-The associated section and figure is listed with each rule. 
+This directory contains Snakemake rules to run simulations whose results are reported in the paper.
+- Snakemake is a powerful workflow that helps keeping track of experiments systematically. Each Snakemake file is consists of rules that define how to create output files from input files. Dependencies between the rules are determined automatically, creating a DAG (directed acyclic graph) of jobs that can be automatically parallelized. Read more about Snakemake in its [documentation](https://snakemake.readthedocs.io/en/v5.1.4/executable.html)
+- The associated section and figure is listed with each rule. 
+
+Run each snakefile below by: 
+- Changing into the root directory of this project 
+- calling `snakemake --snakefile workflow/rules/<rule-name>.smk --cores all`
+**Note**: If you decide to run __multiple rules at the same time__, call the above command with the `--nolock` flag. This is to disable Snakemake's default mechanism of locking a directory to prevent a file being modified multiple times. We do this since some of our rules make use of the same network files.
+Although using `--nolock` is generally __not recommended__, this should be fine because our results are disjoint sets of output files.
 
 # Cognitive and Network Vulnerabilities
 ## Cognitive 

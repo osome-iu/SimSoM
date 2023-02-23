@@ -1,4 +1,7 @@
-import simsom.utils as utils
+"""
+Snakefile to run experiments with 2 gamma values (0.001, 0.01) while saving cascade and exposure networks 
+"""
+
 import simsom.config_vals as configs
 
 ABS_PATH = 'experiments'
@@ -35,7 +38,7 @@ rule run_simulation:
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
         reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} -r {output.reshare} --config {input.configfile} --mode {mode} --times {sim_num}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} -r {output.reshare} --config {input.configfile} --times {sim_num}
     """
 
 rule init_net:
@@ -46,5 +49,5 @@ rule init_net:
     output: os.path.join(DATA_PATH, mode, 'vary_network', "network_{net_no}.gml")
 
     shell: """
-            python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile} --mode {mode}
+            python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile}
         """ 
