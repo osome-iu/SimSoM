@@ -12,6 +12,7 @@ import copy
 from collections import defaultdict
 import os
 
+
 def multiple_simulations(
     infosys_specs, times=1, reshare_fpath="reshares.csv", verboseout=None
 ):
@@ -143,7 +144,7 @@ def main(args):
         action="store",
         dest="mode",
         type=str,
-        required=True,
+        required=False,
         help="mode of implementation ['igraph', 'nx', 'infosys']",
     )
     parser.add_argument(
@@ -167,7 +168,7 @@ def main(args):
 
     infosys_spec = json.load(open(configfile, "r"))
     infosys_spec["graph_gml"] = infile
-    infosys_spec["mode"] = args.mode
+    infosys_spec["mode"] = args.mode if args.mode is not None else "igraph"
 
     # avoid passing undefined keyword to InfoSys
     legal_specs = utils.remove_illegal_kwargs(infosys_spec, SimSom.__init__)

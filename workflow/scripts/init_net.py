@@ -61,7 +61,7 @@ def main(args):
         action="store",
         dest="mode",
         type=str,
-        required=True,
+        required=False,
         help="mode of implementation",
     )
 
@@ -71,7 +71,7 @@ def main(args):
     )  # infile is a json containing list of {"beta": 0.0, "gamma": 0.0}
     outfile = args.outfile
     configfile = args.config
-    mode = args.mode
+    mode = args.mode if args.mode is not None else "igraph"
 
     net_spec = json.load(open(configfile, "r"))
     if net_spec["human_network"] is not None:
@@ -89,7 +89,8 @@ def main(args):
     # Write empty file if exception so smk don't complain
     except Exception as e:
         print(
-            "Exception when making infosystem network. \n Likely due to sampling followers in targeting criteria."
+            "Exception when making infosystem network. \n"
+            "Likely due to sampling followers in targeting criteria."
         )
         print(e)
 
