@@ -1,4 +1,4 @@
-Creator "igraph version 0.9.6 Fri Jan 27 14:36:43 2023"
+Creator "igraph version 0.9.6 Wed Feb 22 23:07:09 2023"
 Version 1
 graph
 [
@@ -307,31 +307,13 @@ graph
   [
     id 50
     bot 1
-    uid "0l"
+    uid "0i"
   ]
   node
   [
     id 51
     bot 1
-    uid "1y"
-  ]
-  node
-  [
-    id 52
-    bot 1
-    uid "2n"
-  ]
-  node
-  [
-    id 53
-    bot 1
-    uid "3d"
-  ]
-  node
-  [
-    id 54
-    bot 1
-    uid "4w"
+    uid "1h"
   ]
   edge
   [
@@ -585,157 +567,77 @@ graph
   ]
   edge
   [
-    source 50
-    target 52
-  ]
-  edge
-  [
     source 51
     target 50
   ]
   edge
   [
-    source 51
-    target 52
-  ]
-  edge
-  [
-    source 52
+    source 6
     target 50
-  ]
-  edge
-  [
-    source 52
-    target 51
-  ]
-  edge
-  [
-    source 53
-    target 52
-  ]
-  edge
-  [
-    source 53
-    target 51
-  ]
-  edge
-  [
-    source 53
-    target 50
-  ]
-  edge
-  [
-    source 54
-    target 50
-  ]
-  edge
-  [
-    source 54
-    target 51
-  ]
-  edge
-  [
-    source 54
-    target 52
-  ]
-  edge
-  [
-    source 15
-    target 50
-  ]
-  edge
-  [
-    source 16
-    target 50
-  ]
-  edge
-  [
-    source 14
-    target 50
-  ]
-  edge
-  [
-    source 49
-    target 51
-  ]
-  edge
-  [
-    source 43
-    target 51
-  ]
-  edge
-  [
-    source 20
-    target 51
-  ]
-  edge
-  [
-    source 41
-    target 51
-  ]
-  edge
-  [
-    source 4
-    target 51
-  ]
-  edge
-  [
-    source 9
-    target 52
-  ]
-  edge
-  [
-    source 2
-    target 52
-  ]
-  edge
-  [
-    source 43
-    target 52
-  ]
-  edge
-  [
-    source 21
-    target 52
-  ]
-  edge
-  [
-    source 16
-    target 52
   ]
   edge
   [
     source 22
-    target 52
+    target 50
   ]
   edge
   [
-    source 5
-    target 53
+    source 35
+    target 50
   ]
   edge
   [
-    source 1
-    target 54
+    source 21
+    target 50
   ]
   edge
   [
-    source 13
-    target 54
+    source 47
+    target 50
   ]
   edge
   [
-    source 4
-    target 54
+    source 27
+    target 50
   ]
   edge
   [
-    source 32
-    target 54
+    source 44
+    target 50
   ]
   edge
   [
-    source 24
-    target 54
+    source 19
+    target 50
+  ]
+  edge
+  [
+    source 10
+    target 50
+  ]
+  edge
+  [
+    source 3
+    target 51
+  ]
+  edge
+  [
+    source 19
+    target 51
+  ]
+  edge
+  [
+    source 27
+    target 51
+  ]
+  edge
+  [
+    source 47
+    target 51
+  ]
+  edge
+  [
+    source 29
+    target 51
   ]
 ]

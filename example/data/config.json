@@ -1,12 +1,15 @@
 {
-    "beta": 0.1,
-    "gamma": 0.05,
     "targeting_criterion": null,
-    "trackmeme": true,
+    "human_network": "data/follower_network.gml",
+    "n_humans": 50,
+    "beta": 0.04,
+    "gamma": 0.1,
     "verbose": false,
-    "epsilon": 0.001,
+    "tracktimestep": true,
+    "save_memeinfo": true,
+    "output_cascades": true,
+    "epsilon": 0.0001,
     "mu": 0.5,
     "phi": 1,
-    "alpha": 15,
-    "theta": 1
+    "alpha": 15
 }

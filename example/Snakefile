@@ -1,7 +1,6 @@
-""" How to run: change into dir: marketplace/example
-    Run using `snakemake`. 
-    For different running options, e.g., dryrun, specifying number of cores, etc., read documentation here: 
-    https://snakemake.readthedocs.io/en/v5.1.4/executable.html
+""" 
+Snakemakerule to create input and run simulation 
+input: infosys_network (using bot parameters)
 
 """
 
