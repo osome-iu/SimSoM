@@ -11,7 +11,8 @@ In which the options are:
   - `-v`: file path to output the results, plus other detailed tracking information
   - `--config`: file path specifying the parameters to run the simulation
   - `--times`: number of time to run the simulation
-2. Snakemake rule: from the `example` directory, run the command `snakemake -c1`
+2. Snakemake rule: `Snakefile` specifies the rules to create a network and run simulation by calling `workflow/scripts/init_net.py` and `workflow/scripts/driver.py`
+- from the `example` directory, run the command `snakemake -c1`
 - This will use 1 CPU core. Use `--cores N` or `-cN` to use N cores or `--cores all` for all available cores.
 - Call `snakemake -n` for a dryrun. You can preview the output and see the DAG of jobs
 
