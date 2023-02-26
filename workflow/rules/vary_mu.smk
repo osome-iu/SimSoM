@@ -6,11 +6,9 @@ CONFIG_PATH = os.path.join(ABS_PATH, "config_02172023")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = "vary_mu"
-# get network names corresponding to the strategy
+baseline_expname="baseline"
 EXPS = json.load(open(config_fname,'r'))[exp_type]
 
-EXP_NOS = list(EXPS.keys())
-EXP2NET = {exp_name: utils.netconfig2netname(config_fname, net_cf) for exp_name, net_cf in EXPS.items()}
 sim_num = 2
 mode='igraph'
 
@@ -19,11 +17,11 @@ RES_DIR = os.path.join(ABS_PATH,'results', 'short', f'02262023_{exp_type}_{sim_n
 
 rule all:
     input: 
-        expand(os.path.join(RES_DIR, '{exp_no}.json'), exp_no=EXP_NOS),
+        expand(os.path.join(RES_DIR, '{exp_no}.json'), exp_no=list(EXPS.keys())),
 
 rule run_simulation:
     input: 
-        network = ancient(lambda wildcards: os.path.join(DATA_PATH, mode, 'vary_network', f"network_{EXP2NET[wildcards.exp_no]}.gml")),
+        network = ancient(os.path.join(DATA_PATH, mode, "network_{baseline_expname}.gml")),
         configfile = ancient(os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json"))
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
@@ -34,10 +32,10 @@ rule run_simulation:
 
 rule init_net:
     input: 
-        follower=ancient(os.path.join(DATA_PATH, 'follower_network.gml')),
-        configfile = ancient(os.path.join(CONFIG_PATH, 'vary_network', "{net_no}.json"))
+        follower=os.path.join(DATA_PATH, 'follower_network.gml'),
+        configfile = os.path.join(CONFIG_PATH, baseline_expname, "{baseline_expname}.json")
         
-    output: os.path.join(DATA_PATH, mode, 'vary_network', "network_{net_no}.gml")
+    output: os.path.join(DATA_PATH, mode, "network_{baseline_expname}.gml")
 
     shell: """
             python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile} --mode {mode}
