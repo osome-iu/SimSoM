@@ -21,7 +21,7 @@ rule all:
 
 rule run_simulation:
     input: 
-        network = ancient(os.path.join(DATA_PATH, mode, "network_{baseline_expname}.gml")),
+        network = ancient(os.path.join(DATA_PATH, mode, f"network_{baseline_expname}.gml")),
         configfile = ancient(os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json"))
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
@@ -33,9 +33,9 @@ rule run_simulation:
 rule init_net:
     input: 
         follower=os.path.join(DATA_PATH, 'follower_network.gml'),
-        configfile = os.path.join(CONFIG_PATH, baseline_expname, "{baseline_expname}.json")
+        configfile = os.path.join(CONFIG_PATH, baseline_expname, f"{baseline_expname}.json")
         
-    output: os.path.join(DATA_PATH, mode, "network_{baseline_expname}.gml")
+    output: os.path.join(DATA_PATH, mode, f"network_{baseline_expname}.gml")
 
     shell: """
             python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile} --mode {mode}
