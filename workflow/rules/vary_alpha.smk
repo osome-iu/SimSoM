@@ -33,7 +33,7 @@ rule run_simulation:
 rule init_net:
     input: 
         follower=os.path.join(DATA_PATH, 'follower_network.gml'),
-        configfile = os.path.join(CONFIG_PATH, baseline_expname, f"{baseline_expname}.json")
+        configfile = os.path.join(ABS_PATH, "config", baseline_expname, f"{baseline_expname}.json")
         
     output: os.path.join(DATA_PATH, mode, f"network_{baseline_expname}.gml")
 
