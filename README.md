@@ -9,12 +9,23 @@ This repository contains code to reproduce the results in the paper [*Vulnerabil
 4. `experiments`: experiment results and .ipynb noteboooks to produce figures reported in the paper
 5. `workflow`: workflow files (Snakemake rules) and scripts
 
-## Environment set-up
-- This code is written and tested with **Python>=3.6** 
-- Run `conda env create -n simsom -f environment.yml` to create the environment with required packages
-- Activate virtualenv and run `pip install -e .` for the module imports to work correctly.
+## Install 
+
+- This code is written and tested with **Python>=3.6**
+- We use `conda`, a package manager to manage the development environment. Please make sure you have [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-installation) or [mamba](https://mamba.readthedocs.io/en/latest/installation.html#) installed on your machine
+
+### Using Make (recommended)
+
+To set up the environment and install the model: run `make` from the project directory (`SimSoM`)
+### Using Conda
+
+1. Create the environment with required packages: run `conda env create -n simsom -f environment.yml` to 
+2. Install the `SimSoM` module: 
+    - activate virtualenv: `conda activate simsom`
+    - run `pip install -e ./libs/`
 
 ## Data
+
 The empirical network is created from the [Replication Data](https://doi.org/10.7910/DVN/6CZHH5) for: [Right and left, partisanship predicts vulnerability to misinformation](https://doi.org/10.37016/mr-2020-55),
 where: 
 - `measures.tab` contains user information, i.e., one's partisanship and misinformation score. 
@@ -24,15 +35,17 @@ We reconstruct the empirical network from the above 2 files, resulting in `data/
 
 ## Running the code
 
-Run a minimal example using `workflow/example/run_simulation.py`
+Check out `example` to get started. 
+- Example of the simulation and results: `example/run_simulation.ipynb`
+
 
 ### Reproduce results from the paper:
-1. From the root directory, unzip the data file using `unzip data/data.zip -d .`
-2. Create config files specifying parameters for simulations. 
-    - How? run `workflow/scripts/make_finalconfig.py`
+
+1. From the root directory, unzip the data file: `unzip data/data.zip -d .`
+2. Create config files specifying parameters for simulations: `workflow/scripts/make_finalconfig.py`
     - See `example/data/config.json` for example of a config file
 3. Run a Snakemake rule corresponding to the simulations of interest. 
-    e.g.: `workflow/rules/shuffle_network.smk` runs simulations on different shuffled version of the empirical network
+    - e.g.: `workflow/rules/shuffle_network.smk` runs simulations on different shuffled version of the empirical network
 
 ### Notes
 The results in the paper are based on averages across multiple simulation runs. To reproduce those results, we suggest running the simulations in parallel, for example on a cluster, since they will need a lot of memory and CPU time.

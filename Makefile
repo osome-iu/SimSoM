@@ -1,25 +1,14 @@
+.PHONY : create_conda_env
+.ONESHELL:
+
 SHELL=/bin/bash
 PROJ_NAME=simsommodel
-
-.PHONY: create_env install_lib create_ipykernel
-
+ENV_PATH=$$(conda info --base)
+CONDA_ACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate $(PROJ_NAME)
+DEPENDENCIES=conda install -y -c anaconda -c conda-forge -c bioconda snakemake-minimal black isort flake8 pytest neovim snakefmt scikit-learn scipy seaborn pandas
 
 create_conda_env:
-	mamba create -y -n $(PROJ_NAME) python=3.8
-	
-	mamba init
-
-	mamba activate $(PROJ_NAME)
-
-	pip install networkx igraph pyarrow igraph
-
-	mamba install -y -c anaconda -c conda-forge -c bioconda pandas snakemake-minimal black isort flake8 pytest neovim snakefmt scikit-learn scipy seaborn
-
-
-install_lib:
-	pip install -e ./libs/
-
-create_ipykernel:
-	python3 -m ipykernel install --user --name=$(PROJ_NAME)
-
-	
+	echo "Creating conda environent at ${ENV_PATH}/envs/${PROJ_NAME} (Delete any existing conda env with the same name).."
+	rm -rf "${ENV_PATH}/envs/${PROJ_NAME}"
+	conda create --force -y -n $(PROJ_NAME) python=3.8  
+	$(CONDA_ACTIVATE); pip install -e ./libs/; pip install networkx igraph pyarrow igraph; $(DEPENDENCIES)
