@@ -129,7 +129,7 @@ def main(args):
         dest="verboseoutfile",
         type=str,
         required=False,
-        help="path to .json.gz file containing verbose infosys measurements (track all memes & feeds)",
+        help="path to .json.gz file containing verbose infosys measurements (track all messages & feeds)",
     )
     parser.add_argument(
         "--config",

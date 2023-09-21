@@ -25,12 +25,12 @@ plt.style.use("stylesheet.mplstyle")
 def read_ijson_compressed(fpath):
     """
     Read data using ijson to avoid memory error for large json files 
-    Data is a list containing meme information 
+    Data is a list containing message information 
     """
     fin = gzip.open(fpath, "r")
     json_bytes = fin.read()
-    # Return the meme information of the first run
-    objects = ijson.items(json_bytes, "all_memes.item")
+    # Return the message information of the first run
+    objects = ijson.items(json_bytes, "all_messages.item")
     data = [i for i in objects]  # convert ijson item obj into list
     return data
 
@@ -128,26 +128,26 @@ def plot_cascade_scaling_with_fitted_line(
     return
 
 
-def data_reshare_vs_exposure(data, meme_type="all", data_type="list"):
+def data_reshare_vs_exposure(data, message_type="all", data_type="list"):
     # return data to plot
-    # data: df or list of memes (dicts) having at least 3 attributes: id_str, is_by_bot, seen_by_agents, spread_via_agents
-    # Note: meme identifier is now "id_str" instead of "id"
+    # data: df or list of messages (dicts) having at least 3 attributes: id_str, is_by_bot, seen_by_agents, spread_via_agents
+    # Note: message identifier is now "id_str" instead of "id"
 
     if data_type != "df":
-        memes = pd.DataFrame.from_records(data)
+        messages = pd.DataFrame.from_records(data)
     else:
-        memes = data
+        messages = data
     try:
-        if meme_type == "bot":
-            memes = memes[memes.is_by_bot == 1]
-        if meme_type == "hum":
-            memes = memes[memes.is_by_bot == 0]
+        if message_type == "bot":
+            messages = messages[messages.is_by_bot == 1]
+        if message_type == "hum":
+            messages = messages[messages.is_by_bot == 0]
 
-        exposure = memes.explode("seen_by_agents")
+        exposure = messages.explode("seen_by_agents")
         exposure = exposure.drop_duplicates(subset=["id_str", "seen_by_agents"])
         exp_size = exposure.groupby(["id_str"]).seen_by_agents.count()
 
-        reshare = memes.explode("spread_via_agents")
+        reshare = messages.explode("spread_via_agents")
         reshare = reshare.drop_duplicates(subset=["id_str", "spread_via_agents"])
         reshare_size = reshare.groupby(["id_str"]).spread_via_agents.count()
 
@@ -190,9 +190,9 @@ if __name__ == "__main__":
                 path = os.path.dirname(fpath)
                 fname = os.path.basename(fpath).replace(".json.gz", "")
                 data = read_ijson_compressed(fpath)
-                # reindex meme ids (make sure meme ids are unique, since original meme ids are int)
-                for meme_info in data:
-                    meme_info["id_str"] = str(meme_info["id"]) + str(idx)
+                # reindex message ids (make sure message ids are unique, since original message ids are int)
+                for message_info in data:
+                    message_info["id_str"] = str(message_info["id"]) + str(idx)
                 all_data += data
 
             except Exception as e:
@@ -203,11 +203,11 @@ if __name__ == "__main__":
         cleaned = []
         # Make sure attribute is of correct type (since ijson changes float to Decimal)
         attributes = ["id_str", "spread_via_agents", "seen_by_agents"]
-        for meme_info in all_data:
-            meme = {"is_by_bot": float(meme_info["is_by_bot"])}
+        for message_info in all_data:
+            message = {"is_by_bot": float(message_info["is_by_bot"])}
             for attrib in attributes:
-                meme[attrib] = meme_info[attrib]
-            cleaned += [meme]
+                message[attrib] = message_info[attrib]
+            cleaned += [message]
         del all_data
 
         df = pd.DataFrame.from_records(cleaned)
@@ -221,7 +221,7 @@ if __name__ == "__main__":
 
     else:
         cleaned = pd.read_parquet(dfout_path)
-        meme_data_type = "df"
+        message_data_type = "df"
 
     ## PLOT ##
     fig_path = os.path.join(plot_dir, "scaling")
@@ -235,7 +235,7 @@ if __name__ == "__main__":
     max_reshare_size = 1000
     try:
         print("1/2. Bot message panel:", flush=True)
-        botdata = data_reshare_vs_exposure(cleaned, meme_type="bot", data_type="df")
+        botdata = data_reshare_vs_exposure(cleaned, message_type="bot", data_type="df")
         plot_cascade_scaling_with_fitted_line(
             botdata,
             axs[0],
@@ -250,7 +250,7 @@ if __name__ == "__main__":
         )
 
         print("2/2. Authentic agent message panel: ", flush=True)
-        humdata = data_reshare_vs_exposure(cleaned, meme_type="hum", data_type="df")
+        humdata = data_reshare_vs_exposure(cleaned, message_type="hum", data_type="df")
         plot_cascade_scaling_with_fitted_line(
             humdata,
             axs[1],
