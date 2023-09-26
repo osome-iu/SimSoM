@@ -62,6 +62,7 @@ from collections import Counter, defaultdict
 import concurrent.futures
 import queue
 from copy import deepcopy
+import sys
 
 
 class SimSom:
@@ -77,7 +78,7 @@ class SimSom:
         mu=0.5,
         phi=0,
         alpha=15,
-        theta=1
+        theta=1,
     ):
         # graph object
         self.graph_gml = graph_gml
@@ -97,18 +98,23 @@ class SimSom:
         self.output_cascades = output_cascades
 
         # bookkeeping
-        self.num_message_unique = 0  # for verbose debug
-        self.num_human_messages = 0  # for verbose debug
-        self.num_human_messages_unique = 0  # for verbose debug
-        self.quality_timestep = []
+        #### debugging
+        # number of unique messages ever created (including extincted ones)
+        self.num_message_unique = 0
+        self.num_human_messages = 0  # number of messages across all human feeds
+        # number of unique messages across all human feeds
+        self.num_human_messages_unique = 0
+        #### debugging
 
-        self.message_dict = []
+        self.quality_timestep = []  # list of overall quality at each timestep
+
+        self.message_dict = []  # list of all message objects
         self.all_messages = {}  # dict of message_id - message objects
         self.message_metadata = {}
         self.agent_feeds = {}  # dict of agent_uid - [message_ids]
 
         self.illegal_messages = []  # list of illegal message ids
-        self.exposure_timestep = []
+        self.exposure_timestep = []  # list of exposure to bot messages at each timestep
 
         # convergence check
         self.quality_diff = 1
@@ -126,7 +132,7 @@ class SimSom:
                 True if len(self.human_uids) == self.n_agents else False
             )
             # init an empty feed for all agents
-            self.agent_feeds = {agent["uid"]: [] for agent in self.network.vs}
+            self.agent_feeds = {agent["uid"]: ([], []) for agent in self.network.vs}
 
             if verbose is True:
                 # sanity check: calculate number of followers
@@ -154,7 +160,7 @@ class SimSom:
 
         if self.output_cascades is True:
             self.reshare_fpath = reshare_fpath
-            reshare_fields = ["message_id", "timestep", "agent1", "agent2"]
+            reshare_fields = ["message_id", "timestep", "source", "target"]
             with open(self.reshare_fpath, "w", encoding="utf-8") as f:
                 writer = csv.writer(f, delimiter=",")
                 writer.writerow(reshare_fields)
@@ -171,17 +177,17 @@ class SimSom:
                 writer.writerow(exposure_fields)
 
         while self.quality_diff > self.epsilon:
-            num_messages = sum([len(feed) for feed in self.agent_feeds.values()])
+            num_messages = sum([len(feed) for feed, _ in self.agent_feeds.values()])
             if self.verbose:
                 print(
-                    f"time_step = {self.time_step}, q = {np.round(self.quality, 6)}, diff = {np.round(self.quality_diff, 6)}, human/all messages: (unique) = {self.num_human_messages_unique}/{self.num_message_unique}, (total) ={self.num_human_messages}/{num_messages}",
+                    f"time_step = {self.time_step}, q = {np.round(self.quality, 6)}, diff = {np.round(self.quality_diff, 6)}, existing human/all messages: {self.num_human_messages}/{num_messages}, unique human messages: {self.num_human_messages_unique}, total created: {self.num_message_unique}",
                     flush=True,
                 )
 
             self.time_step += 1
             if self.tracktimestep is True:
                 self.quality_timestep += [self.quality]
-                self.exposure_timestep += [self.measure_exposure()]
+                # self.exposure_timestep += [self.measure_exposure()]
 
             all_agents = [random.choice(self.network.vs) for _ in range(self.n_agents)]
 
@@ -228,31 +234,27 @@ class SimSom:
         with concurrent.futures.ThreadPoolExecutor() as executor:
             executor.map(post_message, all_agents)
 
-        update_list = defaultdict(list)
+        update_list = defaultdict(lambda: defaultdict(int))
 
         # Distribute posts to newsfeeds
         # each item in queue is a list of requests from an agent to modify its follower feeds
         # e.g.: item= [(follower1, [mess1]), (follower2, [mess1]), .. ]
         # or item= [(follower1, [mess1]*theta), (follower2, [mess1]*theta), .. ] if the agent is a bot
+        # use requests from friends to add messages to agents' feeds
+        # find overlaps between friends' message lists to update popularity
         for item in q.queue:
             for agent_id, message_ids in item:
-                update_list[agent_id].extend(message_ids)
-
+                for message_id in message_ids:
+                    update_list[agent_id][message_id] += 1
+        # eg:
+        # {'a1': defaultdict(int, {'1': 4, '2': 1, '3': 1, '6': 1, '7': 1}),
+        # 'a2': defaultdict(int, {'2': 1, '1': 1, '4': 1})}
         # print("Update list:", update_list, flush=True)
 
-        # use requests from friends to add messages to agents' feeds
-
-        # # TODO: popularity implementation#2, find overlaps between friends' message lists to update popularity
-        # # uncomment following block
-        # popularity_update_requests = defaultdict(0)
-        # for agent_id, mlist in update_list.items():
-        #     for message_id in mlist:
-        #         popularity_update_requests[message_id] += 1
-        # message_list, popularity_list = zip(*popularity_update_requests.items())
-        # self._bulk_add_messages_to_feed(agent_id, message_list,popularity_list)
-
+        # update_list: {agent_id: {message_id: count}}
         for agent_id, message_list in update_list.items():
-            self._bulk_add_messages_to_feed(agent_id, message_list)
+            message_ids, popularity = zip(*message_list.items())
+            self._bulk_add_messages_to_feed(agent_id, message_ids, popularity)
 
         # print("Agent feeds after updating:", self.agent_feeds, flush=True)
 
@@ -272,17 +274,15 @@ class SimSom:
         """
 
         agent_id = agent["uid"]
-        feed = self.agent_feeds[agent_id]
-        
+        feed, popularity = self.agent_feeds[agent_id]
+
         # update agent exposure to messages in its feed at login
-        popularity = self._update_exposure(feed, agent)
-        # return a feed (list of message ids) and corrsp. popularity
-        feed, popularity = zip(*popularity.items())
+        self._update_exposure(feed, agent)
 
         # posting
-        message = self._create_post(agent)
+        message_id = self._create_post(agent)
         # book keeping (for all messages)
-        self._update_message_popularity(message.id, agent)
+        self._update_message_popularity(message_id, agent)
 
         # spread: make requests to add message to top of follower's feed (theta copies if poster is bot to simulate flooding)
         follower_idxs = self.network.predecessors(agent)  # return list of int
@@ -291,52 +291,57 @@ class SimSom:
         modify_requests = []
 
         for follower in follower_uids:
-            if self.output_cascades is True:
-                self._update_reshares(message, agent_id, follower)
-                self._update_feed_data(
-                    target=follower, message_id=message.id, source=agent_id
+            try:
+                if self.output_cascades is True:
+                    self._update_reshares(message_id, agent_id, follower)
+                    self._update_feed_data(
+                        target=follower, message_id=message_id, source=agent_id
+                    )
+                if agent["bot"] == True:
+                    modify_requests.append((follower, [message_id] * self.theta))
+                else:
+                    modify_requests.append((follower, [message_id]))
+            except Exception as e:
+                print(e, flush=True)
+                sys.exit(
+                    "Error while updating tracking/appending to modify_requests (user_step)."
                 )
-            if agent["bot"] == True:
-                modify_requests.append((follower, [message.id] * self.theta))
-            else:
-                modify_requests.append((follower, [message.id]))
 
         return modify_requests
 
-    def _create_post(self, agent, feed_popularity=None):
+    def _create_post(self, agent):
         """
         Create a new message or reshare a message from newsfeed
+        Returns a message id (int)
         """
         # TODO: Do we want to keep the popularity of messages at each timestep?
         # Or keep a copy of agent's feed (message-popularity) for each timestep?
 
-        agent_id = agent["uid"]
-        feed = self.agent_feeds[agent_id]
-        # return messages created by the agent via resharing or posting
-        if len(feed) > 0 and random.random() > self.mu:
-            # retweet a message from feed selected on basis of its engagement and popularity
-            # Note: random.choices() weights input doesn't have to be normalized
+        try:
+            agent_id = agent["uid"]
+            feed, popularity = self.agent_feeds[agent_id]
+            feed_messages = [self.all_messages[message_id] for message_id in feed]
+            # return messages created by the agent via resharing or posting
+            if len(feed) > 0 and random.random() > self.mu:
+                # retweet a message from feed selected on basis of its engagement and popularity
+                # Note: random.choices() weights input doesn't have to be normalized
+                engagement = [message.engagement for message in feed_messages]
+                ranking = np.multiply(engagement, popularity)
 
-            if feed_popularity is None:
-                feed_popularity = np.ones(len(feed))
-            engagement = [m.engagement for m in feed]
-            ranking = np.multiply(engagement, feed_popularity)
+                (message,) = random.choices(feed_messages, weights=ranking, k=1)
+            else:
+                # new message
+                self.num_message_unique += 1
+                message = Message(
+                    id=self.num_message_unique,
+                    is_by_bot=agent["bot"],
+                    phi=self.phi,
+                )
 
-            (message,) = random.choices(feed, weights=ranking, k=1)
-        else:
-            # new message
-            self.num_message_unique += 1
-            message = Message(
-                id=self.num_message_unique,
-                user_id=agent_id,
-                lowq_prob=self.delta,
-                is_by_bot=agent["bot"],
-                phi=self.phi,
-            )
-
-            self.all_messages[message.id] = message
-        return message
-    
+                self.all_messages[message.id] = message
+        except Exception as e:
+            return False
+        return message.id
 
     def update_quality(self):
         """
@@ -383,10 +388,11 @@ class SimSom:
         # keep track of no. messages for verbose debug
         human_message_ids = []
         for u in self.human_uids:
-            for message_id in self.agent_feeds[u]:
+            message_ids, _ = self.agent_feeds[u]
+            for message_id in message_ids:
                 total += self.all_messages[message_id].quality
                 count += 1
-            human_message_ids += self.agent_feeds[u]
+            human_message_ids += message_ids
 
         self.num_human_messages = count
         self.num_human_messages_unique = len(set(human_message_ids))
@@ -401,7 +407,8 @@ class SimSom:
 
         humanshares = []
         for human, feed in self.agent_feeds.items():
-            for message_id in feed:
+            message_ids, _ = feed
+            for message_id in message_ids:
                 humanshares += [message_id]
         message_counts = Counter(humanshares)
         # return a list of [(messageid, count)], sorted by id
@@ -422,61 +429,64 @@ class SimSom:
             exposure += len(self.message_metadata[message_id]["seen_by_agents"])
         return exposure
 
-    def _add_message_to_feed(self, target_id, message_id, source_id, n_copies=1):
-        """
-        Add message to agent's feed, forget the oldest if feed size exceeds self.alpha (Last in last out)
-        Update all news feed information if output_cascades is True
-        Return a copy of the target agent's feed after modification
-        Input:
-        - target_id (str): uid of agent resharing the message -- whose feed we're adding the message to
-        - message_id (str): id of message being reshared
-        - source_id (str): uid of agent spreading the message
-        """
+    # def _add_message_to_feed(self, target_id, message_id, source_id, n_copies=1):
+    #     """
+    #     Add message to agent's feed, forget the oldest if feed size exceeds self.alpha (Last in last out)
+    #     Update all news feed information if output_cascades is True
+    #     Return a copy of the target agent's feed after modification
+    #     Input:
+    #     - target_id (str): uid of agent resharing the message -- whose feed we're adding the message to
+    #     - message_id (str): id of message being reshared
+    #     - source_id (str): uid of agent spreading the message
+    #     """
 
-        feed = deepcopy(self.agent_feeds[target_id])
-        feed[0:0] = [message_id] * n_copies
+    #     feed = deepcopy(self.agent_feeds[target_id])
+    #     feed[0:0] = [message_id] * n_copies
 
-        # b: message extinction can be handled here because if the size of the feed exceeds for 1 of the agent's friends, the same will apply for all friends
-        feed = self._handle_oversized_feed(feed)
+    #     # b: message extinction can be handled here because if the size of the feed exceeds for 1 of the agent's friends, the same will apply for all friends
+    #     feed = self._handle_oversized_feed(feed)
 
-        return feed
+    #     return feed
 
-    def _bulk_add_messages_to_feed(self, target_id, message_ids, popularity=None):
+    def _bulk_add_messages_to_feed(self, target_id, message_ids, popularity):
         """
         Add message to agent's feed in bulk, forget the oldest if feed size exceeds self.alpha (Last in last out)
         Update all news feed information if output_cascades is True
         Return a copy of the target agent's feed after modification
         Input:
         - target_id (str): uid of agent resharing the message -- whose feed we're adding the message to
-        - message_ids (list of str): list of ids of messages to add
+        - message_ids (list of ints): ids of messages to add
         - popularity (list of int): popularity of each message. Popularity[i] is the popularity of message i
         Note: feed[0] is the most recent item in the newsfeed
         """
-        # TODO: remove popularity if implementation#1
+        messages, metadata = deepcopy(self.agent_feeds[target_id])
+        messages[0:0] = message_ids
+        metadata[0:0] = popularity
 
-        feed = deepcopy(self.agent_feeds[target_id])
-        feed[0:0] = message_ids
+        feed = (messages, metadata)
 
-        # b: message extinction can be handled here because if the size of the feed exceeds for 1 of the agent's friends, the same will apply for all friends
-        new_feed = self._handle_oversized_feed(feed)
-        self.agent_feeds[target_id] = new_feed
+        # clip the agent's feed if exceeds alpha
+        if len(message_ids) > self.alpha:
+            feed = self._handle_oversized_feed(feed)
+        self.agent_feeds[target_id] = feed
 
         return
 
     def _handle_oversized_feed(self, feed):
         """
         Handles oversized newsfeed and message extinction
-        - feed (list): an agent's news feed
+        Returns the newsfeed (tuple of lists) where the oldest message is removed
+        Input:
+            feed (tuple - (list of int, list of int)): (list of mess_ids - list of popularities), represents an agent's news feed
         """
-        new_feed = deepcopy(feed)
-        if len(feed) > self.alpha:
-            # clip the agent's feed if exceeds alpha, update value of the feed in dictionary
-            new_feed = feed[: self.alpha]
-            # TODO: Handle message extinction
-            # # Remove messages from popularity info & all_message list if extinct
-            # for message_id in set(feed[self.alpha :]):
-            #     _ = self.message_metadata.pop(message_id, "No Key found")
-            #     _ = self.all_messages.pop(message_id, "No Key found")
+        message_ids, metadata = deepcopy(feed)
+        new_feed = (message_ids[: self.alpha], metadata[: self.alpha])
+        # TODO: Handle message extinction
+        # value of the feed in dictionary
+        # # Remove messages from popularity info & all_message list if extinct
+        # for message_id in set(feed[self.alpha :]):
+        #     _ = self.message_metadata.pop(message_id, "No Key found")
+        #     _ = self.all_messages.pop(message_id, "No Key found")
 
         return new_feed
 
@@ -491,16 +501,16 @@ class SimSom:
 
     def _update_reshares(self, message, source, target):
         """
-        Update the reshare cascade information to a file.
+        Update the reshare cascade information to a file is `self.output_cascades`==True
         Input:
-        - message (Message object): message being reshared
+        - message (int): id of message being reshared
         - source (str): uid of agent spreading the message
         - target (str): uid of agent resharing the message
         """
 
         with open(self.reshare_fpath, "a", encoding="utf-8") as f:
             writer = csv.writer(f, delimiter=",")
-            writer.writerow([message.id, self.time_step, source, target])
+            writer.writerow([message, self.time_step, source, target])
 
         return
 
@@ -508,7 +518,7 @@ class SimSom:
         """
         Concat news feed information to feed information at all time
         (when flag self.output_cascades is True)
-        fields: "agent_id", "message_id", "reshared_by_agent", "timestep"
+        fields: "agent_id", "message_id", "reshared_by_agent", "timestep"]
         Input:
         - target: agent_id (str): uid of agent being activated
         - message_id (int): id of message in this agent's feed
@@ -526,15 +536,12 @@ class SimSom:
         Update human's exposure to message whenever an agent is activated (equivalent to logging in)
         (when flag self.output_cascades is True)
         Input:
-        - feed (list of Message objects): agent's news feed
+        - feed (list of ints): ids of messages in agent's news feed
         - agent (Graph vertex): agent resharing the message
         """
-        # TODO: implementation#1
-        popularity = dict(Counter(feed))  # dict of message_id - count
-        unique_seen_messages = set(popularity.keys())
 
-        for message in unique_seen_messages:
-            self.message_metadata[message.id]["seen_by_agents"] += [agent["uid"]]
+        for message_id in feed:
+            self.message_metadata[message_id]["seen_by_agents"] += [agent["uid"]]
 
         # TODO: Track popularity at each timestep. Is this the same as infeed of agents?
         # Previously:
@@ -545,7 +552,7 @@ class SimSom:
         #     self.message_metadata[message.id]["infeed_of_agents"] += [agent["uid"]]
         #     seen += [message.id]
 
-        return popularity
+        return
 
     def _update_message_popularity(self, message_id, agent):
         """
@@ -597,6 +604,6 @@ class SimSom:
                 f" - mu (posting rate): {self.mu}",
                 f" - alpha (feedsize):  {self.alpha}",
                 f"Network contains one type of agents (no bots): {self.is_human_only}",
-                f"{bot_params}"
+                f"{bot_params}",
             ]
         )
