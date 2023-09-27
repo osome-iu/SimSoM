@@ -165,17 +165,6 @@ class SimSom:
                 writer = csv.writer(f, delimiter=",")
                 writer.writerow(reshare_fields)
 
-            self.exposure_fpath = exposure_fpath
-            exposure_fields = [
-                "agent_id",
-                "message_id",
-                "reshared_by_agent",
-                "timestep",
-            ]
-            with open(self.exposure_fpath, "w", encoding="utf-8") as f:
-                writer = csv.writer(f, delimiter=",")
-                writer.writerow(exposure_fields)
-
         while self.quality_diff > self.epsilon:
             num_messages = sum([len(feed) for feed, _ in self.agent_feeds.values()])
             if self.verbose:
@@ -294,9 +283,7 @@ class SimSom:
             try:
                 if self.output_cascades is True:
                     self._update_reshares(message_id, agent_id, follower)
-                    self._update_feed_data(
-                        target=follower, message_id=message_id, source=agent_id
-                    )
+
                 if agent["bot"] == True:
                     modify_requests.append((follower, [message_id] * self.theta))
                 else:
@@ -511,23 +498,6 @@ class SimSom:
         with open(self.reshare_fpath, "a", encoding="utf-8") as f:
             writer = csv.writer(f, delimiter=",")
             writer.writerow([message, self.time_step, source, target])
-
-        return
-
-    def _update_feed_data(self, target, message_id, source):
-        """
-        Concat news feed information to feed information at all time
-        (when flag self.output_cascades is True)
-        fields: "agent_id", "message_id", "reshared_by_agent", "timestep"]
-        Input:
-        - target: agent_id (str): uid of agent being activated
-        - message_id (int): id of message in this agent's feed
-        - source: reshared_by_agent (str): uid of agent who shared the message
-        """
-
-        with open(self.exposure_fpath, "a", encoding="utf-8") as f:
-            writer = csv.writer(f, delimiter=",")
-            writer.writerow([target, message_id, source, self.time_step])
 
         return
 
