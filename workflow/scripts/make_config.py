@@ -19,7 +19,7 @@ import json
 
 def save_config_to_subdir(config, config_name, saving_dir, exp_type):
     """
-    Save each exp to a .json file 
+    Save each exp to a .json file
     """
     output_dir = os.path.join(saving_dir, f"{exp_type}")
     if not os.path.exists(output_dir):
@@ -161,7 +161,7 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
 
 
 if __name__ == "__main__":
-    ABS_PATH = "exps"
+    ABS_PATH = "/N/project/simsom/simsom_v3"
 
     saving_dir = os.path.join(ABS_PATH, "config")
     make_exps(saving_dir, configs.default_net, configs.infosys_default)
