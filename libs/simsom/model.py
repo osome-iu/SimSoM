@@ -221,7 +221,11 @@ class SimSom:
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             executor.map(post_message, all_agents)
-
+            if self.time_step == 1:
+                print(
+                    f" - Simulation running on {len(executor._threads)} threads",
+                    flush=True,
+                )
         update_list = defaultdict(lambda: defaultdict(int))
 
         # Distribute posts to newsfeeds
