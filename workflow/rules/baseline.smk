@@ -2,8 +2,8 @@
 Snakefile to run baseline experiments where there's no bot in the system
 """
 
-ABS_PATH = 'experiments'
-DATA_PATH = os.path.join(ABS_PATH, "data")
+ABS_PATH = '/N/project/simsom/simsom_v3'
+DATA_PATH = os.path.join(/N/project/simsom/marketplace_slate/data)
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
