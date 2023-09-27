@@ -8,7 +8,7 @@ Inputs:
     - graph_gml (str): path to igraph .graphml file
     - tracktimestep (bool): if True, track overall quality and exposure to illegal content at each timestep 
     - save_message_info (bool): if True, save all message and news feeds info (popularity, mapping of feed-messages, etc. this info is still tracked if flag is False)
-    - output_cascades (bool): if True, track & save reshares and exposures to .csv files (for network viz)
+    - output_cascades (bool): if True, track & save reshares information to .csv files (for network viz)
     - verbose (bool): if True, print messages 
     - epsilon (float): threshold of quality difference between 2 consecutive timesteps to decide convergence. Default: 0.0001
     - rho (float): weight of the previous timestep's quality in calculating new quality. Default: 0.8
@@ -148,14 +148,13 @@ class SimSom:
             )
             print(e, flush=True)
 
-    def simulation(self, reshare_fpath="", exposure_fpath=""):
+    def simulation(self, reshare_fpath=""):
         """
         Driver for simulation.
         This function calls simulation_step() N times at each timestep (where N is number of agents).
         It then updates the overall quality at each timestep and checks for convergence
         Inputs (optional):
             - reshare_fpath: path to .csv file containing reshare cascade info
-            - exposure_fpath: path to .csv file containing exposure cascade info
         """
 
         if self.output_cascades is True:
@@ -254,7 +253,7 @@ class SimSom:
         Represents an action by `agent` at each timestep. `agent` can reshare from their own feeds or post new messages.
         Returns `agent` suggested changes: a tentative list of newsfeeds that `agent` wants to post message on
         After returned from spawning, the simulator will consolidate this list of feeds with other agents' suggested changes.
-        Keep track of message reshare and exposure information if output_cascades is True.
+        Keep track of reshare information if output_cascades is True.
         Input:
             agent (igraph.Vertex): node representing an agent
         Output:

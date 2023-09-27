@@ -37,8 +37,7 @@ def multiple_simulations(
                 else:
                     prefix = f".csv"
                 measurements = follower_sys.simulation(
-                    reshare_fpath=reshare_fpath.replace(".csv", prefix),
-                    exposure_fpath=os.path.join(dir, f"{exp_name}__exposure{prefix}"),
+                    reshare_fpath=reshare_fpath.replace(".csv", prefix)
                 )
             else:
                 measurements = follower_sys.simulation()
@@ -81,10 +80,7 @@ def run_simulation(infosys_specs, reshare_fpath="reshares.csv"):
     print(f"Start simulation..")
     dir = os.path.dirname(reshare_fpath)
     exp_name = os.path.basename(reshare_fpath).split("__")[0]
-    measurements = follower_sys.simulation(
-        reshare_fpath=reshare_fpath,
-        exposure_fpath=os.path.join(dir, f"{exp_name}", "__exposure.csv"),
-    )
+    measurements = follower_sys.simulation(reshare_fpath=reshare_fpath)
     print("average quality for follower network:", measurements["quality"])
     return measurements
 
@@ -190,4 +186,3 @@ def main(args):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-
