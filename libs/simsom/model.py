@@ -178,7 +178,7 @@ class SimSom:
                 self.quality_timestep += [self.quality]
                 # self.exposure_timestep += [self.measure_exposure()]
 
-            all_agents = [random.choice(self.network.vs) for _ in range(self.n_agents)]
+            all_agents = self.network.vs
 
             # Propagate messages
             self.simulation_step(all_agents)
