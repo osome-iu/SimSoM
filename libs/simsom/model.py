@@ -7,14 +7,14 @@ Main class to run the simulation. Represents an Information System
 Inputs: 
     - graph_gml (str): path to igraph .graphml file
     - tracktimestep (bool): if True, track overall quality and exposure to illegal content at each timestep 
-    - save_message_info (bool): if True, save all message and news feeds info (popularity, mapping of feed-messages, etc. this info is still tracked if flag is False)
+    - save_message_info (bool): if True, save all message and newsfeeds info (popularity, mapping of feed-messages, etc. this info is still tracked if flag is False)
     - output_cascades (bool): if True, track & save reshares information to .csv files (for network viz)
     - verbose (bool): if True, print messages 
     - epsilon (float): threshold of quality difference between 2 consecutive timesteps to decide convergence. Default: 0.0001
     - rho (float): weight of the previous timestep's quality in calculating new quality. Default: 0.8
     - mu (float): probability that an agent create new messages. Default: 0.5
     - phi (int): phi*0.1 is the probability that a bot message's engagement (engagment) equals 1. Default: 0
-    - alpha (int): agent's feedsize. Default: 15
+    - alpha (int): agent's newsfeed size. Default: 15
     - theta (int): number of copies bots make when creating messages. Default: 1
 Important note: 
     - graph_gml: link direction is following (follower -> friend), opposite of info spread!
@@ -24,7 +24,7 @@ Important note:
             - rho >= 0.5
 Outputs:
     - measurements (dict): results and information tracked during the simulation. The fields are:
-        - quality (float): average quality of all messages from a humans' feeds.
+        - quality (float): average quality of all messages from a human newsfeed.
         - diversity (float): entropy calculated from all message's quality
         - discriminative_pow (list): results of the Kendall's correlation coefficient test: [tau, p-value]
         - quality_timestep (list of dict): quality of the system over time 
@@ -113,7 +113,6 @@ class SimSom:
         self.message_metadata = {}
         self.agent_feeds = {}  # dict of agent_uid - [message_ids]
 
-        self.illegal_messages = []  # list of illegal message ids
         self.exposure_timestep = []  # list of exposure to bot messages at each timestep
 
         # convergence check
@@ -121,6 +120,8 @@ class SimSom:
         self.quality = 1
         self.time_step = 0
 
+        # stats
+        self.exposure = 0
         try:
             self.network = ig.Graph.Read_GML(self.graph_gml)
             if verbose is True:
@@ -132,8 +133,8 @@ class SimSom:
                 True if len(self.human_uids) == self.n_agents else False
             )
             # init an empty feed for all agents
-            self.agent_feeds = {agent["uid"]: ([], []) for agent in self.network.vs}
-
+            # self.agent_feeds = {agent["uid"]: ([], []) for agent in self.network.vs}
+            self.agent_feeds = defaultdict(lambda: ([], []))
             if verbose is True:
                 # sanity check: calculate number of followers
                 in_deg = [self.network.degree(n, mode="in") for n in self.network.vs]
@@ -168,14 +169,15 @@ class SimSom:
             num_messages = sum([len(feed) for feed, _ in self.agent_feeds.values()])
             if self.verbose:
                 print(
-                    f"time_step = {self.time_step}, q = {np.round(self.quality, 6)}, diff = {np.round(self.quality_diff, 6)}, existing human/all messages: {self.num_human_messages}/{num_messages}, unique human messages: {self.num_human_messages_unique}, total created: {self.num_message_unique}",
+                    f"- time_step = {self.time_step}, q = {np.round(self.quality, 6)}, diff = {np.round(self.quality_diff, 6)}, existing human/all messages: {self.num_human_messages}/{num_messages}, unique human messages: {self.num_human_messages_unique}, total created: {self.num_message_unique}",
                     flush=True,
                 )
+                print("  exposure to harmful content: ", self.exposure, flush=True)
 
             self.time_step += 1
             if self.tracktimestep is True:
                 self.quality_timestep += [self.quality]
-                # self.exposure_timestep += [self.measure_exposure()]
+                self.exposure_timestep += [self.measure_exposure()]
 
             all_agents = self.network.vs
 
@@ -206,12 +208,12 @@ class SimSom:
         """
         During each simulation step, each agent reshare or post new messages (this process is performed in parallel for `n` agents).
         This step represents the distribution of messages by the platform to various feeds.
-        Following the resharing or posting of messages by all agents, there are often cases where multiple friends attempt to modify the same newsfeed within the same timestep.
-        In such cases, the platform consolidates these feeds by randomly selecting new messages from one of the friends. The chosen message is then posted onto the respective agent's feed.
         Inputs:
             - all_agents (list): list of agent ids
         """
-
+        ##TODO: update docstring
+        # Following the resharing or posting of messages by all agents, there are often cases where multiple friends attempt to modify the same newsfeed within the same timestep.
+        # In such cases, the platform consolidates these feeds by randomly selecting new messages from one of the friends. The chosen message is then posted onto the respective agent's feed.
         q = queue.Queue()
 
         def post_message(agent):
@@ -245,7 +247,8 @@ class SimSom:
 
         # update_list: {agent_id: {message_id: count}}
         for agent_id, message_list in update_list.items():
-            message_ids, popularity = zip(*message_list.items())
+            message_ids = list(message_list.keys())
+            popularity = list(message_list.values())
             self._bulk_add_messages_to_feed(agent_id, message_ids, popularity)
 
         # print("Agent feeds after updating:", self.agent_feeds, flush=True)
@@ -330,7 +333,8 @@ class SimSom:
 
                 self.all_messages[message.id] = message
         except Exception as e:
-            return False
+            print(e)
+            raise ValueError("Failed to create a new message.")
         return message.id
 
     def update_quality(self):
@@ -414,29 +418,16 @@ class SimSom:
         """
         Calculate number of exposures to low-quality/illegal messages
         """
+        # TODO: Measure exposure before or after removal? (If after, we have to ignore those that have been removed)
+        illegal_messages = [
+            mid for mid, m in self.all_messages.items() if m.quality == 0
+        ]
         exposure = 0
-        for message_id in self.illegal_messages:
+        for message_id in illegal_messages:
             exposure += len(self.message_metadata[message_id]["seen_by_agents"])
+
+        self.exposure = exposure
         return exposure
-
-    # def _add_message_to_feed(self, target_id, message_id, source_id, n_copies=1):
-    #     """
-    #     Add message to agent's feed, forget the oldest if feed size exceeds self.alpha (Last in last out)
-    #     Update all news feed information if output_cascades is True
-    #     Return a copy of the target agent's feed after modification
-    #     Input:
-    #     - target_id (str): uid of agent resharing the message -- whose feed we're adding the message to
-    #     - message_id (str): id of message being reshared
-    #     - source_id (str): uid of agent spreading the message
-    #     """
-
-    #     feed = deepcopy(self.agent_feeds[target_id])
-    #     feed[0:0] = [message_id] * n_copies
-
-    #     # b: message extinction can be handled here because if the size of the feed exceeds for 1 of the agent's friends, the same will apply for all friends
-    #     feed = self._handle_oversized_feed(feed)
-
-    #     return feed
 
     def _bulk_add_messages_to_feed(self, target_id, message_ids, popularity):
         """
@@ -453,32 +444,32 @@ class SimSom:
         messages[0:0] = message_ids
         metadata[0:0] = popularity
 
-        feed = (messages, metadata)
+        newsfeed = (messages, metadata)
 
         # clip the agent's feed if exceeds alpha
         if len(message_ids) > self.alpha:
-            feed = self._handle_oversized_feed(feed)
-        self.agent_feeds[target_id] = feed
+            newsfeed = self._handle_oversized_feed(newsfeed)
+        self.agent_feeds[target_id] = newsfeed
 
         return
 
-    def _handle_oversized_feed(self, feed):
+    def _handle_oversized_feed(self, newsfeed):
         """
         Handles oversized newsfeed and message extinction
         Returns the newsfeed (tuple of lists) where the oldest message is removed
         Input:
             feed (tuple - (list of int, list of int)): (list of mess_ids - list of popularities), represents an agent's news feed
         """
-        message_ids, metadata = deepcopy(feed)
-        new_feed = (message_ids[: self.alpha], metadata[: self.alpha])
-        # TODO: Handle message extinction
-        # value of the feed in dictionary
-        # # Remove messages from popularity info & all_message list if extinct
-        # for message_id in set(feed[self.alpha :]):
+        message_ids, metadata = deepcopy(newsfeed)
+        updated_feed = (message_ids[: self.alpha], metadata[: self.alpha])
+
+        # b: We don't want to remove forgotten messages (because we need to keep track of their exposure cascade)
+        # # Extinction: remove oldest (forgotten) messages from master lists
+        # for message_id in set(message_ids[self.alpha :]):
         #     _ = self.message_metadata.pop(message_id, "No Key found")
         #     _ = self.all_messages.pop(message_id, "No Key found")
 
-        return new_feed
+        return updated_feed
 
     def _return_all_message_info(self):
         for message in self.all_messages.values():
