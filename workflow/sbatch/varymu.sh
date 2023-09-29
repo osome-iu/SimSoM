@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=2
 #SBATCH --time=3-23:59:00
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=baseline
+#SBATCH --job-name=varymu
 
 ######  Module commands #####
 source /N/u/baotruon/Carbonate/mambaforge/etc/profile.d/conda.sh
@@ -16,5 +16,5 @@ source /N/u/baotruon/Carbonate/mambaforge/etc/profile.d/conda.sh
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/Carbonate/simsom
-echo '###### running baseline exps ######'
-snakemake --nolock --snakefile workflow/rules/baseline.smk --cores 2
+echo '###### running varymu exps ######'
+snakemake --nolock --snakefile workflow/rules/vary_mu.smk --cores 2

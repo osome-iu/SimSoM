@@ -25,7 +25,7 @@ rule all:
 
 rule run_simulation:
     input: 
-        network = os.path.join(DATA_PATH, mode, "network_{exp_no}.gml"),
+        network = ancient(os.path.join(DATA_PATH, mode, "network_{exp_no}.gml")),
         configfile = os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json")
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
@@ -36,8 +36,8 @@ rule run_simulation:
 
 rule init_net:
     input: 
-        follower=os.path.join(DATA_PATH, 'follower_network.gml'),
-        configfile = os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json")
+        follower=ancient(os.path.join(DATA_PATH, 'follower_network.gml')),
+        configfile = ancient(os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json"))
         
     output: os.path.join(DATA_PATH, mode, "network_{exp_no}.gml")
 

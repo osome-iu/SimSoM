@@ -2,8 +2,10 @@
 Snakefile to run experiments with varying mu values (using a network with no bots)
 """
 
-ABS_PATH = 'experiments'
-DATA_PATH = os.path.join(ABS_PATH, "data")
+import json 
+
+ABS_PATH = '/N/project/simsom/simsom_v3'
+DATA_PATH = "/N/project/simsom/marketplace_slate/data"
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
