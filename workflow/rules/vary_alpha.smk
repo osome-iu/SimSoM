@@ -1,9 +1,11 @@
 """
 Snakefile to run experiments with varying alpha values (using a network with no bots)
 """
+import json 
+import simsom.utils as utils
 
-ABS_PATH = 'experiments'
-DATA_PATH = os.path.join(ABS_PATH, "data")
+ABS_PATH = '/N/project/simsom/simsom_v3'
+DATA_PATH = "/N/slate/baotruon/simsom_data/data"
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
