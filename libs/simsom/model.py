@@ -199,6 +199,7 @@ class SimSom:
         if self.save_message_info is True:
             # Save agents' newsfeed info & message popularity
             measurements["quality_timestep"] = self.quality_timestep
+            measurements["exposure_timestep"] = self.exposure_timestep
             measurements["all_messages"] = self.message_dict
             measurements["all_feeds"] = self.agent_feeds
 
@@ -221,11 +222,11 @@ class SimSom:
             if len(modify_requests) > 0:
                 q.put(modify_requests)
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
             executor.map(post_message, all_agents)
             if self.time_step == 1:
                 print(
-                    f" - Simulation running on {len(executor._threads)} threads",
+                    f" - Simulation running on {executor._max_workers} threads",
                     flush=True,
                 )
         update_list = defaultdict(lambda: defaultdict(int))

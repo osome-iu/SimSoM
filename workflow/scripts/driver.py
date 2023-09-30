@@ -23,6 +23,7 @@ def multiple_simulations(
 
     print(f"Run simulation {times} times..")
     for time in range(times):
+        print(f"**{time+1}/{times}**")
         try:
             print("Create SimSom instance..")
             follower_sys = SimSom(**infosys_specs)
