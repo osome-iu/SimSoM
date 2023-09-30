@@ -2,8 +2,11 @@
 Snakefile to run experiments with varying phi and gamma values
 """
 
-ABS_PATH = 'experiments'
-DATA_PATH = os.path.join(ABS_PATH, 'data')
+import json 
+import simsom.utils as utils
+ 
+ABS_PATH = '/N/project/simsom/simsom_v3'
+DATA_PATH = "/N/slate/baotruon/simsom_data/data"
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
@@ -17,7 +20,7 @@ EXP2NET = {
     for exp_name, net_cf in EXPS.items()
 }
 
-sim_num = 1
+sim_num = 3
 mode='igraph'
 
 RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}')
@@ -36,6 +39,7 @@ rule run_simulation:
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
         reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
+    threads: 7
     shell: """
         python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} -r {output.reshare} --config {input.configfile} --times {sim_num}
     """

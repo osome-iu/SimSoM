@@ -222,7 +222,7 @@ class SimSom:
             if len(modify_requests) > 0:
                 q.put(modify_requests)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=7) as executor:
             executor.map(post_message, all_agents)
             if self.time_step == 1:
                 print(

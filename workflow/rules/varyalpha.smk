@@ -1,6 +1,7 @@
 """
 Snakefile to run experiments with varying alpha values (using a network with no bots)
 """
+
 import json 
 import simsom.utils as utils
 
@@ -15,7 +16,7 @@ EXPS = json.load(open(config_fname,'r'))[exp_type]
 
 EXP_NOS = list(EXPS.keys())
 EXP2NET = {exp_name: utils.netconfig2netname(config_fname, net_cf) for exp_name, net_cf in EXPS.items()}
-sim_num = 2
+sim_num = 3
 mode='igraph'
 
 RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}')
@@ -32,6 +33,7 @@ rule run_simulation:
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
+    threads: 7
     shell: """
         python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
     """

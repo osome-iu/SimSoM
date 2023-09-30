@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=21
 #SBATCH --time=3-23:59:00
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=varyalpha
+#SBATCH --job-name=phigamma
 
 ######  Module commands #####
 source /N/u/baotruon/Carbonate/mambaforge/etc/profile.d/conda.sh
@@ -16,5 +16,5 @@ source /N/u/baotruon/Carbonate/mambaforge/etc/profile.d/conda.sh
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/Carbonate/simsom
-echo '###### running varyalpha exps ######'
-snakemake --nolock --snakefile workflow/rules/varyalpha.smk --cores 21
+echo '###### running phigamma exps ######'
+snakemake --nolock --snakefile workflow/rules/phigamma.smk --cores 21

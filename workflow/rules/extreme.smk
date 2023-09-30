@@ -2,8 +2,11 @@
 Snakefile to run experiments using extreme values for the bot subnetwork 
 """
 
-ABS_PATH = 'experiments'
-DATA_PATH = os.path.join(ABS_PATH, "data")
+import json 
+import simsom.utils as utils
+
+ABS_PATH = '/N/project/simsom/simsom_v3'
+DATA_PATH = "/N/slate/baotruon/simsom_data/data"
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
@@ -33,6 +36,7 @@ rule run_simulation:
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
+    threads: 7
     shell: """
         python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
     """
