@@ -10,7 +10,7 @@ DATA_PATH = "/N/slate/baotruon/simsom_data/data"
 
 # ! Note: Before running make sure config_main/shuffle/* exists
 # `shuffle` contains .json configs copied from vary_gamma/*{[0,1,2,3]}.json (where gamma=0.0001, 0.001, 0.01 and 0.1)
-CONFIG_PATH = os.path.join(ABS_PATH, "config")
+CONFIG_PATH = os.path.join(ABS_PATH, "config_ouput_cascade_false")
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 
 # EXP_NOS = ['conservative', 'liberal', 'hubs', 'None']
