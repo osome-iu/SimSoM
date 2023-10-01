@@ -31,7 +31,7 @@ PHI_SWIPE = list(np.arange(0, 1.1, 0.1))
 
 infosys_default = {
     "verbose": False,
-    "output_cascades": True,
+    "output_cascades": False,
     "epsilon": DEFAULT_EPSILON,
     "rho": DEFAULT_RHO,
     "mu": DEFAULT_MU,

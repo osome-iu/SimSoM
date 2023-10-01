@@ -85,7 +85,6 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
 
             config = utils.update_dict(cf, default_net_config)
             config = utils.update_dict(config, default_infosys_config)
-            config["output_cascades"] = False
             config_name = f"{str(target)}{idx}"
             all_exps["vary_mu"][config_name] = config
 
@@ -98,7 +97,6 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
 
             config = utils.update_dict(cf, default_net_config)
             config = utils.update_dict(config, default_infosys_config)
-            config["output_cascades"] = False
             config_name = f"{str(target)}{idx}"
             all_exps["vary_alpha"][config_name] = config
 
@@ -111,7 +109,6 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
             cf = {"theta": theta, "phi": phi}
             config = utils.update_dict(cf, default_net_config)
             config = utils.update_dict(config, default_infosys_config)
-
             config_name = f"{idx}{jdx}"
             all_exps["vary_thetaphi"][config_name] = config
 
@@ -123,7 +120,6 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
             cf = {"theta": theta, "gamma": gamma}
             config = utils.update_dict(cf, default_net_config)
             config = utils.update_dict(config, default_infosys_config)
-
             config_name = f"{idx}{jdx}"
             all_exps["vary_thetagamma"][config_name] = config
 
@@ -163,5 +159,5 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
 if __name__ == "__main__":
     ABS_PATH = "/N/project/simsom/simsom_v3"
 
-    saving_dir = os.path.join(ABS_PATH, "config")
+    saving_dir = os.path.join(ABS_PATH, "config_ouput_cascade_false")
     make_exps(saving_dir, configs.default_net, configs.infosys_default)

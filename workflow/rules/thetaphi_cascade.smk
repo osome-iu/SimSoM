@@ -7,26 +7,30 @@ import simsom.utils as utils
 
 ABS_PATH = '/N/project/simsom/simsom_v3'
 DATA_PATH = "/N/slate/baotruon/simsom_data/data"
-CONFIG_PATH = os.path.join(ABS_PATH, "config_ouput_cascade_false")
+CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = 'vary_thetaphi'
 
 # get names for exp_config and network
 EXPS = json.load(open(config_fname,'r'))[exp_type]
-EXP_NOS = list(EXPS.keys())
+
+# VARY THETA 1,4,16,64 
+# keep others constant - ($\gamma=10^{-3}$) and no deception ($\phi=0$)
+PHI='0'
+EXP_NOS = [exp for exp in EXPS.keys() if exp[1]==PHI]
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
-    for exp_name, net_cf in EXPS.items()
+    for exp_name, net_cf in EXPS.items() if exp_name in EXP_NOS
 }
 
 
-sim_num = 3
+sim_num = 1
 mode='igraph'
 
 RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}')
 TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}')
-# CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
+CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
 
 rule all:
     input: 
@@ -39,10 +43,10 @@ rule run_simulation:
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
-        # reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
+        reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
     threads: 7
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} -r {output.reshare} --config {input.configfile} --times {sim_num}
     """
 
 rule init_net:

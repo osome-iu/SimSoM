@@ -7,7 +7,7 @@ import simsom.utils as utils
  
 ABS_PATH = '/N/project/simsom/simsom_v3'
 DATA_PATH = "/N/slate/baotruon/simsom_data/data"
-CONFIG_PATH = os.path.join(ABS_PATH, "config")
+CONFIG_PATH = os.path.join(ABS_PATH, "config_ouput_cascade_false")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = 'vary_phigamma'
@@ -25,7 +25,7 @@ mode='igraph'
 
 RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}')
 TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}')
-CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
+# CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
 
 rule all:
     input: 
@@ -38,10 +38,10 @@ rule run_simulation:
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
-        reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
+        # reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
     threads: 7
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} -r {output.reshare} --config {input.configfile} --times {sim_num}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
     """
 
 rule init_net:
