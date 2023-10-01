@@ -152,6 +152,14 @@ def main(args):
         required=False,
         help="Number of times to run simulation",
     )
+    parser.add_argument(
+        "--nthreads",
+        action="store",
+        dest="nthreads",
+        type=str,
+        required=False,
+        help="Number of threads (ThreadPoolExecutor max_workers) to run simulation",
+    )
 
     args = parser.parse_args(args)
     infile = args.infile
@@ -166,6 +174,7 @@ def main(args):
     infosys_spec = json.load(open(configfile, "r"))
     infosys_spec["graph_gml"] = infile
     infosys_spec["mode"] = args.mode if args.mode is not None else "igraph"
+    infosys_spec["n_threads"] = int(args.nthreads)
 
     # avoid passing undefined keyword to InfoSys
     legal_specs = utils.remove_illegal_kwargs(infosys_spec, SimSom.__init__)

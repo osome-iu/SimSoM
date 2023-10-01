@@ -73,6 +73,7 @@ class SimSom:
         save_message_info=True,
         output_cascades=False,
         verbose=False,
+        n_threads=7,
         epsilon=0.0001,  # Don't change this value
         rho=0.8,  # Don't change this value, check note above
         mu=0.5,
@@ -92,6 +93,7 @@ class SimSom:
         self.theta = theta
 
         # simulation options
+        self.n_threads = n_threads
         self.verbose = verbose
         self.tracktimestep = tracktimestep
         self.save_message_info = save_message_info
@@ -222,7 +224,9 @@ class SimSom:
             if len(modify_requests) > 0:
                 q.put(modify_requests)
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=7) as executor:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.n_threads
+        ) as executor:
             executor.map(post_message, all_agents)
             if self.time_step == 1:
                 print(
