@@ -6,23 +6,25 @@ import json
 import simsom.utils as utils
 
 ABS_PATH = '/N/project/simsom/simsom_v3'
-DATA_PATH = "/N/project/simsom/marketplace_slate/data"
+DATA_PATH = "/N/slate/baotruon/simsom_data/data"
 
 # ! Note: Before running make sure config_main/shuffle/* exists
 # `shuffle` contains .json configs copied from vary_gamma/*{[0,1,2,3]}.json (where gamma=0.0001, 0.001, 0.01 and 0.1)
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 
-EXP_NOS = ['conservative', 'liberal', 'hubs', 'None']
-SHUFFLES = ['hub','community', 'all']
+# EXP_NOS = ['conservative', 'liberal', 'hubs', 'None']
 # GAMMAS = [0,1,2,3] # [0.0001, 0.001, 0.01, 0.1]
-GAMMAS = [0,1,2,3]
+
+EXP_NOS = ['None']
+GAMMAS = [2] # only run for default gamma=0.01
+SHUFFLES = ['hub','community', 'all']
 
 mode='igraph'
 sim_num=5
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'shuffle')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'shuffle')
+RES_DIR = os.path.join(ABS_PATH,'results', 'shuffle_5runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', 'shuffle_5runs')
 
 rule all:
     input: 
