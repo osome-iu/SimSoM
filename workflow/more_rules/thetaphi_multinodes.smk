@@ -1,10 +1,13 @@
 """
 Snakefile to run experiments with varying theta and phi values
-(Total 77)
+(Total 66)
 """
 
 import json 
 import simsom.utils as utils
+
+# import simsom.config_vals as config_vals
+# config_vals.THETA_SWIPE # [1, 2, 4, 8, 16, 32, 64]
 
 ABS_PATH = '/N/project/simsom/simsom_v3'
 DATA_PATH = "/N/slate/baotruon/simsom_data/data"
@@ -15,10 +18,13 @@ exp_type = 'vary_thetaphi'
 
 # get names for exp_config and network
 EXPS = json.load(open(config_fname,'r'))[exp_type]
-EXP_NOS = list(EXPS.keys())
+
+MAXTHETA_IDX = 5  # 2^5 = 32
+EXP_NOS = [exp for exp in EXPS.keys() if int(exp[0]) <= MAXTHETA_IDX]
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
     for exp_name, net_cf in EXPS.items()
+    if exp_name in EXP_NOS
 }
 
 nthreads=10

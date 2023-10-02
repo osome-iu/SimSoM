@@ -1,5 +1,6 @@
 """
 Snakefile to run experiments with varying theta and phi values
+(Total 66 jobs)
 """
 
 import json 
@@ -14,10 +15,13 @@ exp_type = 'vary_thetaphi'
 
 # get names for exp_config and network
 EXPS = json.load(open(config_fname,'r'))[exp_type]
-EXP_NOS = list(EXPS.keys())
+
+MAXTHETA_IDX = 5  # 2^5 = 32
+EXP_NOS = [exp for exp in EXPS.keys() if int(exp[0]) <= MAXTHETA_IDX]
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
     for exp_name, net_cf in EXPS.items()
+    if exp_name in EXP_NOS
 }
 
 nthreads=21
