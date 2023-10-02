@@ -174,7 +174,8 @@ def main(args):
     infosys_spec = json.load(open(configfile, "r"))
     infosys_spec["graph_gml"] = infile
     infosys_spec["mode"] = args.mode if args.mode is not None else "igraph"
-    infosys_spec["n_threads"] = int(args.nthreads)
+    if args.nthreads is not None:
+        infosys_spec["n_threads"] = int(args.nthreads)
 
     # avoid passing undefined keyword to InfoSys
     legal_specs = utils.remove_illegal_kwargs(infosys_spec, SimSom.__init__)
