@@ -2,7 +2,7 @@
 #####  Constructed by HPC everywhere #####
 #SBATCH -A r00382
 #SBATCH --mail-user=baotruon@iu.edu
-#SBATCH --nodes=39
+#SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=36
 #SBATCH --time=1-23:59:00
