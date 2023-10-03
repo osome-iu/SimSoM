@@ -11,11 +11,11 @@
 #SBATCH --job-name=phigamma_4runs
 
 ######  Module commands #####
-source /N/u/baotruon/Carbonate/mambaforge/etc/profile.d/conda.sh
+source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
 # conda activate simsommodel
 
 
 ######  Job commands go below this line #####
-cd /N/u/baotruon/Carbonate/simsom
+cd /N/u/baotruon/BigRed200/simsom
 echo '###### running phigamma_4runs exps ######'
 snakemake --nolock --snakefile workflow/new_rules/phigamma_4runs.smk --cores 36

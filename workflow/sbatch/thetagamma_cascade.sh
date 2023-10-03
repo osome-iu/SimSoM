@@ -11,11 +11,11 @@
 #SBATCH --job-name=thetagamma_cascade
 
 ######  Module commands #####
-source /N/u/baotruon/Carbonate/mambaforge/etc/profile.d/conda.sh
+source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
 # conda activate simsommodel
 
 
 ######  Job commands go below this line #####
-cd /N/u/baotruon/Carbonate/simsom
+cd /N/u/baotruon/BigRed200/simsom
 echo '###### running thetagamma_cascade exps ######'
 snakemake --nolock --snakefile workflow/rules/thetagamma_cascade.smk --cores 21

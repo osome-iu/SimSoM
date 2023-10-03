@@ -11,11 +11,11 @@
 #SBATCH --job-name=baseline
 
 ######  Module commands #####
-source /N/u/baotruon/Carbonate/mambaforge/etc/profile.d/conda.sh
+source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
 # conda activate simsommodel
 
 
 ######  Job commands go below this line #####
-cd /N/u/baotruon/Carbonate/simsom
+cd /N/u/baotruon/BigRed200/simsom
 echo '###### running baseline exps ######'
 snakemake --nolock --snakefile workflow/rules/baseline.smk --cores 2
