@@ -23,8 +23,8 @@ SHUFFLES = ['hub','community', 'all']
 mode='igraph'
 sim_num=5
 
-RES_DIR = os.path.join(ABS_PATH,'results', 'shuffle_5runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', 'shuffle_5runs')
+RES_DIR = os.path.join(ABS_PATH,'results_bigred', 'shuffle_5runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', 'shuffle_5runs')
 
 rule all:
     input: 

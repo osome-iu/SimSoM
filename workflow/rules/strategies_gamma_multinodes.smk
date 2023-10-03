@@ -24,8 +24,8 @@ nthreads = 11
 sim_num = 6
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'strategies_6runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'strategies_6runs')
+RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'strategies_6runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'strategies_6runs')
 
 rule all:
     input: 

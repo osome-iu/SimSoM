@@ -19,8 +19,8 @@ EXP2NET = {exp_name: utils.netconfig2netname(config_fname, net_cf) for exp_name,
 sim_num = 2
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_2runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_2runs')
+RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'{exp_type}_2runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'{exp_type}_2runs')
 
 rule all:
     input: 

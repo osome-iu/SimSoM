@@ -22,8 +22,8 @@ EXP2NET = {
 sim_num = 3
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_7runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_7runs')
+RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'{exp_type}_7runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'{exp_type}_7runs')
 
 rule all:
     input: 

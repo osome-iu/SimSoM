@@ -16,8 +16,8 @@ EXP_NOS = list(EXPS.keys())
 sim_num = 3
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH, 'results', f'{exp_type}')
-TRACKING_DIR = os.path.join(ABS_PATH, 'results_verbose', f'{exp_type}')
+RES_DIR = os.path.join(ABS_PATH, 'results_bigred', f'{exp_type}')
+TRACKING_DIR = os.path.join(ABS_PATH, 'results_verbose_bigred', f'{exp_type}')
 
 rule all:
     input: 

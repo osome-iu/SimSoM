@@ -25,8 +25,8 @@ nthreads=10
 sim_num = 4
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_4runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_4runs')
+RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'{exp_type}_4runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'{exp_type}_4runs')
 # CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
 
 rule all:
