@@ -18,4 +18,4 @@ source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running thetaphi_mtheta4 exps ######'
-snakemake --nolock --snakefile workflow/rules/thetaphi_5runs_mtheta4.smk --cores 36
+snakemake --nolock --snakefile workflow/rules/thetaphi_5runs_maxtheta4.smk --cores 36
