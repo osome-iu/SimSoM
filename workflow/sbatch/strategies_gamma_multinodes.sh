@@ -5,7 +5,8 @@
 #SBATCH --nodes=3
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=23
-#SBATCH --time=3-23:59:00
+#SBATCH --time=1-23:59:00
+#SBATCH --mem=20gb
 #SBATCH --mail-type=FAIL,BEGIN,END
 #SBATCH --job-name=strategies_multinodes
 
