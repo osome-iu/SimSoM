@@ -4,9 +4,9 @@
 #SBATCH --mail-user=baotruon@iu.edu
 #SBATCH --nodes=39
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=22
+#SBATCH --cpus-per-task=36
 #SBATCH --time=1-23:59:00
-#SBATCH --mem=20gb
+#SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
 #SBATCH --job-name=thetaphi_multinodes
 
@@ -18,4 +18,4 @@ source /N/u/baotruon/Carbonate/mambaforge/etc/profile.d/conda.sh
 ######  Job commands go below this line #####
 cd /N/u/baotruon/Carbonate/simsom
 echo '###### running thetaphi_multinodes exps ######'
-snakemake --nolock --snakefile workflow/rules/thetaphi_multinodes.smk --cores 22
+snakemake --nolock --snakefile workflow/rules/thetaphi_multinodes.smk --cores 36
