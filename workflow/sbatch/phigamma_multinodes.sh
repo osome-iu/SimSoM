@@ -18,4 +18,4 @@ source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running phigamma_multinodes exps ######'
-snakemake --nolock --snakefile workflow/rules/phigamma_multinodes.smk --cores 36
+snakemake --nolock --snakefile workflow/new_rules/phigamma_multinodes.smk --cores 36

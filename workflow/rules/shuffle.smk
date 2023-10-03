@@ -20,11 +20,12 @@ EXP_NOS = ['None']
 GAMMAS = [2] # only run for default gamma=0.01
 SHUFFLES = ['hub','community', 'all']
 
+nthreads = 7
 mode='igraph'
-sim_num=5
+sim_num=1
 
-RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'shuffle')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'shuffle')
+RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'shuffle_1run')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'shuffle_1run')
 
 rule all:
     input: 
@@ -38,9 +39,9 @@ rule run_simulation:
     output: 
         measurements = os.path.join(RES_DIR, '{shuffle}_shuffle__{strategy}{gamma}.json'),
         tracking = os.path.join(TRACKING_DIR, '{shuffle}_shuffle__{strategy}{gamma}.json.gz')
-    threads: 7
+    threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 

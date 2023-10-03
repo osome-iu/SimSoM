@@ -20,12 +20,12 @@ EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
     for exp_name, net_cf in EXPS.items() if exp_name in EXP_NOS}
 
-nthreads = 11
-sim_num = 6
+nthreads = 7
+sim_num = 5
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'strategies_6runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'strategies_6runs')
+RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'strategies_5runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'strategies_5runs')
 
 rule all:
     input: 

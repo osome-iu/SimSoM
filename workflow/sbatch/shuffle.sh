@@ -4,7 +4,7 @@
 #SBATCH --mail-user=baotruon@iu.edu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=21
+#SBATCH --cpus-per-task=22
 #SBATCH --time=1-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
@@ -18,4 +18,4 @@ source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running shuffle exps ######'
-snakemake --nolock --snakefile workflow/rules/shuffle.smk --cores 21
+snakemake --nolock --snakefile workflow/more_rules/shuffle.smk --cores 22
