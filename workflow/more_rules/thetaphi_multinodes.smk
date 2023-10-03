@@ -27,7 +27,7 @@ EXP2NET = {
     if exp_name in EXP_NOS
 }
 
-nthreads=10
+nthreads=6
 sim_num = 6
 mode='igraph'
 
