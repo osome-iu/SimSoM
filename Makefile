@@ -3,8 +3,8 @@
 
 SHELL=/bin/bash
 PROJ_NAME=simsommodel
-ENV_PATH=$$(conda info --base)
-CONDA_ACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate $(PROJ_NAME)
+ENV_PATH=$(conda info --base)
+CONDA_ACTIVATE=source $(ENV_PATH)/etc/profile.d/conda.sh ; conda activate $(PROJ_NAME)
 DEPENDENCIES=conda install -y -c anaconda -c conda-forge -c bioconda snakemake-minimal black isort flake8 pytest neovim snakefmt scikit-learn scipy seaborn pandas
 
 create_conda_env:
