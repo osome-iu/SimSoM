@@ -13,11 +13,12 @@ exp_type = "baseline"
 EXPS = json.load(open(config_fname,'r'))[exp_type]
 EXP_NOS = list(EXPS.keys())
 
-sim_num = 3
+nthreads=20
+sim_num = 5
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH, 'results_bigred', f'{exp_type}')
-TRACKING_DIR = os.path.join(ABS_PATH, 'results_verbose_bigred', f'{exp_type}')
+RES_DIR = os.path.join(ABS_PATH, 'results_bigred', f'{exp_type}_5runs')
+TRACKING_DIR = os.path.join(ABS_PATH, 'results_verbose_bigred', f'{exp_type}_5runs')
 
 rule all:
     input: 
@@ -31,7 +32,7 @@ rule run_simulation:
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:

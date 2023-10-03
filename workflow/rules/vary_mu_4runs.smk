@@ -18,7 +18,7 @@ EXPS = json.load(open(config_fname,'r'))[exp_type]
 EXP_NOS = list(EXPS.keys())
 EXP2NET = {exp_name: utils.netconfig2netname(config_fname, net_cf) for exp_name, net_cf in EXPS.items()}
 
-nthreads=21
+nthreads=7
 sim_num = 4
 mode='igraph'
 

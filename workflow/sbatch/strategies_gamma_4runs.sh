@@ -18,4 +18,4 @@ source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running strategies_4runs exps ######'
-snakemake --nolock --snakefile workflow/more_rules/strategies_gamma_4runs.smk --cores 36
+snakemake --nolock --snakefile workflow/rules/strategies_gamma_4runs.smk --cores 36
