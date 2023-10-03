@@ -20,7 +20,7 @@ EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
     for exp_name, net_cf in EXPS.items() if exp_name in EXP_NOS}
 
-nthreads = 7
+nthreads = 6
 sim_num = 5
 mode='igraph'
 

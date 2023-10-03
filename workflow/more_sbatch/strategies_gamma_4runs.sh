@@ -4,7 +4,7 @@
 #SBATCH --mail-user=baotruon@iu.edu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=22
+#SBATCH --cpus-per-task=24
 #SBATCH --time=3-23:59:00
 #SBATCH --mail-type=FAIL,BEGIN,END
 #SBATCH --job-name=strategies_4runs
@@ -17,4 +17,4 @@ source /N/u/baotruon/Carbonate/mambaforge/etc/profile.d/conda.sh
 ######  Job commands go below this line #####
 cd /N/u/baotruon/Carbonate/simsom
 echo '###### running strategies_4runs exps ######'
-snakemake --nolock --snakefile workflow/more_rules/strategies_gamma_4runs.smk --cores 22
+snakemake --nolock --snakefile workflow/more_rules/strategies_gamma_4runs.smk --cores 24
