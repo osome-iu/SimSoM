@@ -21,7 +21,7 @@ EXP2NET = {
     for exp_name, net_cf in EXPS.items()
 }
 
-nthreads=10
+nthreads=7
 sim_num = 4
 mode='igraph'
 
