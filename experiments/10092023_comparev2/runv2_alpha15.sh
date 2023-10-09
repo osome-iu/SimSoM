@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running v2 exps (alpha=15) ######'
-python3 experiments/10092023_comparev2/2.run_v2.py 15 100
+python3 experiments/10092023_comparev2/2.run_v2.py 100 15
