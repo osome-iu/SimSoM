@@ -81,6 +81,7 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
+        print("SimSomV3")
         # graph object
         self.graph_gml = graph_gml
 
@@ -445,6 +446,7 @@ class SimSom:
         - popularity (list of int): popularity of each message. Popularity[i] is the popularity of message i
         Note: feed[0] is the most recent item in the newsfeed
         """
+        # TODO: we still have duplicates now . When update popularity, DO take into account the popularity of existing messages
         messages, metadata = deepcopy(self.agent_feeds[target_id])
         messages[0:0] = message_ids
         metadata[0:0] = popularity
