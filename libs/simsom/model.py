@@ -447,17 +447,22 @@ class SimSom:
         Note: feed[0] is the most recent item in the newsfeed
         """
         # TODO: we still have duplicates now . When update popularity, DO take into account the popularity of existing messages
+        # print(f"Agent {target_id} feed: \nBefore: {self.agent_feeds[target_id][0]}")
+        # if target_id == "1.0":
+        #     print("Agent 1.0")
         messages, metadata = deepcopy(self.agent_feeds[target_id])
+        # push new messages into the feed
         messages[0:0] = message_ids
         metadata[0:0] = popularity
 
         newsfeed = (messages, metadata)
 
         # clip the agent's feed if exceeds alpha
-        if len(message_ids) > self.alpha:
+        if len(newsfeed[0]) > self.alpha:
             newsfeed = self._handle_oversized_feed(newsfeed)
         self.agent_feeds[target_id] = newsfeed
 
+        # print("After: ", self.agent_feeds[target_id][0])
         return
 
     def _handle_oversized_feed(self, newsfeed):
@@ -475,6 +480,8 @@ class SimSom:
         # for message_id in set(message_ids[self.alpha :]):
         #     _ = self.message_metadata.pop(message_id, "No Key found")
         #     _ = self.all_messages.pop(message_id, "No Key found")
+        assert len(updated_feed[0]) <= self.alpha
+        assert len(updated_feed[1]) <= self.alpha
 
         return updated_feed
 

@@ -36,14 +36,14 @@ def run_sim(simulation_specs, no_runs=1):
 
     logger.info("*** Start simulation ***")
     for run in range(no_runs):
-        logger.info(f"-- Run {run+1}/{no_runs}: \n Create SimSom instance..")
+        # logger.info(f"-- Run {run+1}/{no_runs}: \n Create SimSom instance..")
         # Create a SimSom instance
         follower_sys = SimSomV2(network_fpath, **simulation_specs)
 
-        if no_runs == 0:
-            logger.info(follower_sys)
         if run % 10 == 0:
-            logger.info(f" - {run} ..")
+            logger.info(f"-- {run} --")
+        if run == 0:
+            logger.info(follower_sys)
 
         # Run simulation
         if simulation_specs["output_cascades"] is False:
