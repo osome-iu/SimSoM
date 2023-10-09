@@ -42,8 +42,8 @@ def run_sim(simulation_specs, no_runs=1):
 
         if no_runs == 0:
             logger.info(follower_sys)
-        if no_runs % 10 == 0:
-            logger.info(f" - {no_runs} ..")
+        if run % 10 == 0:
+            logger.info(f" - {run} ..")
 
         # Run simulation
         if simulation_specs["output_cascades"] is False:
