@@ -105,12 +105,12 @@ def get_logger(name):
     return logger
 
 
-def get_file_logger(log_dir=".log", also_print=False):
+def get_file_logger(log_dir=".log", log_fpath=None, also_print=False):
     """Create logger."""
 
     # Create log_dir if it doesn't exist already
     try:
-        os.makedirs(f"{log_dir}")
+        os.makedirs(log_dir)
     except:
         pass
 
@@ -123,7 +123,8 @@ def get_file_logger(log_dir=".log", also_print=False):
         fmt="%(asctime)s-%(name)s-%(levelname)s-%(message)s",
         datefmt="%Y-%m-%d_%H:%M:%S",
     )
-    log_fpath = os.path.join(log_dir, f"{__name__}_{get_now()}")
+    if log_fpath is None:
+        log_fpath = os.path.join(log_dir, f"{__name__}_{get_now()}")
     fh = logging.FileHandler(log_fpath)
     fh.setFormatter(formatter)
     fh.setLevel(level=logging.INFO)
