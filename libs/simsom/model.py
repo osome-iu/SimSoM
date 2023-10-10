@@ -37,9 +37,8 @@ Outputs:
             - engagement (float): engagement 
             - human_shares (int): number of shares by humans
             - bot_shares (int): number of shares by bots
-            - spread_via_agents (list): list of uids of agents who reshared this message
-            - seen_by_agents (list): list of uids of agents who are exposed to this message (disregard bot spam)
-            - infeed_of_agents (list): list of uids of agents who are exposed to this message (including bot spam)
+            - spread_via_agents (list): uids of agents who reshared this message
+            - seen_by_agents (list): uids of agents who are exposed to this message (disregard bot spam)
             - qual_th (int): quality ranking
             - share_th (int): popularity ranking
         - all_feeds (dict): dictionary mapping agent's feed to the messages it contains at convergence
@@ -182,10 +181,8 @@ class SimSom:
                 self.quality_timestep += [self.quality]
                 self.exposure_timestep += [self.measure_exposure()]
 
-            all_agents = self.network.vs
-
             # Propagate messages
-            self.simulation_step(all_agents)
+            self.simulation_step()
 
             self.update_quality()
 
@@ -208,16 +205,15 @@ class SimSom:
 
         return measurements
 
-    def simulation_step(self, all_agents):
+    def simulation_step(self):
         """
-        During each simulation step, each agent reshare or post new messages (this process is performed in parallel for `n` agents).
-        This step represents the distribution of messages by the platform to various feeds.
-        Inputs:
-            - all_agents (list): list of agent ids
+        During each simulation step, agents reshare or post new messages (in parallel).
+        After `n` agents have done their actions and return requests to modify their follower feeds, messages are not yet propagated in the network.
+        This step aggregates popularity of the messages (if multiple agents reshare the same message) and distributes messages to newsfeeds.
         """
-        ##TODO: update docstring
-        # Following the resharing or posting of messages by all agents, there are often cases where multiple friends attempt to modify the same newsfeed within the same timestep.
-        # In such cases, the platform consolidates these feeds by randomly selecting new messages from one of the friends. The chosen message is then posted onto the respective agent's feed.
+
+        all_agents = self.network.vs  # list of all agent ids
+
         q = queue.Queue()
 
         def post_message(agent):
@@ -234,14 +230,14 @@ class SimSom:
                     f" - Simulation running on {executor._max_workers} threads",
                     flush=True,
                 )
+
         update_list = defaultdict(lambda: defaultdict(int))
 
-        # Distribute posts to newsfeeds
+        ### Aggregate message popularity
         # each item in queue is a list of requests from an agent to modify its follower feeds
         # e.g.: item= [(follower1, [mess1]), (follower2, [mess1]), .. ]
         # or item= [(follower1, [mess1]*theta), (follower2, [mess1]*theta), .. ] if the agent is a bot
-        # use requests from friends to add messages to agents' feeds
-        # find overlaps between friends' message lists to update popularity
+        # iterates over all agent update requests, if exists overlap update popularity
         for item in q.queue:
             for agent_id, message_ids in item:
                 for message_id in message_ids:
@@ -251,7 +247,8 @@ class SimSom:
         # 'a2': defaultdict(int, {'2': 1, '1': 1, '4': 1})}
         # print("Update list:", update_list, flush=True)
 
-        # update_list: {agent_id: {message_id: count}}
+        ### Distribute posts to newsfeeds
+        # update_list: {agent_id: {message_id: popularity}}
         for agent_id, message_list in update_list.items():
             message_ids = list(message_list.keys())
             popularity = list(message_list.values())
@@ -435,24 +432,31 @@ class SimSom:
         self.exposure = exposure
         return exposure
 
-    def _bulk_add_messages_to_feed(self, target_id, message_ids, popularity):
+    def _bulk_add_messages_to_feed(self, target_id, new_message_ids, popularity):
         """
-        Add message to agent's feed in bulk, forget the oldest if feed size exceeds self.alpha (Last in last out)
-        Update all news feed information if output_cascades is True
-        Return a copy of the target agent's feed after modification
-        Input:
+        Add message to agent's feed in bulk, forget the oldest if feed size exceeds self.alpha (first in first out)
+        If a message to be added is already in the feed, update its popularity and move to beginning of feed (youngest)
+        Inputs:
         - target_id (str): uid of agent resharing the message -- whose feed we're adding the message to
-        - message_ids (list of ints): ids of messages to add
+        - new_message_ids (list of ints): ids of messages to be added
         - popularity (list of int): popularity of each message. Popularity[i] is the popularity of message i
         Note: feed[0] is the most recent item in the newsfeed
         """
-        # TODO: we still have duplicates now . When update popularity, DO take into account the popularity of existing messages
-        # print(f"Agent {target_id} feed: \nBefore: {self.agent_feeds[target_id][0]}")
-        # if target_id == "1.0":
-        #     print("Agent 1.0")
         messages, metadata = deepcopy(self.agent_feeds[target_id])
+
+        # check overlap with existing messages
+        overlap = set(new_message_ids) & set(messages)
+        if len(overlap) > 0:
+            for message_id in overlap:
+                idx = messages.index(message_id)
+                del messages[idx]
+                del metadata[idx]
+                # update popularity
+                jdx = new_message_ids.index(message_id)
+                popularity[jdx] += 1
+
         # push new messages into the feed
-        messages[0:0] = message_ids
+        messages[0:0] = new_message_ids
         metadata[0:0] = popularity
 
         newsfeed = (messages, metadata)
@@ -462,7 +466,6 @@ class SimSom:
             newsfeed = self._handle_oversized_feed(newsfeed)
         self.agent_feeds[target_id] = newsfeed
 
-        # print("After: ", self.agent_feeds[target_id][0])
         return
 
     def _handle_oversized_feed(self, newsfeed):
@@ -472,22 +475,20 @@ class SimSom:
         Input:
             feed (tuple - (list of int, list of int)): (list of mess_ids - list of popularities), represents an agent's news feed
         """
-        message_ids, metadata = deepcopy(newsfeed)
+        message_ids, metadata = newsfeed
         updated_feed = (message_ids[: self.alpha], metadata[: self.alpha])
 
-        # b: We don't want to remove forgotten messages (because we need to keep track of their exposure cascade)
-        # # Extinction: remove oldest (forgotten) messages from master lists
-        # for message_id in set(message_ids[self.alpha :]):
-        #     _ = self.message_metadata.pop(message_id, "No Key found")
-        #     _ = self.all_messages.pop(message_id, "No Key found")
         assert len(updated_feed[0]) <= self.alpha
-        assert len(updated_feed[1]) <= self.alpha
 
         return updated_feed
 
     def _return_all_message_info(self):
-        for message in self.all_messages.values():
-            assert isinstance(message, Message)
+        """
+        Combine message attributes (quality, engagement) with popularity data (spread_via_agents, seen_by_agents, etc.)
+        Return a list of dict, where each dict contains message metadata
+        """
+        # for message in self.all_messages.values():
+        #     assert isinstance(message, Message)
         # Be careful: convert to dict to avoid infinite recursion
         messages = [message.__dict__ for message in self.all_messages.values()]
         for message_dict in messages:
@@ -541,14 +542,14 @@ class SimSom:
         """
 
         if message_id not in self.message_metadata.keys():
+            # "agent_id": agent who first reshared this message (also creator)
             self.message_metadata[message_id] = {
                 "agent_id": agent["uid"],
                 # "is_by_bot": message.is_by_bot,
                 "human_shares": 0,
                 "bot_shares": 0,
                 "spread_via_agents": [],
-                "seen_by_agents": [],  # disregard bot spam
-                "infeed_of_agents": [],  # regard bot spam
+                "seen_by_agents": [],
             }
 
         self.message_metadata[message_id]["spread_via_agents"] += [agent["uid"]]
