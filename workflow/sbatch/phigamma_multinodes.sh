@@ -11,7 +11,7 @@
 #SBATCH --job-name=phigamma_multinodes
 
 ######  Module commands #####
-source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
+source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
 conda activate simsommodel
 
 
