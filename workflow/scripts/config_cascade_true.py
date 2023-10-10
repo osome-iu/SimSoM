@@ -159,5 +159,7 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
 if __name__ == "__main__":
     ABS_PATH = "/N/project/simsom/simsom_v3"
 
-    saving_dir = os.path.join(ABS_PATH, "config")
-    make_exps(saving_dir, configs.default_net, configs.infosys_default)
+    saving_dir = os.path.join(ABS_PATH, "config_cascade_true")
+    infosys_default = configs.infosys_default
+    infosys_default["output_cascades"] = True
+    make_exps(saving_dir, configs.default_net, infosys_default)

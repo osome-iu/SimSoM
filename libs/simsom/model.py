@@ -80,7 +80,7 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-        print("SimSomV3")
+        print("SimSomV3.1")
         # graph object
         self.graph_gml = graph_gml
 
