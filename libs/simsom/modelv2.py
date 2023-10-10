@@ -146,7 +146,13 @@ class SimSomV2:
                 writer = csv.writer(f, delimiter=",")
                 writer.writerow(exposure_fields)
 
+        ## debug: calculate number the same agents being activated at each time
+        overlaps = []
+
         while self.quality_diff > self.epsilon:
+            self.num_memes = sum(
+                [len(f) for f in self.agent_feeds.values() if len(f) > 0]
+            )
             if self.verbose:
                 print(
                     f"time_step = {self.time_step}, q = {self.quality}, diff = {self.quality_diff}, unique/human memes = {self.num_meme_unique}/{self.memes_human_feed}, all memes created={self.num_memes}",
@@ -157,12 +163,21 @@ class SimSomV2:
             if self.tracktimestep is True:
                 self.quality_timestep += [self.quality]
 
+            active_agents = []
             for _ in range(self.n_agents):
                 # simulation
-                self.num_memes = sum(
-                    [len(f) for f in self.agent_feeds.values() if len(f) > 0]
-                )
-                self.simulation_step()
+                agent = self.simulation_step()
+                active_agents += [agent]
+
+            ## debug: calculate number the same agents being activated at each time
+            overlap = sum(
+                [
+                    activity
+                    for agent, activity in Counter(active_agents).items()
+                    if activity > 1
+                ]
+            )
+            overlaps += [overlap]
 
             self.update_quality()
 
@@ -170,10 +185,14 @@ class SimSomV2:
         # Call this before calculating tau and diversity!!
         self.meme_dict = self._return_all_meme_info()
 
+        ## debug
+        overlap_rate = sum(overlaps) / self.n_agents / len(overlaps)
+
         measurements = {
             "quality": self.quality,
             "diversity": self.measure_diversity(),
             "discriminative_pow": self.measure_kendall_tau(),
+            "overlap_rate": overlap_rate,
         }
 
         if self.save_memeinfo is True:
@@ -237,7 +256,7 @@ class SimSomV2:
             if self.output_cascades is True:
                 self._update_reshares(meme, agent_id, follower)
 
-        return
+        return agent_id
 
     def update_quality(self):
         """
