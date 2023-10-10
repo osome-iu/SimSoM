@@ -12,7 +12,7 @@
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
-# conda activate simsommodel
+conda activate simsommodel
 
 
 ######  Job commands go below this line #####

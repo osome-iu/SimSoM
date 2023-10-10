@@ -4,18 +4,18 @@
 #SBATCH --mail-user=baotruon@iu.edu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=36
+#SBATCH --cpus-per-task=43
 #SBATCH --time=1-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=varymu_4runs
+#SBATCH --job-name=thetagamma_5runs
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
-# conda activate simsommodel
+conda activate simsommodel
 
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running varymu_4runs exps ######'
-snakemake --nolock --snakefile workflow/rules/vary_mu_4runs.smk --cores 36
+echo '###### running thetagamma_5runs exps ######'
+snakemake --nolock --snakefile workflow/rules/thetagamma_5runs.smk --cores 43

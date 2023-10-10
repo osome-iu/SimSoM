@@ -4,18 +4,18 @@
 #SBATCH --mail-user=baotruon@iu.edu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=36
+#SBATCH --cpus-per-task=43
 #SBATCH --time=1-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=phigamma_4runs
+#SBATCH --job-name=strategies_gamma
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
-# conda activate simsommodel
+conda activate simsommodel
 
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running phigamma_4runs exps ######'
-snakemake --nolock --snakefile workflow/rules/phigamma_4runs.smk --cores 36
+echo '###### running strategies_gamma exps ######'
+snakemake --nolock --snakefile workflow/rules/strategies_gamma.smk --cores 43

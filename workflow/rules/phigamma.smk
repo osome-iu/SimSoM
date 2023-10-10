@@ -1,17 +1,17 @@
 """
-Snakefile to run experiments with varying theta and gamma values
-(Total 28 jobs)
+Snakefile to run experiments with varying phi and gamma values
+(Total 44 jobs)
 """
 
 import json 
 import simsom.utils as utils
-
+ 
 ABS_PATH = '/N/project/simsom/simsom_v3'
 DATA_PATH = "/N/slate/baotruon/simsom_data/data"
 CONFIG_PATH = os.path.join(ABS_PATH, "config_ouput_cascade_false")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
-exp_type = 'vary_thetagamma'
+exp_type = 'vary_phigamma'
 
 # get names for exp_config and network
 EXPS = json.load(open(config_fname,'r'))[exp_type]
@@ -22,11 +22,11 @@ EXP2NET = {
 }
 
 nthreads=7
-sim_num = 4
+sim_num = 5
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'{exp_type}_4runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'{exp_type}_4runs')
+RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'{exp_type}_5runs_')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'{exp_type}_5runs_')
 # CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
 
 rule all:
@@ -48,11 +48,10 @@ rule run_simulation:
 
 rule init_net:
     input: 
-        follower=ancient(os.path.join(DATA_PATH, 'follower_network.gml')),
+        follower= ancient(os.path.join(DATA_PATH, 'follower_network.gml')),
         configfile = ancient(os.path.join(CONFIG_PATH, 'vary_network', "{net_no}.json"))
         
     output: os.path.join(DATA_PATH, mode, 'vary_network', "network_{net_no}.gml")
-
     shell: """
             python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile}
         """ 
