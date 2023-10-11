@@ -13,7 +13,7 @@ Inputs:
     - epsilon (float): threshold of quality difference between 2 consecutive timesteps to decide convergence. Default: 0.0001
     - rho (float): weight of the previous timestep's quality in calculating new quality. Default: 0.8
     - mu (float): probability that an agent create new messages. Default: 0.5
-    - phi (int): phi*0.1 is the probability that a bot message's engagement (engagment) equals 1. Default: 0
+    - phi (float): phi in range [0,1] is the probability that a bot message's engagement (engagment) equals 1. Default: 0
     - alpha (int): agent's newsfeed size. Default: 15
     - theta (int): number of copies bots make when creating messages. Default: 1
 Important note: 
@@ -32,7 +32,7 @@ Outputs:
             - id (int): unique identifier for this message
             - agent_id (str): uid of agent originating this message
             - is_by_bot (int): 0 if message is by human, 1 if by bot
-            - phi (int): same as phi specified in InfoSys
+            - phi (float): same as phi specified in InfoSys
             - quality (float): quality
             - engagement (float): engagement 
             - human_shares (int): number of shares by humans
