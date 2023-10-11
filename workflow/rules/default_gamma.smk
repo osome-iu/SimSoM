@@ -42,7 +42,7 @@ rule run_simulation:
         configfile = ancient(os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json"))
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
-        tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
+        tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
         reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
     threads: nthreads
     shell: """
