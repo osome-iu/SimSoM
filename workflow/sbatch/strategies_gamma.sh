@@ -11,7 +11,7 @@
 #SBATCH --job-name=strategies_gamma
 
 ######  Module commands #####
-source /N/u/baotruon/BigRed200/mambaforge/etc/profile.d/conda.sh
+source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
 conda activate simsommodel
 
 
