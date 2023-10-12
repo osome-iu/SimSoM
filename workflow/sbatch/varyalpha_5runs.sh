@@ -5,7 +5,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=43
-#SBATCH --time=1-23:59:00
+#SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
 #SBATCH --job-name=varyalpha_5runs
@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running varyalpha_5runs exps ######'
-snakemake --nolock --snakefile workflow/rules/varyalpha_5runs.smk --cores 43
+snakemake --rerun-incomplete --nolock --snakefile workflow/rules/varyalpha_5runs.smk --cores 43

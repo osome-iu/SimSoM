@@ -16,6 +16,7 @@ conda activate simsommodel
 
 
 ######  Job commands go below this line #####
+#### Estimated time for this job: 1-08:54:19 ####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running shuffle exps ######'
 snakemake --nolock --snakefile workflow/rules/shuffle.smk --cores 22

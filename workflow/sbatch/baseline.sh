@@ -16,6 +16,7 @@ conda activate simsommodel
 
 
 ######  Job commands go below this line #####
+#### Estimated time for this job: 1-10:27:59 ####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running baseline exps ######'
 snakemake --nolock --snakefile workflow/rules/baseline.smk --cores 21
