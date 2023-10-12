@@ -1,6 +1,7 @@
 """
-Snakefile to run experiments with varying alpha values (using a network with no bots)
-Input network: default bot network
+Snakefile to run experiments with varying mu values (using a network with no bots)
+(Total 5 jobs)
+Input network: baseline where there are no bots 
 """
 
 import json 
@@ -11,7 +12,7 @@ DATA_PATH = "/N/slate/baotruon/simsom_data/data"
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
-exp_type = "vary_alpha"
+exp_type = "vary_mu"
 # get network names corresponding to the strategy
 EXPS = json.load(open(config_fname,'r'))[exp_type]
 
@@ -22,8 +23,8 @@ nthreads=7
 sim_num = 5
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'{exp_type}_5runs_')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'{exp_type}_5runs_')
+RES_DIR = os.path.join(ABS_PATH,'results_bigred', f'{exp_type}_nobots_5runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose_bigred', f'{exp_type}_nobots_5runs')
 
 rule all:
     input: 
@@ -31,23 +32,23 @@ rule all:
 
 rule run_simulation:
     input: 
-        network = ancient(lambda wildcards: os.path.join(DATA_PATH, mode, 'vary_network', f"network_{EXP2NET[wildcards.exp_no]}.gml")),
+        network = ancient(os.path.join(DATA_PATH, mode, "network_baseline.gml")),
         configfile = ancient(os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json"))
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
-    threads: 7
+    threads: nthreads
     shell: """
         python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
-rule init_net:
-    input: 
-        follower=ancient(os.path.join(DATA_PATH, 'follower_network.gml')),
-        configfile = ancient(os.path.join(CONFIG_PATH, 'vary_network', "{net_no}.json"))
+# rule init_net:
+#     input: 
+#         follower=ancient(os.path.join(DATA_PATH, 'follower_network.gml')),
+#         configfile = ancient(os.path.join(CONFIG_PATH, 'vary_network', "{net_no}.json"))
         
-    output: os.path.join(DATA_PATH, mode, 'vary_network', "network_{net_no}.gml")
+#     output: os.path.join(DATA_PATH, mode, 'vary_network', "network_{net_no}.gml")
 
-    shell: """
-            python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile}
-        """ 
+#     shell: """
+#             python3 -m workflow.scripts.init_net -i {input.follower} -o {output} --config {input.configfile}
+#         """ 

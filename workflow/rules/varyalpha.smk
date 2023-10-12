@@ -1,5 +1,6 @@
 """
 Snakefile to run experiments with varying alpha values (using a network with no bots)
+Input network: default bot network
 """
 
 import json 

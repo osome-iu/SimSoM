@@ -1,6 +1,7 @@
 """
 Snakefile to run experiments with varying mu values (using a network with no bots)
 (Total 5 jobs)
+Input network: default bot network
 """
 
 import json 
