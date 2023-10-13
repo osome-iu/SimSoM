@@ -10,6 +10,8 @@
         - thetagamma
     - Targeting strategies
         - Default values, only change targeting 
+
+    config["output_cascades"]=True for thetaphi, phigamma, thetagamma
 """
 import simsom.utils as utils
 import simsom.config_vals as configs
@@ -28,7 +30,7 @@ def save_config_to_subdir(config, config_name, saving_dir, exp_type):
     json.dump(config, open(os.path.join(output_dir, f"{config_name}.json"), "w"))
 
 
-def make_exps(saving_dir, default_net_config, default_infosys_config):
+def make_exps(saving_dir, default_botnet, default_infosys):
     """
     Create configs for exps
     Outputs:
@@ -48,8 +50,8 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
                 "gamma": gamma,
                 "targeting_criterion": target,
             }
-            config = utils.update_dict(cf, default_net_config)
-            config = utils.update_dict(config, default_infosys_config)
+            config = utils.update_dict(cf, default_botnet)
+            config = utils.update_dict(config, default_infosys)
 
             config_name = f"{jdx}{kdx}"
             all_exps["vary_network"][config_name] = config
@@ -61,7 +63,8 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
     ##### BASELINE #####
     all_exps["baseline"] = {}
     config_name = f"baseline"
-    config = configs.baseline_exp
+    config = configs.baseline_net
+    config.update(configs.infosys_baseline)
     all_exps["baseline"][config_name] = config
 
     save_config_to_subdir(config, config_name, saving_dir, "baseline")
@@ -83,8 +86,8 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
         for kdx, target in enumerate([configs.DEFAULT_STRATEGY]):
             cf = {"mu": mu, "targeting_criterion": target}
 
-            config = utils.update_dict(cf, default_net_config)
-            config = utils.update_dict(config, default_infosys_config)
+            config = utils.update_dict(cf, configs.baseline_net)
+            config = utils.update_dict(config, default_infosys)
             config_name = f"{str(target)}{idx}"
             all_exps["vary_mu"][config_name] = config
 
@@ -95,20 +98,39 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
         for kdx, target in enumerate([configs.DEFAULT_STRATEGY]):
             cf = {"alpha": alpha, "targeting_criterion": target}
 
-            config = utils.update_dict(cf, default_net_config)
-            config = utils.update_dict(config, default_infosys_config)
+            config = utils.update_dict(cf, configs.baseline_net)
+            config = utils.update_dict(config, default_infosys)
             config_name = f"{str(target)}{idx}"
             all_exps["vary_alpha"][config_name] = config
 
             save_config_to_subdir(config, config_name, saving_dir, "vary_alpha")
+
+    ##### NETWORK STRUCTURE #####
+    # random, hubs, communities, hubs+communities networks.
+    # hubs+communities is the default network (gamma=0.01, targeting=None)
+    # but since results are only significant for gamma=0.1, we only consider the range gamma=[0.01, 0.1]
+    # GAMMA = [0.0001, 0.001, 0.01, 0.1]
+    all_exps["shuffle"] = {}
+    for idx, gamma in enumerate(configs.GAMMA):
+        for kdx, target in enumerate(configs.TARGETING):
+            if (gamma >= 0.01) and (target == None):
+                cf = {"gamma": gamma, "targeting_criterion": target}
+
+                config = utils.update_dict(cf, default_botnet)
+                config = utils.update_dict(config, default_infosys)
+
+                config_name = f"{str(target)}{idx}"
+                all_exps["shuffle"][config_name] = config
+                save_config_to_subdir(config, config_name, saving_dir, "shuffle")
 
     ##### EXPLORE BOT PARAMS #####
     all_exps["vary_thetaphi"] = {}
     for idx, theta in enumerate(configs.THETA_SWIPE):
         for jdx, phi in enumerate(configs.PHI_SWIPE):
             cf = {"theta": theta, "phi": phi}
-            config = utils.update_dict(cf, default_net_config)
-            config = utils.update_dict(config, default_infosys_config)
+            config = utils.update_dict(cf, default_botnet)
+            config = utils.update_dict(config, default_infosys)
+            config["output_cascades"] = True
             config_name = f"{idx}{jdx}"
             all_exps["vary_thetaphi"][config_name] = config
 
@@ -118,8 +140,9 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
     for idx, theta in enumerate(configs.THETA_SWIPE):
         for jdx, gamma in enumerate(configs.GAMMA):
             cf = {"theta": theta, "gamma": gamma}
-            config = utils.update_dict(cf, default_net_config)
-            config = utils.update_dict(config, default_infosys_config)
+            config = utils.update_dict(cf, default_botnet)
+            config = utils.update_dict(config, default_infosys)
+            config["output_cascades"] = True
             config_name = f"{idx}{jdx}"
             all_exps["vary_thetagamma"][config_name] = config
 
@@ -129,9 +152,9 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
     for idx, phi in enumerate(configs.PHI_SWIPE):
         for jdx, gamma in enumerate(configs.GAMMA):
             cf = {"phi": phi, "gamma": gamma}
-            config = utils.update_dict(cf, default_net_config)
-            config = utils.update_dict(config, default_infosys_config)
-
+            config = utils.update_dict(cf, default_botnet)
+            config = utils.update_dict(config, default_infosys)
+            config["output_cascades"] = True
             config_name = f"{idx}{jdx}"
             all_exps["vary_phigamma"][config_name] = config
 
@@ -144,8 +167,8 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
         for kdx, target in enumerate(configs.TARGETING):
             cf = {"gamma": gamma, "targeting_criterion": target}
 
-            config = utils.update_dict(cf, default_net_config)
-            config = utils.update_dict(config, default_infosys_config)
+            config = utils.update_dict(cf, default_botnet)
+            config = utils.update_dict(config, default_infosys)
 
             config_name = f"{str(target)}{idx}"
             all_exps["vary_gamma"][config_name] = config
@@ -157,7 +180,7 @@ def make_exps(saving_dir, default_net_config, default_infosys_config):
 
 
 if __name__ == "__main__":
-    ABS_PATH = "/N/project/simsom/simsom_v3"
-
+    # ABS_PATH = "/N/project/simsom/simsom_v3"
+    ABS_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps"
     saving_dir = os.path.join(ABS_PATH, "config")
-    make_exps(saving_dir, configs.default_net, configs.infosys_default)
+    make_exps(saving_dir, configs.default_bot_net, configs.infosys_default)

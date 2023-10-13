@@ -40,7 +40,7 @@ infosys_default = {
     "theta": DEFAULT_THETA,
 }
 
-default_net = {
+default_bot_net = {
     "beta": DEFAULT_BETA,
     "gamma": DEFAULT_GAMMA,
     "targeting_criterion": None,
@@ -48,12 +48,15 @@ default_net = {
     "human_network": follower_network,
 }
 
-baseline_exp = {
+baseline_net = {
     "beta": 0,
-    "targeting_criterion": DEFAULT_STRATEGY,
     "gamma": 0,
+    "targeting_criterion": None,
     "verbose": False,
     "human_network": follower_network,
+}
+
+infosys_baseline = {
     "output_cascades": False,
     "epsilon": DEFAULT_EPSILON,
     "rho": DEFAULT_RHO,
