@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running strategie_5runs exps ######'
-snakemake --nolock --snakefile workflow/rules/strategies_gamma_5runs.smk --cores 57
+echo '###### running strategies_5runs exps ######'
+snakemake --rerun-incomplete --nolock --snakefile workflow/rules/strategies_gamma_5runs.smk --cores 57
