@@ -1,0 +1,1 @@
+{"verbose": true, "tracktimestep": true, "save_memeinfo": false, "output_cascades": false, "epsilon": 0.0001, "mu": 0.5, "alpha": 15, "quality": [0.4969348171037571], "diversity": [6.153529104554252], "discriminative_pow": [[0.780713634043185, 0.0]]}

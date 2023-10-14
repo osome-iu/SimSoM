@@ -339,7 +339,20 @@ class SimSomV2:
         - meme (Message object): meme being reshared
         - source_id (str): uid of agent spreading the meme
         """
+
         feed = self.agent_feeds[target_id]
+
+        message_ids = [message.id for message in feed]
+        if self.time_step % 5 == 0:
+            self.logger.info(f"   {meme.id} --> {target_id}")
+
+            self.logger.info(f"   Before ({target_id}): {message_ids}")
+            self.logger.info(f"   Before populr: {dict(Counter(message_ids))}")
+
+        overlap = set(message_ids) & set([meme.id])
+        if len(overlap) > 0:
+            self.logger.info(f"Overlap: {overlap}..")
+
         feed[0:0] = [meme] * n_copies
 
         if self.output_cascades is True:
@@ -352,6 +365,16 @@ class SimSomV2:
             for meme in set(self.agent_feeds[target_id][self.alpha :]):
                 _ = self.meme_popularity.pop(meme.id, "No Key found")
                 self.all_memes.remove(meme)
+
+        message_ids = [message.id for message in self.agent_feeds[target_id]]
+        duplicates = [mid for mid, count in Counter(message_ids).items() if count > 1]
+        if len(duplicates) > 0:
+            self.logger.info(f"Duplicates: {len(duplicates)}..")
+
+        if self.time_step % 10 == 0:
+            self.logger.info(f"   After ({target_id}): {message_ids}")
+            self.logger.info(f"   After populr: {dict(Counter(message_ids))}")
+
         return
 
     def _return_all_meme_info(self):

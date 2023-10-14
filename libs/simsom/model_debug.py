@@ -217,7 +217,9 @@ class SimSom:
         This step aggregates popularity of the messages (if multiple agents reshare the same message) and distributes messages to newsfeeds.
         """
 
-        all_agents = self.network.vs  # list of all agent ids
+        all_agents = [
+            random.choice(self.network.vs) for _ in range(self.n_agents)
+        ]  # list of all agent ids
 
         q = queue.Queue()
 
@@ -451,22 +453,32 @@ class SimSom:
         """
         messages, metadata = deepcopy(self.agent_feeds[target_id])
 
+        if self.time_step % 5 == 0:
+            self.logger.info(f"   {new_message_ids} --> {target_id}")
+            self.logger.info(f"   Before ({target_id}): {messages}")
+            self.logger.info(f"   Before populr: {metadata}")
+
         # check overlap with existing messages
         overlap = set(new_message_ids) & set(messages)
         if len(overlap) > 0:
+            self.logger.info(f"Resolving overlap: {overlap}..")
             for message_id in overlap:
                 idx = messages.index(message_id)
                 del messages[idx]
-                del metadata[idx]
+                curr_populr = metadata.pop(idx)
                 # update popularity
                 jdx = new_message_ids.index(message_id)
-                popularity[jdx] += 1
+                popularity[jdx] += curr_populr
 
         # push new messages into the feed
         messages[0:0] = new_message_ids
         metadata[0:0] = popularity
 
         newsfeed = (messages, metadata)
+
+        if self.time_step % 5 == 0:
+            self.logger.info(f"   After ({target_id}): {messages}")
+            self.logger.info(f"   After populr: {metadata}")
 
         # clip the agent's feed if exceeds alpha
         if len(newsfeed[0]) > self.alpha:
