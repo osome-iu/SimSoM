@@ -8,10 +8,11 @@ import logging
 import os
 import json
 import gzip
-import datetime as dt
+import datetime
 import inspect
 import scipy.stats as stats
 import simsom.config_vals as configs
+
 
 ### I/O
 def write_json_compressed(fout, data):
@@ -85,7 +86,7 @@ def remove_illegal_kwargs(adict, amethod):
 
 def get_now():
     # return timestamp
-    return int(dt.datetime.now().timestamp())
+    return int(datetime.datetime.now().timestamp())
 
 
 def get_logger(name):
@@ -140,8 +141,8 @@ def get_file_logger(log_dir=".log", also_print=False):
 
 
 def safe_open(path, mode="w"):
-    """ Open "path" for writing or reading, creating any parent directories as needed.
-        mode =[w, wb, r, rb]
+    """Open "path" for writing or reading, creating any parent directories as needed.
+    mode =[w, wb, r, rb]
     """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     return open(path, mode)
