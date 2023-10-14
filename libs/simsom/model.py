@@ -452,10 +452,11 @@ class SimSom:
             for message_id in overlap:
                 idx = messages.index(message_id)
                 del messages[idx]
-                del metadata[idx]
+                del messages[idx]
+                curr_populr = metadata.pop(idx)
                 # update popularity
                 jdx = new_message_ids.index(message_id)
-                popularity[jdx] += 1
+                popularity[jdx] += curr_populr
 
         # push new messages into the feed
         messages[0:0] = new_message_ids
