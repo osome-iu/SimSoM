@@ -5,11 +5,11 @@ Snakefile to run experiments using different shuffled version of the default net
 import json 
 import simsom.utils as utils
 
-# ABS_PATH = '/N/project/simsom/simsom_v3/10122023_v3.2'
-# DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.2/data"
+ABS_PATH = '/N/project/simsom/simsom_v3/10122023_v3.2'
+DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.2/data"
 
-ABS_PATH = '/Users/baott/SimSoM/experiments/10122023_v3.2_exps'
-DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
+# ABS_PATH = '/Users/baott/SimSoM/experiments/10122023_v3.2_exps'
+# DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
 
 # `shuffle` uses .json configs copied from vary_gamma/*{[0,1,2,3]}.json (where gamma=0.0001, 0.001, 0.01 and 0.1)
 CONFIG_PATH = os.path.join(ABS_PATH, "config")

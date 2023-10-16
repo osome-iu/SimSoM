@@ -6,11 +6,11 @@ Snakefile to run experiments with varying mu values (using a network with no bot
 import json 
 import simsom.utils as utils
 
-# ABS_PATH = '/N/project/simsom/simsom_v3/10122023_v3.2'
-# DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.2/data"
+ABS_PATH = '/N/project/simsom/simsom_v3/10122023_v3.2'
+DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.2/data"
 
-ABS_PATH = '/Users/baott/SimSoM/experiments/10122023_v3.2_exps'
-DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
+# ABS_PATH = '/Users/baott/SimSoM/experiments/10122023_v3.2_exps'
+# DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
 
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 

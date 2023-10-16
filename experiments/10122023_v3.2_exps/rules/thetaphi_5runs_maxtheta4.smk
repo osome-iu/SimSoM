@@ -9,13 +9,13 @@ import simsom.utils as utils
 # import simsom.config_vals as config_vals
 # config_vals.THETA_SWIPE # [1, 2, 4, 8, 16, 32, 64]
 
-# ABS_PATH = '/N/project/simsom/simsom_v3/10122023_v3.2'
-# DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.2/data"
+ABS_PATH = '/N/project/simsom/simsom_v3/10122023_v3.2'
+DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.2/data"
 
-ABS_PATH = '/Users/baott/SimSoM/experiments/10122023_v3.2_exps'
-DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
+# ABS_PATH = '/Users/baott/SimSoM/experiments/10122023_v3.2_exps'
+# DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
 
-CONFIG_PATH = os.path.join(ABS_PATH, "config")
+CONFIG_PATH = os.path.join(ABS_PATH, "config_cascade_false")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = 'vary_thetaphi'
@@ -32,11 +32,11 @@ EXP2NET = {
 }
 
 nthreads=7
-sim_num = 5
+sim_num = 3
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_5runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_5runs')
+RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_5runs_nocascade')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_5runs_nocascade')
 # CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
 
 rule all:
