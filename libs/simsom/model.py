@@ -472,6 +472,7 @@ class SimSom:
             self.agent_feeds[target_id] = updated_feed
         except Exception as e:
             print(e)
+            print(f"Fail to add messages to {target_id}'s feed")
 
         return
 
@@ -490,8 +491,6 @@ class SimSom:
         Input:
             newsfeed (tuple of lists): (message_ids, no_shares, ages), represents an agent's news feed
         """
-        if self.time_step == 10:
-            print("")
         messages, shares, ages = [np.array(i) for i in newsfeed]
 
         popularity = shares / np.sum(shares)  # relative no_shares

@@ -5,7 +5,7 @@ using modified config where human_network=null
 import json 
 
 ABS_PATH = '/N/project/simsom/simsom_v3/10122023_v3.3'
-DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.2/data"
+DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.3/data"
 
 # ABS_PATH = '/Users/baott/SimSoM/experiments/10122023_v3.3_exps'
 # DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
