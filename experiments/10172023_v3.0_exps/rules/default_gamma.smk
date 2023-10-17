@@ -9,7 +9,7 @@ import json
 import simsom.utils as utils
 
 ABS_PATH = '/N/project/simsom/simsom_v3/10172023_v3.0'
-DATA_PATH = "/N/u/baotruon/BigRed200/simsom/experiments/10142023_v3.3_exps/data"
+DATA_PATH = "/N/u/baotruon/BigRed200/simsom/experiments/10172023_v3.0_exps/data"
 
 # ABS_PATH = '/Users/baott/SimSoM/experiments/10172023_v3.0_exps'
 # DATA_PATH = "/Users/baott/SimSoM/experiments/10172023_v3.0_exps/data"
