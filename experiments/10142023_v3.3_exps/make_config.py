@@ -178,6 +178,6 @@ def make_exps(saving_dir, default_botnet, default_infosys):
 
 
 if __name__ == "__main__":
-    ABS_PATH = "/N/project/simsom/simsom_v3/10122023_v3.3"
+    ABS_PATH = "/N/project/simsom/simsom_v3/10142023_v3.3"
     saving_dir = os.path.join(ABS_PATH, "config")
     make_exps(saving_dir, configs.default_bot_net, configs.infosys_default)
