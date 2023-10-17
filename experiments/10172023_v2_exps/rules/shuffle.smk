@@ -6,7 +6,7 @@ import json
 import simsom.utils as utils
 
 ABS_PATH = '/N/project/simsom/simsom_v3/10172023_v2_exps'
-DATA_PATH = "/N/project/simsom/simsom_v3/10172023_v3.0_exps/data"
+DATA_PATH="/N/u/baotruon/BigRed200/simsom/experiments/10172023_v3.0_exps/data"
 
 # `shuffle` uses .json configs copied from vary_gamma/*{[0,1,2,3]}.json (where gamma=0.0001, 0.001, 0.01 and 0.1)
 CONFIG_PATH = os.path.join(ABS_PATH, "config")

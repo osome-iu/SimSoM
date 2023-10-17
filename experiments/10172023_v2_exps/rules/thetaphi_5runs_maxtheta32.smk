@@ -10,7 +10,7 @@ import simsom.utils as utils
 # config_vals.THETA_SWIPE # [1, 2, 4, 8, 16, 32, 64]
 
 ABS_PATH = '/N/project/simsom/simsom_v3/10172023_v2_exps'
-DATA_PATH = "/N/project/simsom/simsom_v3/10172023_v3.0_exps/data"
+DATA_PATH="/N/u/baotruon/BigRed200/simsom/experiments/10172023_v3.0_exps/data"
 
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
