@@ -160,3 +160,10 @@ def entropy(x):
     # x: list of proportion
     entropy = np.sum(x * np.log(x))
     return entropy
+
+
+def normalize(v):
+    norm = np.linalg.norm(v, ord=1)
+    if norm == 0:
+        return v
+    return v / norm
