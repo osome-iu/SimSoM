@@ -9,11 +9,11 @@ import simsom.utils as utils
 # import simsom.config_vals as config_vals
 # config_vals.THETA_SWIPE # [1, 2, 4, 8, 16, 32, 64]
 
-ABS_PATH = '/N/project/simsom/simsom_v3/10122023_v3.3'
-DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.3/data"
+ABS_PATH = '/N/project/simsom/simsom_v3/10142023_v3.3'
+DATA_PATH = "/N/project/simsom/simsom_v3/10142023_v3.3/data"
 
-# ABS_PATH = '/Users/baott/SimSoM/experiments/10122023_v3.3_exps'
-# DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
+# ABS_PATH = '/Users/baott/SimSoM/experiments/10142023_v3.3_exps'
+# DATA_PATH = "/Users/baott/SimSoM/experiments/10142023_v3.3_exps/data"
 
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 

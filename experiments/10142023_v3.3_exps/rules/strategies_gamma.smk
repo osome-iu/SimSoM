@@ -6,11 +6,11 @@ Snakefile to run experiments with different bot tactics: varying targeting strat
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/10122023_v3.3'
-DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.3/data"
+ABS_PATH = '/N/project/simsom/simsom_v3/10142023_v3.3'
+DATA_PATH = "/N/project/simsom/simsom_v3/10142023_v3.3/data"
 
-# ABS_PATH = '/Users/baott/SimSoM/experiments/10122023_v3.3_exps'
-# DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
+# ABS_PATH = '/Users/baott/SimSoM/experiments/10142023_v3.3_exps'
+# DATA_PATH = "/Users/baott/SimSoM/experiments/10142023_v3.3_exps/data"
 
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
