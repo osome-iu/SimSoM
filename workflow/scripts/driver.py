@@ -23,6 +23,7 @@ def multiple_simulations(
 
     print(f"Run simulation {times} times..")
     for time in range(times):
+        print(f"**{time+1}/{times}**")
         try:
             print("Create SimSom instance..")
             follower_sys = SimSom(**infosys_specs)
@@ -37,8 +38,7 @@ def multiple_simulations(
                 else:
                     prefix = f".csv"
                 measurements = follower_sys.simulation(
-                    reshare_fpath=reshare_fpath.replace(".csv", prefix),
-                    exposure_fpath=os.path.join(dir, f"{exp_name}__exposure{prefix}"),
+                    reshare_fpath=reshare_fpath.replace(".csv", prefix)
                 )
             else:
                 measurements = follower_sys.simulation()
@@ -81,10 +81,7 @@ def run_simulation(infosys_specs, reshare_fpath="reshares.csv"):
     print(f"Start simulation..")
     dir = os.path.dirname(reshare_fpath)
     exp_name = os.path.basename(reshare_fpath).split("__")[0]
-    measurements = follower_sys.simulation(
-        reshare_fpath=reshare_fpath,
-        exposure_fpath=os.path.join(dir, f"{exp_name}", "__exposure.csv"),
-    )
+    measurements = follower_sys.simulation(reshare_fpath=reshare_fpath)
     print("average quality for follower network:", measurements["quality"])
     return measurements
 
@@ -155,6 +152,14 @@ def main(args):
         required=False,
         help="Number of times to run simulation",
     )
+    parser.add_argument(
+        "--nthreads",
+        action="store",
+        dest="nthreads",
+        type=str,
+        required=False,
+        help="Number of threads (ThreadPoolExecutor max_workers) to run simulation",
+    )
 
     args = parser.parse_args(args)
     infile = args.infile
@@ -169,6 +174,8 @@ def main(args):
     infosys_spec = json.load(open(configfile, "r"))
     infosys_spec["graph_gml"] = infile
     infosys_spec["mode"] = args.mode if args.mode is not None else "igraph"
+    if args.nthreads is not None:
+        infosys_spec["n_threads"] = int(args.nthreads)
 
     # avoid passing undefined keyword to InfoSys
     legal_specs = utils.remove_illegal_kwargs(infosys_spec, SimSom.__init__)
@@ -190,4 +197,3 @@ def main(args):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-

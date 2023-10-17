@@ -137,14 +137,13 @@ class SimSom:
             )
             print(e, flush=True)
 
-    def simulation(self, reshare_fpath="", exposure_fpath=""):
+    def simulation(self, reshare_fpath=""):
         """
         Driver for simulation.
         This function calls simulation_step() N times at each timestep (where N is number of agents).
         It then updates the overall quality at each timestep and checks for convergence
         Inputs (optional):
             - reshare_fpath: path to .csv file containing reshare cascade info
-            - exposure_fpath: path to .csv file containing exposure cascade info
         """
 
         if self.output_cascades is True:
@@ -153,17 +152,6 @@ class SimSom:
             with open(self.reshare_fpath, "w", encoding="utf-8") as f:
                 writer = csv.writer(f, delimiter=",")
                 writer.writerow(reshare_fields)
-
-            self.exposure_fpath = exposure_fpath
-            exposure_fields = [
-                "agent_id",
-                "message_id",
-                "reshared_by_agent",
-                "timestep",
-            ]
-            with open(self.exposure_fpath, "w", encoding="utf-8") as f:
-                writer = csv.writer(f, delimiter=",")
-                writer.writerow(exposure_fields)
 
         while self.quality_diff > self.epsilon:
             if self.verbose:
