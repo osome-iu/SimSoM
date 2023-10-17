@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running sm_phigamma_mphi4 exps ######'
-snakemake --nolock --snakefile experiments/10172023_v2_exps/rules/phigamma_5runs_maxphi4.smk --cores 57
+snakemake --nolock --rerun-triggers mtime --snakefile experiments/10172023_v2_exps/rules/phigamma_5runs_maxphi4.smk --cores 57

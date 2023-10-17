@@ -77,7 +77,7 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-
+        print("SimSoM V.2")
         self.graph_gml = graph_gml
         self.verbose = verbose
         self.tracktimestep = tracktimestep
@@ -125,10 +125,10 @@ class SimSom:
 
     def simulation(self, reshare_fpath="", exposure_fpath=""):
         """
-        Driver for simulation. 
-        This function calls simulation_step() N times at each timestep (where N is number of agents). 
-        It then updates the overall quality at each timestep and checks for convergence 
-        Inputs (optional): 
+        Driver for simulation.
+        This function calls simulation_step() N times at each timestep (where N is number of agents).
+        It then updates the overall quality at each timestep and checks for convergence
+        Inputs (optional):
             - reshare_fpath: path to .csv file containing reshare cascade info
             - exposure_fpath: path to .csv file containing exposure cascade info
         """
@@ -192,7 +192,7 @@ class SimSom:
 
     def simulation_step(self):
         """
-        A simulation step: An agent is chosen at random. The chosen agent can reshare or post a new message. 
+        A simulation step: An agent is chosen at random. The chosen agent can reshare or post a new message.
         Keep track of message reshare and exposure information if output_cascades is True.
         """
         agent = random.choice(self.network.vs)
@@ -310,8 +310,8 @@ class SimSom:
         """
         Add meme to agent's feed, forget the oldeest if feed size exceeds self.alpha (Last in last out)
         Update all news feed information if output_cascades is True
-        Input: 
-        - target_id (str): uid of agent resharing the meme -- whose feed we're adding the meme to 
+        Input:
+        - target_id (str): uid of agent resharing the meme -- whose feed we're adding the meme to
         - meme (Message object): meme being reshared
         - source_id (str): uid of agent spreading the meme
         """
@@ -341,8 +341,8 @@ class SimSom:
 
     def _update_reshares(self, meme, source, target):
         """
-        Update the reshare cascade information to a file. 
-        Input: 
+        Update the reshare cascade information to a file.
+        Input:
         - meme (Message object): meme being reshared
         - source (str): uid of agent spreading the meme
         - target (str): uid of agent resharing the meme
@@ -358,9 +358,9 @@ class SimSom:
         Concat news feed information to feed information at all time
         (when flag self.output_cascades is True)
         fields: "agent_id", "meme_id", "reshared_by_agent", "timestep"]
-        Input: 
+        Input:
         - target: agent_id (str): uid of agent being activated
-        - meme_id (int): id of meme in this agent's feed 
+        - meme_id (int): id of meme in this agent's feed
         - source: reshared_by_agent (str): uid of agent who shared the meme
         """
 
@@ -374,7 +374,7 @@ class SimSom:
         """
         Update human's exposure to meme whenever an agent is activated (equivalent to logging in)
         (when flag self.output_cascades is True)
-        Input: 
+        Input:
         - feed (list of Message objects): agent's news feed
         - agent (Graph vertex): agent resharing the meme
         """
@@ -388,8 +388,8 @@ class SimSom:
 
     def _update_meme_popularity(self, meme, agent):
         """
-        Update information of a meme whenever it is reshared. 
-        Input: 
+        Update information of a meme whenever it is reshared.
+        Input:
         - meme (Message object): meme being reshared
         - agent (Graph vertex): agent resharing the meme
         """

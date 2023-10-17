@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running baseline_sm33 exps ######'
-snakemake --nolock --snakefile experiments/10172023_v2_exps/rules/baseline.smk --cores 8
+snakemake --nolock --rerun-triggers mtime --snakefile experiments/10172023_v2_exps/rules/baseline.smk --cores 8
