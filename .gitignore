@@ -4,3 +4,8 @@
 __pycache__/
 .vs_code/
 simsom.egg-info/
+experiments/*
+!experiments/10172023_v3.0_exps/
+
+example/
+data/
