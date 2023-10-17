@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=shuffle_sm33
+#SBATCH --job-name=shuffle_sm2
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running shuffle_sm33 exps ######'
+echo '###### running shuffle_sm2 exps ######'
 snakemake --rerun-incomplete --nolock --rerun-triggers mtime --snakefile experiments/10172023_v2_exps/rules/shuffle.smk --cores 22

@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=sm_phigamma_mphi4
+#SBATCH --job-name=sm2_phigamma_mphi4
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running sm_phigamma_mphi4 exps ######'
+echo '###### running sm2_phigamma_mphi4 exps ######'
 snakemake --nolock --rerun-triggers mtime --snakefile experiments/10172023_v2_exps/rules/phigamma_5runs_maxphi4.smk --cores 57

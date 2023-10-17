@@ -41,7 +41,7 @@ rule run_simulation:
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
     """
 
 rule init_net:
