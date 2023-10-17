@@ -21,7 +21,7 @@ EXPS = json.load(open(config_fname,'r'))[exp_type]
 EXP_NOS = list(EXPS.keys())
 
 nthreads=7
-sim_num = 10
+sim_num = 5
 mode='igraph'
 
 RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_10runs')
