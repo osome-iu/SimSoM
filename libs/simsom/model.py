@@ -14,7 +14,7 @@ Inputs:
     - epsilon (float): threshold of quality difference between 2 consecutive timesteps to decide convergence. Default: 0.0001
     - rho (float): weight of the previous timestep's quality in calculating new quality. Default: 0.8
     - mu (float): probability that an agent create new messages. Default: 0.5
-    - phi (int): phi*0.1 is the probability that a bot message's fitness equals 1. Default: 0
+    - phi (int): phi is the probability that a bot message's fitness equals 1. Default: 0
     - alpha (int): agent's feedsize. Default: 15
     - theta (int): number of copies bots make when creating memes. Default: 1
 Important note: 
