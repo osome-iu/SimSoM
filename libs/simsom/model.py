@@ -101,13 +101,19 @@ class SimSom:
         self.output_cascades = output_cascades
 
         # bookkeeping
-        self.num_message_unique = 0  # for verbose debug
-        self.messages_human_feed = 0  # for verbose debug
         self.quality_timestep = []
         self.message_dict = []
         self.all_messages = {}  # dict of message_id - message objects
         self.message_popularity = {}
         self.agent_feeds = {}  # dict of agent_uid - [message_ids]
+
+        #### debugging
+        # number of unique messages ever created (including extincted ones)
+        self.num_message_unique = 0
+        self.num_human_messages = 0  # number of messages across all human feeds
+        # number of unique messages across all human feeds
+        self.num_human_messages_unique = 0
+        #### debugging
 
         # convergence check
         self.quality_diff = 1
@@ -120,6 +126,7 @@ class SimSom:
                 print(self.network.summary(), flush=True)
 
             self.n_agents = self.network.vcount()
+            self.human_uids = [n["uid"] for n in self.network.vs if n["bot"] == 0]
             # init an empty feed for all agents
             self.agent_feeds = {agent["uid"]: [] for agent in self.network.vs}
 
@@ -155,8 +162,9 @@ class SimSom:
 
         while self.quality_diff > self.epsilon:
             if self.verbose:
+                num_messages = sum([len(feed) for feed in self.agent_feeds.values()])
                 print(
-                    f"time_step = {self.time_step}, q = {self.quality}, diff = {self.quality_diff}, human/all messages = {self.messages_human_feed}/{self.num_message_unique}",
+                    f"- time_step = {self.time_step}, q = {np.round(self.quality, 6)}, diff = {np.round(self.quality_diff, 6)}, existing human/all messages: {self.num_human_messages}/{num_messages}, unique human messages: {self.num_human_messages_unique}, total created: {self.num_message_unique}",
                     flush=True,
                 )
 
@@ -316,13 +324,17 @@ class SimSom:
         total = 0
         count = 0
 
-        human_uids = [n["uid"] for n in self.network.vs if n["bot"] == 0]
-        for u in human_uids:
+        # keep track of no. messages for verbose debug
+        human_message_ids = []
+        for u in self.human_uids:
             for message_id in self.agent_feeds[u]:
                 total += self.all_messages[message_id].quality
                 count += 1
+                human_message_ids.append(message_id)
 
-        self.messages_human_feed = count
+        self.num_human_messages = count
+        self.num_human_messages_unique = len(set(human_message_ids))
+
         return total / count if count > 0 else 0
 
     def measure_diversity(self):
