@@ -4,3 +4,15 @@
 __pycache__/
 .vs_code/
 simsom.egg-info/
+
+.DS_Store
+.log
+.ipynb_checkpoints/
+__pycache__/
+.vs_code/
+simsom.egg-info/
+experiments/*
+!experiments/10172023_v2_exps/
+
+example/
+data/
