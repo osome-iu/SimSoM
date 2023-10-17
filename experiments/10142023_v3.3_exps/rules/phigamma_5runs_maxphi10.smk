@@ -7,10 +7,11 @@ Use network_*0.gml, where wildcards=[0,1,2,3] (for varying Gamma and None strate
 import json 
 import simsom.utils as utils
  
-ABS_PATH = '/N/project/simsom/simsom_v3/10122023_v3.3'
-DATA_PATH = "/N/project/simsom/simsom_v3/10122023_v3.3/data"
-# ABS_PATH = '/Users/baott/SimSoM/experiments/10122023_v3.2_exps'
-# DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
+ABS_PATH = '/N/project/simsom/simsom_v3/10142023_v3.3'
+DATA_PATH = "/N/project/simsom/simsom_v3/10142023_v3.3/data"
+
+# ABS_PATH = '/Users/baott/SimSoM/experiments/10142023_v3.3_exps'
+# DATA_PATH = "/Users/baott/SimSoM/experiments/10142023_v3.3_exps/data"
 
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
