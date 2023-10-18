@@ -1,7 +1,7 @@
 """
 Snakefile to run experiments using extreme values for the bot subnetwork 
 """
-
+import simsom.utils as utils
 import json 
 
 ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_full'
