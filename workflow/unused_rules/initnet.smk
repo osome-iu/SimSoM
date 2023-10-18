@@ -3,8 +3,14 @@ Snakefile to create the information network with varying beta, gamma values and 
 """
 
 import simsom.config_vals as configs
-ABS_PATH = 'experiments'
-DATA_PATH = os.path.join(ABS_PATH, "data")
+import json 
+
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_full'
+DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_full/data"
+
+# ABS_PATH = 'experiments'
+# DATA_PATH = os.path.join(ABS_PATH, "data")
+
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
