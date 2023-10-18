@@ -2,8 +2,14 @@
 Snakefile to run experiments using different shuffled version of the default network (gamma=0.01)
 """
 
-ABS_PATH = 'experiments'
-DATA_PATH = os.path.join(ABS_PATH, "data")
+import json 
+
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_full'
+DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_full/data"
+
+# ABS_PATH = 'experiments'
+# DATA_PATH = os.path.join(ABS_PATH, "data")
+
 
 # ! Note: Before running make sure config_main/shuffle/* exists
 # `shuffle` contains .json configs copied from vary_gamma/*{[0,1,2,3]}.json (where gamma=0.0001, 0.001, 0.01 and 0.1)

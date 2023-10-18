@@ -1,8 +1,14 @@
 """
-Snakefile to run experiments with different bot tactics: varying targeting strategies and gamma values
+Snakefile to run experiments with varying theta and phi values
+cascade=True
+maxtheta=32
 """
 
 import json 
+import simsom.utils as utils
+
+# import simsom.config_vals as config_vals
+# config_vals.THETA_SWIPE # [1, 2, 4, 8, 16, 32, 64]
 
 ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_full'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_full/data"
@@ -10,23 +16,28 @@ DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_full/data"
 # ABS_PATH = 'experiments'
 # DATA_PATH = os.path.join(ABS_PATH, "data")
 
-CONFIG_PATH = os.path.join(ABS_PATH, "config")
-config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
-exp_type = "vary_gamma"
-GAMMA='3' #index of gamma (0.1)
-# get network names corresponding to the strategy
-EXPS = json.load(open(config_fname, "r"))[exp_type]
+CONFIG_PATH = os.path.join(ABS_PATH, "config_cascade_true")
 
-EXP_NOS = [exp for exp in EXPS.keys() if str(GAMMA) in exp]
+config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
+exp_type = 'vary_thetaphi'
+
+# get names for exp_config and network
+EXPS = json.load(open(config_fname,'r'))[exp_type]
+
+MAXTHETA_IDX = 2  # 2^5 = 32
+EXP_NOS = [exp for exp in EXPS.keys() if int(exp[0]) > MAXTHETA_IDX]
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
-    for exp_name, net_cf in EXPS.items() if exp_name in EXP_NOS}
+    for exp_name, net_cf in EXPS.items()
+    if exp_name in EXP_NOS
+}
 
-nthreads = 7
-sim_num = 5
+nthreads= 7
+sim_num = 1
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'strategies_5runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'strategies_5runs')
+RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_5runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_5runs')
+CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
 
 rule all:
     input: 
@@ -38,10 +49,11 @@ rule run_simulation:
         configfile = ancient(os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json"))
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
-        tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
+        tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
+        reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -r {output.reshare} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:
