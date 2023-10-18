@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running mu_full33 exps ######'
-snakemake --rerun-incomplete --nolock --snakefile workflow/rules/varymu.smk --cores 43
+snakemake --rerun-incomplete --rerun-triggers mtime --nolock --snakefile workflow/rules/varymu.smk --cores 43
