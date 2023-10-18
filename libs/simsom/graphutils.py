@@ -13,10 +13,16 @@ def read_empirical_network(file):
     """
     Read a network from file path.
     """
-    net = ig.Graph.Read_GML(file)
+    try:
+        net = ig.Graph.Read_GML(file)
 
-    # prevent errors with duplicate attribs
-    net = _delete_unused_attributes(net, desire_attribs=["label", "party", "misinfo"])
+        # prevent errors with duplicate attribs
+        net = _delete_unused_attributes(
+            net, desire_attribs=["label", "party", "misinfo"]
+        )
+    except Exception as e:
+        print("Exception when reading network")
+        print(e.args)
     return net
 
 
@@ -24,7 +30,7 @@ def random_walk_network(net_size, p=0.5, k_out=3):
     """
     Create a network using a directed variant of the random-walk growth model
     https://journals.aps.org/pre/abstract/10.1103/PhysRevE.67.056104
-    Inputs: 
+    Inputs:
         - net_size (int): number of nodes in the desired network
         - k_out (int): average no. friends for each new node
         - p (float): probability for a new node to follow friends of a friend (models network clustering)
@@ -154,7 +160,7 @@ def init_net(
 
 def rewire_preserve_degree(og_graph, iterations=5):
     """
-    Returns a rewired graph where degree distribution is preserved. 
+    Returns a rewired graph where degree distribution is preserved.
     Parameters:
         - graph (igraph.Graph object): the graph to shuffle
         - iterations: number of times to rewire to make sure community structure is destroyed
@@ -173,7 +179,7 @@ def rewire_preserve_degree(og_graph, iterations=5):
 
 def rewire_random(og_graph, probability=1):
     """
-    Returns a randomly rewired graph. 
+    Returns a randomly rewired graph.
     Parameters:
         - og_graph (igraph.Graph object): the graph to shuffle
         - probability (float): constant probability with which each endpoint of each edge is rewired
@@ -193,7 +199,7 @@ def _is_ingroup(graph, edge, party=None):
     """
     Check if an edge connects 2 nodes from the same community (party).
     Make sure that graph has a 'party' attribute s.t. -1<party<1
-    For Nikolov et al. (2019) empirical follower network, every node belongs to a community: 
+    For Nikolov et al. (2019) empirical follower network, every node belongs to a community:
     Conservative: node['party'] > 0, Liberal: node['party'] < 0
     Parameters:
         - party (str): {conservative, liberal}
@@ -240,7 +246,7 @@ def _rewire_subgraph_by_edges(
 
 def rewire_preserve_community(graph, iterations=5):
     """
-    Returns a rewired graph where degree community structure is preserved. 
+    Returns a rewired graph where degree community structure is preserved.
     Inputs:
         - graph (igraph.Graph object): the graph to shuffle
         - iterations (int): number of times to rewire to make sure community structure is destroyed
@@ -302,8 +308,10 @@ def rewire_preserve_community(graph, iterations=5):
 
 def _delete_unused_attributes(net, desire_attribs=["uid", "party", "misinfo"]):
     # delete unused attribs or artifact of igraph to maintain consistency
+    network_attribs = net.vs.attributes()
+    if len(set(desire_attribs) & set(network_attribs)) < len(desire_attribs):
+        raise ValueError(f"one of the desire attribs {desire_attribs} not in network")
     for attrib in net.vs.attributes():
         if attrib not in desire_attribs:
             del net.vs[attrib]
     return net
-

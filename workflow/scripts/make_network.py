@@ -12,8 +12,8 @@ import os
 
 def make_network(path, files):
     """
-        Make directed network follower -> friend
-        Get a subgraph of partisan users
+    Make directed network follower -> friend
+    Get a subgraph of partisan users
     """
 
     stats = pd.read_csv(os.path.join(path, files["user_info"]), sep="\t")
@@ -41,7 +41,7 @@ def make_network(path, files):
     for s in nodes:
         G.add_node(
             s,
-            partisanship=user_dict[s]["Partisanship"],
+            party=user_dict[s]["Partisanship"],
             misinfo=user_dict[s]["Misinformation"],
         )
         for f in adjlist[s]:
@@ -52,8 +52,8 @@ def make_network(path, files):
 
 def filter_graph(G, nodes_to_filter):
     """
-        - Reduce the size of network by retaining a k-core=94
-        - Reduce density by delete a random sample of edges 
+    - Reduce the size of network by retaining a k-core=94
+    - Reduce density by delete a random sample of edges
     """
 
     average_friends = G.number_of_edges() / G.number_of_nodes()
