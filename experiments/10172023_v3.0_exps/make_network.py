@@ -41,7 +41,7 @@ def make_network(path, files):
     for s in nodes:
         G.add_node(
             s,
-            partisanship=user_dict[s]["Partisanship"],
+            party=user_dict[s]["Partisanship"],
             misinfo=user_dict[s]["Misinformation"],
         )
         for f in adjlist[s]:
@@ -99,9 +99,9 @@ def filter_graph(G, nodes_to_filter):
 
 
 if __name__ == "__main__":
-    DATA_PATH = "/Users/baott/SimSoM/experiments/10122023_v3.2_exps/data"
+    DATA_PATH = "experiments/10172023_v3.0_exps/data"
 
-    RAW_PATH = "data/raw"
+    RAW_PATH = os.path.join(DATA_PATH, "raw")
     files = {
         # File has 3 columns: ID \t partisanship \t misinformation \n
         "user_info": "measures.tab",
