@@ -212,10 +212,10 @@ class SimSom:
         This step aggregates popularity of the messages (if multiple agents reshare the same message) and distributes messages to newsfeeds.
         """
 
-        # all_agents = self.network.vs  # list of all agent ids
-        all_agents = [
-            random.choice(self.network.vs) for _ in range(self.n_agents)
-        ]  # list of all agent ids
+        all_agents = self.network.vs  # list of all agent ids
+        # all_agents = [
+        #     random.choice(self.network.vs) for _ in range(self.n_agents)
+        # ]  # list of all agent ids
         q = queue.Queue()
 
         def post_message(agent):
