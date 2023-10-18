@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running alpha_full33 exps ######'
-snakemake --rerun-incomplete --nolock --snakefile workflow/rules/varyalpha.smk --cores 57
+snakemake --rerun-incomplete --nolock --snakefile workflow/rules/vary_alpha.smk --cores 57
