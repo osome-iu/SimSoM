@@ -7,11 +7,11 @@ cascade=False
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/10142023_v3.3'
-DATA_PATH = "/N/project/simsom/simsom_v3/10142023_v3.3/data"
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_full'
+DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_full/data"
 
-# ABS_PATH = '/Users/baott/SimSoM/experiments/10142023_v3.3_exps'
-# DATA_PATH = "/Users/baott/SimSoM/experiments/10142023_v3.3_exps/data"
+# ABS_PATH = 'experiments'
+# DATA_PATH = os.path.join(ABS_PATH, "data")
 
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
