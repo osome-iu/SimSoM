@@ -9,7 +9,7 @@ import json
 import simsom.utils as utils
 
 ABS_PATH = '/N/project/simsom/simsom_v3/10172023_v2_exps'
-DATA_PATH="/N/u/baotruon/BigRed200/simsom/experiments/10172023_v3.0_exps/data"
+DATA_PATH="/N/project/simsom/simsom_v3/10172023_v2_exps/data"
 
 CONFIG_PATH = os.path.join(ABS_PATH, "config")
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
