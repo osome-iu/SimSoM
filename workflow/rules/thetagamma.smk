@@ -4,6 +4,7 @@ cascade=True
 """
 
 import json 
+import simsom.utils as utils
 
 ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_full'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_full/data"
