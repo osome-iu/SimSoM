@@ -204,7 +204,7 @@ class SimSom:
             - all_agents (list): list of agent ids
         """
 
-        all_agents = [random.choice(self.network.vs) for _ in range(self.n_agents)]
+        all_agents = self.network.vs
 
         q = queue.Queue()
 
