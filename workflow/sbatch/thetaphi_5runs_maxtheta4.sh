@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=thetaphi_mtheta4
+#SBATCH --job-name=full31_tp_mtheta4
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running thetaphi_mtheta4 exps ######'
-snakemake --nolock --snakefile workflow/rules/thetaphi_5runs_maxtheta4.smk --cores 43
+echo '###### running full31_tp_mtheta4 exps ######'
+snakemake --nolock --rerun-incomplete --rerun-triggers mtime --snakefile workflow/rules/thetaphi_5runs_maxtheta4.smk --cores 43

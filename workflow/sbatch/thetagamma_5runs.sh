@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=thetagamma_5runs
+#SBATCH --job-name=full31_tg_5runs
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running thetagamma_5runs exps ######'
-snakemake --nolock --snakefile workflow/rules/thetagamma_5runs.smk --cores 43
+echo '###### running full31_tg_5runs exps ######'
+snakemake --nolock --rerun-incomplete --rerun-triggers mtime --snakefile workflow/rules/thetagamma_5runs.smk --cores 43
