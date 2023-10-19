@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running full33_thetaphi_t32_cascade exps ######'
-snakemake --nolock --snakefile workflow/rules/thetaphi_5runs_maxtheta32.smk --cores 57
+snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules/thetaphi_5runs_maxtheta32.smk --cores 57
