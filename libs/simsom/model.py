@@ -14,7 +14,7 @@ Inputs:
     - epsilon (float): threshold of quality difference between 2 consecutive timesteps to decide convergence. Default: 0.0001
     - rho (float): weight of the previous timestep's quality in calculating new quality. Default: 0.8
     - mu (float): probability that an agent create new messages. Default: 0.5
-    - phi (int): phi is the probability that a bot message's fitness equals 1. Default: 0
+    - phi (int): phi is the probability that a bot message's engagement equals 1. Default: 0
     - alpha (int): agent's feedsize. Default: 15
     - theta (int): number of copies bots make when creating memes. Default: 1
 Important note: 
@@ -35,7 +35,7 @@ Outputs:
             - is_by_bot (int): 0 if message is by human, 1 if by bot
             - phi (int): same as phi specified in InfoSys
             - quality (float): quality
-            - fitness (float): engagement 
+            - engagement (float): engagement 
             - human_shares (int): number of shares by humans
             - bot_shares (int): number of shares by bots
             - spread_via_agents (list): list of uids of agents who reshared this message
@@ -210,13 +210,24 @@ class SimSom:
 
         def post_message(agent):
             modify_requests = self.user_step(agent)
+
             if len(modify_requests) > 0:
                 q.put(modify_requests)
 
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.n_threads
         ) as executor:
-            executor.map(post_message, all_agents)
+            if self.time_step == 1:
+                print(
+                    f" - Simulation running on {executor._max_workers} threads",
+                    flush=True,
+                )
+            for _ in executor.map(post_message, all_agents):
+                try:
+                    pass
+                except Exception as e:
+                    print("Propagation step failed:", e, flush=True)
+                    raise  # exit program
 
         update_list = defaultdict(list)
 
@@ -245,40 +256,47 @@ class SimSom:
         Inputs:
             - agent (igraph.Vertex): node representing an agent
         """
-
-        agent_id = agent["uid"]
-        feed = self.agent_feeds[agent_id]
-
-        if len(feed) > 0 and random.random() > self.mu:
-            # retweet a message from feed selected on basis of its fitness
-            (message,) = random.choices(feed, weights=[m.fitness for m in feed], k=1)
-        else:
-            # new message
-            self.num_message_unique += 1
-            message = Message(
-                self.num_message_unique, is_by_bot=agent["bot"], phi=self.phi
-            )
-
-            self.all_messages[message.id] = message
-
-        # book keeping
-        self._update_message_popularity(message.id, agent)
-        self._update_exposure(feed, agent)
-
-        # spread (truncate feeds at max len alpha)
-        follower_idxs = self.network.predecessors(agent)  # return list of int
-        follower_uids = [n["uid"] for n in self.network.vs if n.index in follower_idxs]
-
-        modify_requests = []
-        # add message to top of follower's feed (theta copies if poster is bot to simulate flooding)
-        for follower in follower_uids:
-            if agent["bot"] == 1:
-                modify_requests.append((follower, [message.id]))
+        try:
+            agent_id = agent["uid"]
+            feed = self.agent_feeds[agent_id]
+            feed_messages = [self.all_messages[message_id] for message_id in feed]
+            if len(feed) > 0 and random.random() > self.mu:
+                # retweet a message from feed selected on basis of its engagement
+                (message,) = random.choices(
+                    feed_messages, weights=[m.engagement for m in feed_messages], k=1
+                )
             else:
-                modify_requests.append((follower, [message.id] * self.theta))
+                # new message
+                self.num_message_unique += 1
+                message = Message(
+                    self.num_message_unique, is_by_bot=agent["bot"], phi=self.phi
+                )
 
-            if self.output_cascades is True:
-                self._update_reshares(message, agent_id, follower)
+                self.all_messages[message.id] = message
+
+            # book keeping
+            self._update_message_popularity(message.id, agent)
+            self._update_exposure(feed, agent)
+
+            # spread (truncate feeds at max len alpha)
+            follower_idxs = self.network.predecessors(agent)  # return list of int
+            follower_uids = [
+                n["uid"] for n in self.network.vs if n.index in follower_idxs
+            ]
+
+            modify_requests = []
+            # add message to top of follower's feed (theta copies if poster is bot to simulate flooding)
+            for follower in follower_uids:
+                if not agent["bot"]:
+                    modify_requests.append((follower, [message.id]))
+                else:
+                    modify_requests.append((follower, [message.id] * self.theta))
+
+                if self.output_cascades is True:
+                    self._update_reshares(message, agent_id, follower)
+
+        except Exception as e:
+            raise Exception("Error in user_step: ", e)
 
         return modify_requests
 
@@ -441,11 +459,11 @@ class SimSom:
         """
 
         seen = []
-        for message in feed:
-            if message.id not in seen:
-                self.message_popularity[message.id]["seen_by_agents"] += [agent["uid"]]
-            self.message_popularity[message.id]["infeed_of_agents"] += [agent["uid"]]
-            seen += [message.id]
+        for message_id in feed:
+            if message_id not in seen:
+                self.message_popularity[message_id]["seen_by_agents"] += [agent["uid"]]
+            self.message_popularity[message_id]["infeed_of_agents"] += [agent["uid"]]
+            seen += [message_id]
         return
 
     def _update_message_popularity(self, message_id, agent):
