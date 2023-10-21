@@ -63,24 +63,25 @@ from collections import Counter, defaultdict
 import concurrent.futures
 import queue
 from copy import deepcopy
+import sys
 
 
 class SimSom:
     def __init__(
         self,
-        graph_gml,
-        tracktimestep=True,
-        save_message_info=True,
-        output_cascades=False,
-        verbose=False,
-        n_threads=7,
-        epsilon=0.0001,  # Don't change this value
-        rho=0.8,  # Don't change this value, check note above
-        mu=0.5,
-        phi=0,
-        alpha=15,
-        theta=1,
-    ):
+        graph_gml: str,
+        tracktimestep: bool = True,
+        save_message_info: bool = True,
+        output_cascades: bool = False,
+        verbose: bool = False,
+        n_threads: int = 7,
+        epsilon: float = 0.0001,  # Don't change this value
+        rho: float = 0.8,  # Don't change this value, check note above
+        mu: float = 0.5,
+        alpha: int = 15,
+        theta: int = 1,
+        phi: float = 0,
+    ) -> None:
         print("SimSoM V3.0")
         # graph object
         self.graph_gml = graph_gml
@@ -227,7 +228,7 @@ class SimSom:
                     pass
                 except Exception as e:
                     print("Propagation step failed:", e, flush=True)
-                    raise  # exit program
+                    sys.exit(1)
 
         update_list = defaultdict(list)
 
