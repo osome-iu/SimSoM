@@ -69,7 +69,6 @@ import sys
 class SimSom:
     def __init__(
         self,
-<<<<<<< HEAD
         graph_gml: str,
         tracktimestep: bool = True,
         save_message_info: bool = True,
@@ -84,22 +83,6 @@ class SimSom:
         phi: float = 0,
     ) -> None:
         print("SimSoM V3.0")
-=======
-        graph_gml,
-        tracktimestep=True,
-        save_message_info=True,
-        output_cascades=False,
-        verbose=False,
-        n_threads=7,
-        epsilon=0.0001,  # Don't change this value
-        rho=0.8,  # Don't change this value, check note above
-        mu=0.5,
-        phi=0,
-        alpha=15,
-        theta=1,
-    ):
-        print("SimSoM V3.0 all agents activated")
->>>>>>> 33a5f90 (v3.0 model change desc all agents)
         # graph object
         self.graph_gml = graph_gml
 
