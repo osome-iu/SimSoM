@@ -261,8 +261,9 @@ class SimSom:
             no_shares = list(message_counts.values())
             try:
                 avg_age = self._bulk_add_messages_to_feed(
-                    agent_id, message_ids, no_shares
+                    agent_id, np.array(message_ids), np.array(no_shares)
                 )
+
                 ages += [avg_age]
             except Exception as e:
                 print(e, flush=True)
@@ -401,6 +402,7 @@ class SimSom:
         human_message_ids = []
         for u in self.human_uids:
             message_ids, _, _ = self.agent_feeds[u]
+            message_ids = list(message_ids)
             for message_id in message_ids:
                 total += self.all_messages[message_id].quality
                 count += 1
@@ -453,16 +455,20 @@ class SimSom:
         If a message to be added is already in the feed, update its popularity and move to beginning of feed (youngest)
         Inputs:
         - target_id (str): uid of agent resharing the message -- whose feed we're adding the message to
-        - new_message_ids (list of ints): ids of messages to be added
-        - incoming_shares (list of int): number of shares of each message. incoming_shares[i] is no. shares of message i
+        - incoming_ids (np.array of ints): ids of messages to be added
+        - incoming_shares (np.array  of int): number of shares of each message. incoming_shares[i] is no. shares of message i
         Note: feed[0] is the most recent item in the newsfeed
         """
         try:
             newsfeed = self.agent_feeds[target_id]
             messages, no_shares, ages = newsfeed
-            avg_age = np.mean(ages)
+            avg_age = np.mean(ages) if len(ages) > 0 else 0
             if len(newsfeed[0]) == 0:
-                updated_feed = (incoming_ids, incoming_shares, [0] * len(incoming_ids))
+                updated_feed = (
+                    incoming_ids,
+                    incoming_shares,
+                    np.zeros(len(incoming_ids), dtype=int),
+                )
             elif len(set(messages) & set(incoming_ids)) > 0:
                 if self.verbose:
                     print(f"  ids   : {incoming_ids} -> {messages}")
@@ -471,10 +477,12 @@ class SimSom:
                     newsfeed, incoming_ids, incoming_shares
                 )
             else:
-                messages[0:0] = incoming_ids
-                no_shares[0:0] = incoming_shares
-                ages = [a + 1 for a in ages]
-                ages[0:0] = [0] * len(incoming_ids)
+                messages = np.insert(messages, 0, incoming_ids, axis=0)
+                no_shares = np.insert(no_shares, 0, incoming_shares, axis=0)
+                ages = np.ones(len(ages), dtype=int)
+                ages = np.insert(
+                    ages, 0, np.zeros(len(incoming_ids), dtype=int), axis=0
+                )
 
                 updated_feed = (messages, no_shares, ages)
 
@@ -484,7 +492,11 @@ class SimSom:
 
             # rank messages
 
+            # for i in updated_feed:
+            #     assert isinstance(i, np.ndarray)
+
             self.agent_feeds[target_id] = updated_feed
+
         except Exception as e:
             raise Exception(f"Fail to add messages to {target_id}'s feed", e)
 
@@ -503,9 +515,9 @@ class SimSom:
         - $\lambda = 0.9$
 
         Input:
-            newsfeed (tuple of lists): (message_ids, no_shares, ages), represents an agent's news feed
+            newsfeed (tuple of np.arrays): (message_ids, no_shares, ages), represents an agent's news feed
         """
-        messages, shares, ages = [np.array(i) for i in newsfeed]
+        messages, shares, ages = newsfeed
 
         popularity = shares / np.sum(shares)  # relative no_shares
 
@@ -532,10 +544,8 @@ class SimSom:
         - target_feed (tuple of lists): (message_ids, no_shares, ages), represents an agent's news feed
         """
         try:
-            messages, no_shares, ages = [np.array(i) for i in target_feed]
-            incoming_ids, incoming_shares = np.array(incoming_ids), np.array(
-                incoming_shares
-            )
+            messages, no_shares, ages = target_feed
+
             # return sorted intersection
             overlap, x_ind, y_ind = np.intersect1d(
                 messages, incoming_ids, return_indices=True
@@ -584,7 +594,7 @@ class SimSom:
                 print(
                     f"   updated: messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
-            updated_feed = (list(messages), list(no_shares), list(ages))
+            updated_feed = messages, no_shares, ages
         except Exception as e:
             raise Exception("Error in handle_overlap: ", e)
 
@@ -602,7 +612,7 @@ class SimSom:
 
         sorted_by_age = sorted(zip(messages, shares, ages), key=lambda x: x[2])
         sorted_messages, sorted_shares, sorted_ages = [
-            list(i) for i in zip(*sorted_by_age)
+            np.array(i) for i in zip(*sorted_by_age)
         ]
 
         updated_feed = (
@@ -612,7 +622,8 @@ class SimSom:
         )
 
         assert len(updated_feed[0]) <= self.alpha
-
+        # for i in updated_feed:
+        #     assert isinstance(i, np.ndarray)
         return updated_feed
 
     def _return_all_message_info(self):
