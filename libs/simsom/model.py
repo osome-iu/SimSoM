@@ -121,7 +121,7 @@ class SimSom:
         self.quality_diff = 1
         self.quality = 1
         self.time_step = 0
-
+        self.avg_age_timestep = []
         # stats
         self.exposure = 0
         try:
@@ -200,6 +200,7 @@ class SimSom:
             # Save agents' newsfeed info & message popularity
             measurements["quality_timestep"] = self.quality_timestep
             measurements["exposure_timestep"] = self.exposure_timestep
+            measurements["avg_age_timestep"] = self.avg_age_timestep
             measurements["all_messages"] = self.message_dict
             measurements["all_feeds"] = self.agent_feeds
 
@@ -253,17 +254,22 @@ class SimSom:
         ### Distribute posts to newsfeeds
         # update_list: {agent_id: {message_id: popularity}}
 
+        ages = []
         for agent_id, message_list in update_list.items():
             message_counts = Counter(message_list)
             message_ids = list(message_counts.keys())
             no_shares = list(message_counts.values())
             try:
-                self._bulk_add_messages_to_feed(agent_id, message_ids, no_shares)
+                avg_age = self._bulk_add_messages_to_feed(
+                    agent_id, message_ids, no_shares
+                )
+                ages += [avg_age]
             except Exception as e:
                 print(e, flush=True)
                 sys.exit("Propagation (bulk_add_messages_to_feed) failed.")
         # print("Agent feeds after updating:", self.agent_feeds, flush=True)
 
+        self.avg_age_timestep += [sum(ages) / len(ages) if len(ages) > 0 else 0]
         return
 
     def user_step(self, agent):
@@ -454,7 +460,7 @@ class SimSom:
         try:
             newsfeed = self.agent_feeds[target_id]
             messages, no_shares, ages = newsfeed
-
+            avg_age = np.mean(ages)
             if len(newsfeed[0]) == 0:
                 updated_feed = (incoming_ids, incoming_shares, [0] * len(incoming_ids))
             elif len(set(messages) & set(incoming_ids)) > 0:
@@ -467,6 +473,7 @@ class SimSom:
             else:
                 messages[0:0] = incoming_ids
                 no_shares[0:0] = incoming_shares
+                ages = [a + 1 for a in ages]
                 ages[0:0] = [0] * len(incoming_ids)
 
                 updated_feed = (messages, no_shares, ages)
@@ -481,7 +488,7 @@ class SimSom:
         except Exception as e:
             raise Exception(f"Fail to add messages to {target_id}'s feed", e)
 
-        return
+        return avg_age
 
     def _rank_newsfeed(self, newsfeed, w_e=1 / 3, w_p=1 / 3, aging_lambda=0.9):
         """
