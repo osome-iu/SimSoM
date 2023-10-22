@@ -35,9 +35,9 @@ network_fpath = os.path.join(DATA_PATH, "infosys_network.gml")
 
 # network_fpath = os.path.join(DATA_PATH, "network_baseline.gml")
 ## SPECS
-alpha = 1
+alpha = 15
 simulation_specs = {
-    "verbose": True,
+    "verbose": False,
     "tracktimestep": True,
     "save_message_info": False,
     "output_cascades": False,
@@ -63,7 +63,7 @@ if not os.path.exists(RESULT_DIR):
 # Create a list to store results across runs
 # quality = []
 
-metrics = ["quality", "diversity", "discriminative_pow"]
+metrics = ["quality", "diversity", "discriminative_pow", "avg_age_timestep"]
 res_list = defaultdict(list)
 
 print("*** Start simulation ***")
