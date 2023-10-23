@@ -15,12 +15,19 @@ import simsom.config_vals as configs
 
 
 ### I/O
-def write_json_compressed(fout, data):
+def write_json_compressed(fpath, data):
     # write compressed json for hpc - pass file handle instead of filename so we can flush
     try:
+        fout = gzip.open(fpath, "w")
         fout.write(json.dumps(data).encode("utf-8"))
+        # force writing out the changes
+        fout.flush()
+        fout.close()
+        print(f"Successfully wrote to {fpath}")
+        return True
     except Exception as e:
-        print(e)
+        print("Fail to write json compressed", e)
+        return e
 
 
 def read_json_compressed(fpath):
@@ -30,9 +37,11 @@ def read_json_compressed(fpath):
         json_bytes = fin.read()
         json_str = json_bytes.decode("utf-8")
         data = json.loads(json_str)
+        fin.close()
+        return data
     except Exception as e:
         print(e)
-    return data
+        return e
 
 
 ### EXP CONFIGS

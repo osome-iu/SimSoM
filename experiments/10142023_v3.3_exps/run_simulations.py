@@ -100,8 +100,7 @@ for run in range(no_runs):
         specs = deepcopy(simulation_specs)
         specs.update(results)
         fpath = message_info_fpath.replace(".json.gz", f"_{run}.json.gz")
-        fout = gzip.open(fpath, "w")
-        write_json_compressed(fout, specs)
+        write_json_compressed(fpath, specs)
 
 # Save short results (with simulation specs)
 short_results = deepcopy(simulation_specs)
