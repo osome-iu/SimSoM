@@ -30,19 +30,18 @@ def multiple_simulations(
             print("Start simulation ..")
             # Tracking cascade info
             if infosys_specs["output_cascades"] is True:
-                dir = os.path.dirname(reshare_fpath)
-                exp_name = os.path.basename(reshare_fpath).split("__")[0]
                 #  make a reshare.csv file no matter what. Save to other files according to number of (multiple) runs.
-                if time > 0:
-                    prefix = f"_{time}.csv"
-                else:
-                    prefix = f".csv"
+                prefix = f"_{time}.csv"
                 measurements = follower_sys.simulation(
                     reshare_fpath=reshare_fpath.replace(".csv", prefix)
                 )
             else:
                 measurements = follower_sys.simulation()
 
+        except Exception as e:
+            raise Exception("Failed to run simulations.", e)
+
+        try:
             # Update results over multiple simulations
             for metric in metrics:
                 n_measures[metric] += [measurements[metric]]
@@ -57,14 +56,10 @@ def multiple_simulations(
                 verboseout_path = verboseout.replace(".json.gz", prefix)
                 specs = copy.deepcopy(infosys_specs)
                 specs.update(measurements)
-                fout = gzip.open(verboseout_path, "w")
-                utils.write_json_compressed(fout, specs)
-                # force writing out the changes
-                fout.flush()
+                utils.write_json_compressed(verboseout_path, specs)
 
         except Exception as e:
-            print("Error creating SimSom instance of running simulation.")
-            print(e)
+            raise ("Error saving verbose results", e)
 
     print(
         f"average quality for follower network: {np.mean(np.array(n_measures['quality']))} pm {np.std(np.array(n_measures['quality']))}"
@@ -193,6 +188,7 @@ def main(args):
     fout = open(outfile, "w")
     json.dump(infosys_spec, fout)
     fout.flush()
+    fout.close()
 
 
 if __name__ == "__main__":

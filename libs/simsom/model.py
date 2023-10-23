@@ -146,11 +146,10 @@ class SimSom:
                 )
 
         except Exception as e:
-            print(
+            raise Exception(
                 f"Unable to read graph file. File doesn't exist of corrupted: {graph_gml}",
-                flush=True,
+                e,
             )
-            print(e, flush=True)
 
     def simulation(self, reshare_fpath=""):
         """
@@ -189,26 +188,34 @@ class SimSom:
 
         # return feeds, self.message_metadata, self.quality
         # Call this before calculating tau and diversity!!
-        self.message_dict = self._return_all_message_info()
+        try:
+            self.message_dict = self._return_all_message_info()
 
-        measurements = {
-            "quality": self.quality,
-            "diversity": self.measure_diversity(),
-            "discriminative_pow": self.measure_kendall_tau(),
-        }
-
-        if self.save_message_info is True:
-            # Save agents' newsfeed info & message popularity
-            measurements["quality_timestep"] = self.quality_timestep
-            measurements["exposure_timestep"] = self.exposure_timestep
-            measurements["age_timestep"] = self.age_timestep
-            measurements["all_messages"] = self.message_dict
-            # convert np arrays to list to JSON serialize
-            # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
-            measurements["all_feeds"] = {
-                agent_id: tuple(i.tolist() for i in feed_tuple)
-                for agent_id, feed_tuple in self.agent_feeds.items()
+            measurements = {
+                "quality": self.quality,
+                "diversity": self.measure_diversity(),
+                "discriminative_pow": self.measure_kendall_tau(),
             }
+
+            if self.save_message_info is True:
+                # Save agents' newsfeed info & message popularity
+                measurements["quality_timestep"] = self.quality_timestep
+                measurements["exposure_timestep"] = self.exposure_timestep
+                measurements["age_timestep"] = self.age_timestep
+                measurements["all_messages"] = self.message_dict
+                # convert np arrays to list to JSON serialize
+                # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
+                for agent_id, feed_tuple in self.agent_feeds.items():
+                    measurements["feeds_message_ids"] = {
+                        agent_id: feed_tuple[0].tolist()
+                    }
+                    measurements["feeds_shares"] = {agent_id: feed_tuple[1].tolist()}
+                    measurements["feeds_ages"] = {agent_id: feed_tuple[2].tolist()}
+        except Exception as e:
+            raise Exception(
+                'Failed to output a measurement, e.g,["quality", "diversity", "discriminative_pow"] or save message info.',
+                e,
+            )
 
         return measurements
 
@@ -500,8 +507,8 @@ class SimSom:
 
             # rank messages
 
-            # for i in updated_feed:
-            #     assert isinstance(i, np.ndarray)
+            for i in updated_feed:
+                assert isinstance(i, np.ndarray)
 
             self.agent_feeds[target_id] = updated_feed
 
@@ -630,8 +637,8 @@ class SimSom:
         )
 
         assert len(updated_feed[0]) <= self.alpha
-        # for i in updated_feed:
-        #     assert isinstance(i, np.ndarray)
+        for i in updated_feed:
+            assert isinstance(i, np.ndarray)
         return updated_feed
 
     def _return_all_message_info(self):
