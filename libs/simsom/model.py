@@ -507,8 +507,8 @@ class SimSom:
 
             # rank messages
 
-            # for i in updated_feed:
-            #     assert isinstance(i, np.ndarray)
+            for i in updated_feed:
+                assert isinstance(i, np.ndarray)
 
             self.agent_feeds[target_id] = updated_feed
 
@@ -637,8 +637,8 @@ class SimSom:
         )
 
         assert len(updated_feed[0]) <= self.alpha
-        # for i in updated_feed:
-        #     assert isinstance(i, np.ndarray)
+        for i in updated_feed:
+            assert isinstance(i, np.ndarray)
         return updated_feed
 
     def _return_all_message_info(self):
