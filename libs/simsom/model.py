@@ -121,7 +121,7 @@ class SimSom:
         self.quality_diff = 1
         self.quality = 1
         self.time_step = 0
-        # track min, mean, max message age over time
+        # list of lists. Each element is the age of all messages in that timestep
         self.age_timestep = []
         # stats
         self.exposure = 0
@@ -205,12 +205,16 @@ class SimSom:
                 measurements["all_messages"] = self.message_dict
                 # convert np arrays to list to JSON serialize
                 # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
+                # Only save data for agents whose feeds are not empty
                 for agent_id, feed_tuple in self.agent_feeds.items():
-                    measurements["feeds_message_ids"] = {
-                        agent_id: feed_tuple[0].tolist()
-                    }
-                    measurements["feeds_shares"] = {agent_id: feed_tuple[1].tolist()}
-                    measurements["feeds_ages"] = {agent_id: feed_tuple[2].tolist()}
+                    if len(feed_tuple[0]) > 0:
+                        measurements["feeds_message_ids"] = {
+                            agent_id: feed_tuple[0].tolist()
+                        }
+                        measurements["feeds_shares"] = {
+                            agent_id: feed_tuple[1].tolist()
+                        }
+                        measurements["feeds_ages"] = {agent_id: feed_tuple[2].tolist()}
         except Exception as e:
             raise Exception(
                 'Failed to output a measurement, e.g,["quality", "diversity", "discriminative_pow"] or save message info.',
@@ -273,19 +277,18 @@ class SimSom:
             message_ids = list(message_counts.keys())
             no_shares = list(message_counts.values())
             try:
-                avg_age = self._bulk_add_messages_to_feed(
+                agent_message_ages = self.agent_feeds[agent_id][2]
+                if len(agent_message_ages) > 0:
+                    ages += agent_message_ages.tolist()
+                self._bulk_add_messages_to_feed(
                     agent_id, np.array(message_ids), np.array(no_shares)
                 )
-
-                ages += [avg_age]
             except Exception as e:
                 print(e, flush=True)
                 sys.exit("Propagation (bulk_add_messages_to_feed) failed.")
         # print("Agent feeds after updating:", self.agent_feeds, flush=True)
 
-        self.age_timestep += [
-            (min(ages), sum(ages) / len(ages) if len(ages) > 0 else 0, max(ages))
-        ]
+        self.age_timestep += [ages]
         return
 
     def user_step(self, agent):
@@ -477,7 +480,6 @@ class SimSom:
         try:
             newsfeed = self.agent_feeds[target_id]
             messages, no_shares, ages = newsfeed
-            avg_age = np.mean(ages) if len(ages) > 0 else 0
             if len(newsfeed[0]) == 0:
                 updated_feed = (
                     incoming_ids,
@@ -512,10 +514,9 @@ class SimSom:
 
             self.agent_feeds[target_id] = updated_feed
 
+            return True
         except Exception as e:
             raise Exception(f"Fail to add messages to {target_id}'s feed", e)
-
-        return avg_age
 
     def _rank_newsfeed(self, newsfeed, w_e=1 / 3, w_p=1 / 3, aging_lambda=0.9):
         """
