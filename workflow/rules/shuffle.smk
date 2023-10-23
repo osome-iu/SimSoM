@@ -26,8 +26,8 @@ nthreads = 7
 mode='igraph'
 sim_num=5
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'shuffle_5runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'shuffle_5runs')
+RES_DIR = os.path.join(ABS_PATH,'results', f'shuffle_1runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'shuffle_1runs')
 
 rule all:
     input: 

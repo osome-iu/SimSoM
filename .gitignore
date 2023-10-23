@@ -10,3 +10,4 @@ example/
 data/
 .snakemake/
 */.snakemake/
+output*

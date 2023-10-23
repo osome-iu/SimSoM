@@ -31,11 +31,11 @@ EXP2NET = {
 }
 
 nthreads=7
-sim_num = 5
+sim_num = 1
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}')
-CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
+RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_1run')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_1run')
+CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}_1run')
 
 rule all:
     input: 

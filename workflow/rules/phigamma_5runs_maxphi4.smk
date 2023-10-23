@@ -31,12 +31,12 @@ EXP2NET = {
 }
 
 nthreads=7
-sim_num = 5
+sim_num = 1
 mode='igraph'
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_5runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_5runs')
-# CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
+RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_1runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_1runs')
+# CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}_1run')
 
 rule all:
     input: 

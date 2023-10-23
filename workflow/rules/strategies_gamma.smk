@@ -24,10 +24,10 @@ EXP2NET = {
     for exp_name, net_cf in EXPS.items() if exp_name in EXP_NOS}
 
 nthreads = 7
-sim_num = 5
+sim_num = 1
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'strategies_5runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'strategies_5runs')
+RES_DIR = os.path.join(ABS_PATH,'results', f'strategies_1runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'strategies_1runs')
 
 rule all:
     input: 

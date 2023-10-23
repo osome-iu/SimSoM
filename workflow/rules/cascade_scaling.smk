@@ -26,11 +26,11 @@ EXP_NOS = [
 EXP2NET = {exp_name: utils.netconfig2netname(config_fname, net_cf) for exp_name, net_cf in EXPS.items() if exp_name in EXP_NOS}
 
 nthreads = 7
-sim_num = 5
+sim_num = 1
 
-RES_DIR = os.path.join(ABS_PATH,'results', 'cascade_scaling')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', 'cascade_scaling')
-CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', 'cascade_scaling')
+RES_DIR = os.path.join(ABS_PATH,'results', 'cascade_scaling_1run')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', 'cascade_scaling_1run')
+CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', 'cascade_scaling_1run')
 
 rule all:
     input: 

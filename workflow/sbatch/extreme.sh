@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=extreme_full33
+#SBATCH --job-name=extreme_f33.1r
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running extreme_full33 exps ######'
-snakemake --nolock --snakefile workflow/rules/extreme.smk --cores 21
+echo '###### running extreme_f33.1r exps ######'
+snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules/extreme.smk --cores 21
