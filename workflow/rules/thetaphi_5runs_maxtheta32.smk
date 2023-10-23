@@ -6,8 +6,8 @@ Snakefile to run experiments with varying theta and phi values
 import simsom.utils as utils
 import json 
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_full'
-DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_full/data"
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_10222023'
+DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = 'experiments'
 # DATA_PATH = os.path.join(ABS_PATH, "data")
