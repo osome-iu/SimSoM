@@ -5,7 +5,7 @@ __pycache__/
 .vs_code/
 simsom.egg-info/
 experiments/*
-!experiments/10172023_v3.0_exps/
+# !experiments/10172023_v3.0_exps/
 
 example/
 !example/run_simulations.py
