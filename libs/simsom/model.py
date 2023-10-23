@@ -139,11 +139,10 @@ class SimSom:
                 )
 
         except Exception as e:
-            print(
+            raise Exception(
                 f"Unable to read graph file. File doesn't exist of corrupted: {graph_gml}",
-                flush=True,
+                e,
             )
-            print(e, flush=True)
 
     def simulation(self, reshare_fpath=""):
         """
@@ -176,23 +175,27 @@ class SimSom:
             self.simulation_step()
 
             self.update_quality()
+        try:
+            # return feeds, self.message_popularity, self.quality
+            # Call this before calculating tau and diversity!!
+            self.message_dict = self._return_all_message_info()
 
-        # return feeds, self.message_popularity, self.quality
-        # Call this before calculating tau and diversity!!
-        self.message_dict = self._return_all_message_info()
+            measurements = {
+                "quality": self.quality,
+                "diversity": self.measure_diversity(),
+                "discriminative_pow": self.measure_kendall_tau(),
+            }
 
-        measurements = {
-            "quality": self.quality,
-            "diversity": self.measure_diversity(),
-            "discriminative_pow": self.measure_kendall_tau(),
-        }
-
-        if self.save_message_info is True:
-            # Save agents' newsfeed info & message popularity
-            measurements["quality_timestep"] = self.quality_timestep
-            measurements["all_messages"] = self.message_dict
-            measurements["all_feeds"] = self.agent_feeds
-
+            if self.save_message_info is True:
+                # Save agents' newsfeed info & message popularity
+                measurements["quality_timestep"] = self.quality_timestep
+                measurements["all_messages"] = self.message_dict
+                measurements["all_feeds"] = self.agent_feeds
+        except Exception as e:
+            raise Exception(
+                'Failed to output a measurement, e.g,["quality", "diversity", "discriminative_pow"] or save message info.',
+                e,
+            )
         return measurements
 
     def simulation_step(self):
