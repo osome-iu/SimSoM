@@ -11,7 +11,7 @@
     - Targeting strategies
         - Default values, only change targeting 
 
-    config["output_cascades"]=False
+    config["output_cascades"]=True for phigamma, thetagamma, thetaphi and vary_gamma
 """
 import simsom.utils as utils
 import simsom.config_vals as configs
@@ -130,7 +130,7 @@ def make_exps(saving_dir, default_botnet, default_infosys):
             cf = {"theta": theta, "phi": phi}
             config = utils.update_dict(cf, default_botnet)
             config = utils.update_dict(config, default_infosys)
-
+            config["output_cascades"] = True
             config_name = f"{idx}{jdx}"
             all_exps["vary_thetaphi"][config_name] = config
 
@@ -142,7 +142,7 @@ def make_exps(saving_dir, default_botnet, default_infosys):
             cf = {"theta": theta, "gamma": gamma}
             config = utils.update_dict(cf, default_botnet)
             config = utils.update_dict(config, default_infosys)
-
+            config["output_cascades"] = True
             config_name = f"{idx}{jdx}"
             all_exps["vary_thetagamma"][config_name] = config
 
@@ -154,7 +154,7 @@ def make_exps(saving_dir, default_botnet, default_infosys):
             cf = {"phi": phi, "gamma": gamma}
             config = utils.update_dict(cf, default_botnet)
             config = utils.update_dict(config, default_infosys)
-
+            config["output_cascades"] = True
             config_name = f"{idx}{jdx}"
             all_exps["vary_phigamma"][config_name] = config
 
@@ -169,6 +169,7 @@ def make_exps(saving_dir, default_botnet, default_infosys):
 
             config = utils.update_dict(cf, default_botnet)
             config = utils.update_dict(config, default_infosys)
+            config["output_cascades"] = True
 
             config_name = f"{str(target)}{idx}"
             all_exps["vary_gamma"][config_name] = config
@@ -182,5 +183,5 @@ def make_exps(saving_dir, default_botnet, default_infosys):
 if __name__ == "__main__":
     # ABS_PATH = "/N/project/simsom/simsom_v3"
     ABS_PATH = "/N/project/simsom/simsom_v3/v3.3_full"
-    saving_dir = os.path.join(ABS_PATH, "config")
+    saving_dir = os.path.join(ABS_PATH, "config_cascade_true")
     make_exps(saving_dir, configs.default_bot_net, configs.infosys_default)
