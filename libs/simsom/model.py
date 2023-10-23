@@ -121,7 +121,8 @@ class SimSom:
         self.quality_diff = 1
         self.quality = 1
         self.time_step = 0
-        self.avg_age_timestep = []
+        # track min, mean, max message age over time
+        self.age_timestep = []
         # stats
         self.exposure = 0
         try:
@@ -200,9 +201,14 @@ class SimSom:
             # Save agents' newsfeed info & message popularity
             measurements["quality_timestep"] = self.quality_timestep
             measurements["exposure_timestep"] = self.exposure_timestep
-            measurements["avg_age_timestep"] = self.avg_age_timestep
+            measurements["age_timestep"] = self.age_timestep
             measurements["all_messages"] = self.message_dict
-            measurements["all_feeds"] = self.agent_feeds
+            # convert np arrays to list to JSON serialize
+            # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
+            measurements["all_feeds"] = {
+                agent_id: tuple(i.tolist() for i in feed_tuple)
+                for agent_id, feed_tuple in self.agent_feeds.items()
+            }
 
         return measurements
 
@@ -270,7 +276,9 @@ class SimSom:
                 sys.exit("Propagation (bulk_add_messages_to_feed) failed.")
         # print("Agent feeds after updating:", self.agent_feeds, flush=True)
 
-        self.avg_age_timestep += [sum(ages) / len(ages) if len(ages) > 0 else 0]
+        self.age_timestep += [
+            (min(ages), sum(ages) / len(ages) if len(ages) > 0 else 0, max(ages))
+        ]
         return
 
     def user_step(self, agent):

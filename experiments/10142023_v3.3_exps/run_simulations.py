@@ -41,7 +41,7 @@ simulation_specs = {
     "tracktimestep": True,
     "save_message_info": False,
     "output_cascades": False,
-    "epsilon": 0.0001,
+    "epsilon": 0.001,
     "mu": 0.5,
     "alpha": alpha,
     "n_threads": 12,
@@ -63,7 +63,7 @@ if not os.path.exists(RESULT_DIR):
 # Create a list to store results across runs
 # quality = []
 
-metrics = ["quality", "diversity", "discriminative_pow", "avg_age_timestep"]
+metrics = ["quality", "diversity", "discriminative_pow", "age_timestep"]
 res_list = defaultdict(list)
 
 print("*** Start simulation ***")
