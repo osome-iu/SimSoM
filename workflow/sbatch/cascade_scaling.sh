@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=cascade_scaling_full33
+#SBATCH --job-name=cascade_scaling_33varywe
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running cascade_scaling_full33 exps ######'
+echo '###### running cascade_scaling_33varywe exps ######'
 snakemake --nolock --snakefile workflow/rules/cascade_scaling.smk --cores 57

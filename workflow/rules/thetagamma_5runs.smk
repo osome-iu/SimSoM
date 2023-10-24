@@ -7,8 +7,8 @@ cascade=False
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_10222023'
-DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_varywe'
+DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_varywe/data"
 
 # ABS_PATH = 'experiments'
 # DATA_PATH = os.path.join(ABS_PATH, "data")
@@ -27,7 +27,7 @@ EXP2NET = {
 }
 
 nthreads=7
-sim_num = 5
+sim_num = 3
 
 RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_5runs')
 TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_5runs')
