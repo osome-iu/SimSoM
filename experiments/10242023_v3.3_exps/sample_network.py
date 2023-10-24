@@ -67,7 +67,7 @@ def make_network(
     for s in nodes:
         G.add_node(
             s,
-            partisanship=user_dict[s]["Partisanship"],
+            party=user_dict[s]["Partisanship"],
             misinfo=user_dict[s]["Misinformation"],
         )
         for f in adjlist[s]:
