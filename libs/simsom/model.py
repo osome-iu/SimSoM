@@ -80,7 +80,12 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-        print("SimSomV3.3 all agents activated (bug fixed)")
+        self.w_e = 0.8
+        self.w_p = 0.1
+
+        print(
+            f"SimSomV3.3 all agents activated (bug fixed); w_e={self.w_e}, w_p={self.w_p}"
+        )
         # graph object
         self.graph_gml = graph_gml
 
@@ -123,6 +128,8 @@ class SimSom:
         self.time_step = 0
         # list of lists. Each element is the age of all messages in that timestep
         self.age_timestep = []
+        # # list of the by_bot status of reshared messages
+        # self.chosen_messages = []
         # stats
         self.exposure = 0
         try:
@@ -202,6 +209,7 @@ class SimSom:
                 measurements["quality_timestep"] = self.quality_timestep
                 measurements["exposure_timestep"] = self.exposure_timestep
                 measurements["age_timestep"] = self.age_timestep
+                # measurements["reshare_by_bot_status"] = self.chosen_messages
                 measurements["all_messages"] = self.message_dict
                 # convert np arrays to list to JSON serialize
                 # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
@@ -311,7 +319,9 @@ class SimSom:
             self._update_exposure(feed, agent)
 
             # posting
+
             message_id = self._create_post(agent)
+            # self.chosen_messages += [self.all_messages[message_id].is_by_bot]
             # book keeping (for all messages)
             self._update_message_popularity(message_id, agent)
 
@@ -353,11 +363,14 @@ class SimSom:
             if len(newsfeed[0]) > 0 and random.random() > self.mu:
                 # retweet a message from feed selected based on its ranking (engagement, popularity and recency)
                 # Note: random.choices() weights input doesn't have to be normalized
-                r_messages, ranking = self._rank_newsfeed(newsfeed)
+                r_messages, ranking = self._rank_newsfeed(
+                    newsfeed, w_e=self.w_e, w_p=self.w_p
+                )
 
                 # make sure ranking order is correct
                 # assert (r_messages == messages).all()
                 (message_id,) = random.choices(messages, weights=ranking, k=1)
+
             else:
                 # new message
                 self.num_message_unique += 1
@@ -604,8 +617,8 @@ class SimSom:
             no_shares = np.insert(no_shares, 0, incoming_shares[~mask_y])
             messages = np.insert(messages, 0, incoming_ids[~mask_y])
             ages = np.insert(ages, 0, np.zeros(len(incoming_shares[~mask_y])))
-            if (ages != np.zeros(len(ages))).all():
-                print("")
+            # if (ages != np.zeros(len(ages))).all():
+            #     print("")
             if self.verbose:
                 print(
                     f"   updated: messages: {messages}, shares: {no_shares}, ages: {ages}"
