@@ -4,7 +4,7 @@
 #SBATCH --mail-user=baotruon@iu.edu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=43
+#SBATCH --cpus-per-task=22
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running mu_sm33 exps ######'
-snakemake --rerun-incomplete --nolock --snakefile experiments/10252023_v3.3_wp_exps/rules/varymu.smk --cores 43
+snakemake --rerun-incomplete --nolock --snakefile experiments/10252023_v3.3_wp_exps/rules/varymu.smk --cores 22
