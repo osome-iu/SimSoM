@@ -80,8 +80,8 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-        self.w_e = 0.8
-        self.w_p = 0.1
+        self.w_e = 0.1
+        self.w_p = 0.8
 
         print(
             f"SimSomV3.3 all agents activated (bug fixed); w_e={self.w_e}, w_p={self.w_p}"
@@ -546,6 +546,11 @@ class SimSom:
         Input:
             newsfeed (tuple of np.arrays): (message_ids, no_shares, ages), represents an agent's news feed
         """
+        w_r = 1 - (w_e + w_p)
+        if self.time_step == 1:
+            print(
+                f"Newsfeed ranking params: w_e={w_e}, w_p={w_p}, w_r={np.round(w_r, 2)}"
+            )
         messages, shares, ages = newsfeed
 
         popularity = shares / np.sum(shares)  # relative no_shares
@@ -557,7 +562,7 @@ class SimSom:
         engagement = np.array(
             [self.all_messages[message].engagement for message in messages]
         )
-        w_r = 1 - (w_e + w_p)
+
         ranking = np.sum([w_e * engagement, w_p * popularity, w_r * recency], axis=0)
 
         # # normalize
