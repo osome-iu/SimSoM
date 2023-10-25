@@ -547,10 +547,12 @@ class SimSom:
             newsfeed (tuple of np.arrays): (message_ids, no_shares, ages), represents an agent's news feed
         """
         w_r = 1 - (w_e + w_p)
-        if self.time_step == 1:
-            print(
-                f"Newsfeed ranking params: w_e={w_e}, w_p={w_p}, w_r={np.round(w_r, 2)}"
-            )
+        # Somehow _rank_newsfeed is called but the statement doesn't get printed
+        # if self.time_step == 0:
+        #     print(
+        #         f"Newsfeed ranking params: w_e={w_e}, w_p={w_p}, w_r={np.round(w_r, 2)}",
+        #         flush=True,
+        #     )
         messages, shares, ages = newsfeed
 
         popularity = shares / np.sum(shares)  # relative no_shares
