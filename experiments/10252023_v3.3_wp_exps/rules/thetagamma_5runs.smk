@@ -12,7 +12,7 @@ DATA_PATH = "/N/project/simsom/simsom_v3/10242023_v3.3/data"
 # ABS_PATH = '/Users/baott/SimSoM/experiments/10142023_v3.3_exps'
 # DATA_PATH = "/Users/baott/SimSoM/experiments/10142023_v3.3_exps/data"
 
-CONFIG_PATH = os.path.join(ABS_PATH, "config")
+CONFIG_PATH ="/N/project/simsom/simsom_v3/10242023_v3.3/config"
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = 'vary_thetagamma'

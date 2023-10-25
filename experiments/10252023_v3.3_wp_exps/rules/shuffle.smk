@@ -12,7 +12,7 @@ DATA_PATH = "/N/project/simsom/simsom_v3/10242023_v3.3/data"
 # DATA_PATH = "/Users/baott/SimSoM/experiments/10142023_v3.3_exps/data"
 
 # `shuffle` uses .json configs copied from vary_gamma/*{[0,1,2,3]}.json (where gamma=0.0001, 0.001, 0.01 and 0.1)
-CONFIG_PATH = os.path.join(ABS_PATH, "config")
+CONFIG_PATH ="/N/project/simsom/simsom_v3/10242023_v3.3/config"
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 
 # EXP_NOS = ['conservative', 'liberal', 'hubs', 'None']
