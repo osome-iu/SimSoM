@@ -6,7 +6,7 @@ Snakefile to run experiments with varying mu values (using a network with no bot
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/10252023_v3.3_wp'
+ABS_PATH = '/N/project/simsom/simsom_v3/10252023_v3.3_wr'
 DATA_PATH = "/N/project/simsom/simsom_v3/10242023_v3.3/data"
 
 # ABS_PATH = '/Users/baott/SimSoM/experiments/10142023_v3.3_exps'

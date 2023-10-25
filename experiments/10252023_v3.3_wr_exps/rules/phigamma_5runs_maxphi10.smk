@@ -7,7 +7,7 @@ Use network_*0.gml, where wildcards=[0,1,2,3] (for varying Gamma and None strate
 import json 
 import simsom.utils as utils
  
-ABS_PATH = '/N/project/simsom/simsom_v3/10252023_v3.3_wp'
+ABS_PATH = '/N/project/simsom/simsom_v3/10252023_v3.3_wr'
 DATA_PATH = "/N/project/simsom/simsom_v3/10242023_v3.3/data"
 
 # ABS_PATH = '/Users/baott/SimSoM/experiments/10142023_v3.3_exps'
@@ -23,7 +23,7 @@ EXPS = json.load(open(config_fname,'r'))[exp_type]
 
 MAXPHI_IDX = 4  # 0.4
 
-EXP_NOS = [exp for exp in EXPS.keys() if int(exp[0]) <= MAXPHI_IDX]
+EXP_NOS = [exp for exp in EXPS.keys() if int(exp[0]) > MAXPHI_IDX]
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
     for exp_name, net_cf in EXPS.items()
