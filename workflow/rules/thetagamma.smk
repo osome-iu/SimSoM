@@ -1,29 +1,25 @@
 """
-Run exps with default bot and gamma value 
-strategy='None', gamma=0.01, phi=0, theta=THETASWIPE
-Use config & data from main v3.3 full exps 
-cascade=False
+Snakefile to run experiments with varying theta and gamma values
+cascade=True
 """
 
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_10262023_highwe'
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_10222023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = 'experiments'
 # DATA_PATH = os.path.join(ABS_PATH, "data")
 
-CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
+CONFIG_PATH = os.path.join(ABS_PATH, "config_cascade_true")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
-exp_type = 'vary_thetaphi'
-PHI='0' #index of phi=0
+exp_type = 'vary_thetagamma'
 
 # get names for exp_config and network
 EXPS = json.load(open(config_fname,'r'))[exp_type]
-EXP_NOS = [exp for exp in EXPS.keys() if (exp[1]==PHI)]
-
+EXP_NOS = list(EXPS.keys())
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
     for exp_name, net_cf in EXPS.items()
@@ -32,9 +28,9 @@ EXP2NET = {
 nthreads=7
 sim_num = 5
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_5runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_5runs')
-# CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
+RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}')
+CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
 
 rule all:
     input: 
@@ -47,10 +43,10 @@ rule run_simulation:
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
-        # reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
+        reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -r {output.reshare} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:

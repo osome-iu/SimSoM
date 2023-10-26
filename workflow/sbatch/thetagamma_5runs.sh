@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=f33_highwe__thetagamma
+#SBATCH --job-name=full33__thetagamma
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running f33_highwe__thetagamma exps ######'
+echo '###### running full33__thetagamma exps ######'
 snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules/thetagamma_5runs.smk --cores 57
