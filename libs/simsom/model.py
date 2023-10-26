@@ -80,8 +80,8 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-        self.w_e = 1 / 3
-        self.w_p = 1 / 3
+        self.w_e = 0.4
+        self.w_p = 0.4
         print(
             f"SimSomV3.3 all agents activated (bug fixed); w_e={self.w_e}, w_p={self.w_p}"
         )
