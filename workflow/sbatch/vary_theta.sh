@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running f33huberman_theta exps ######'
-snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules/vary_theta.smk --cores 57
+snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile workflow/rules/vary_theta.smk --cores 57
