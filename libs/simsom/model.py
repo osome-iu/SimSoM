@@ -316,7 +316,7 @@ class SimSom:
 
             # posting
             message_id = self._create_post(agent)
-            # book keeping (for all messages)
+            # book keeping: record that this agent shared a message
             self._update_message_popularity(message_id, agent)
 
             # spread: make requests to add message to top of follower's feed (theta copies if poster is bot to simulate flooding)
@@ -685,9 +685,12 @@ class SimSom:
         - agent (Graph vertex): agent resharing the message
         """
 
+        # "seen_by_agents" and "seen_by_agent_timestep" are equal-length lists. Used to construct the exposure cascade
         for message_id in feed:
             self.message_metadata[message_id]["seen_by_agents"] += [agent["uid"]]
-
+            self.message_metadata[message_id]["seen_by_agent_timestep"] += [
+                self.time_step
+            ]
         # TODO: Track popularity at each timestep. Is this the same as infeed of agents?
         # Previously:
         # seen = []
@@ -716,6 +719,7 @@ class SimSom:
                 "bot_shares": 0,
                 "spread_via_agents": [],
                 "seen_by_agents": [],
+                "seen_by_agent_timestep": [],
             }
 
         self.message_metadata[message_id]["spread_via_agents"] += [agent["uid"]]
