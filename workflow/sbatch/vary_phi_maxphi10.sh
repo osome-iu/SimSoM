@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=extreme_f33_highwe
+#SBATCH --job-name=phi_maxphi10_f33
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running extreme_f33_highwe exps ######'
-snakemake --nolock --snakefile workflow/rules/extreme.smk --cores 21
+echo '###### running phi_maxphi10_f33_highwe exps ######'
+snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile workflow/rules/vary_phi_maxphi10.smk --cores 21

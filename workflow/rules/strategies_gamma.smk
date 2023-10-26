@@ -5,13 +5,13 @@ Snakefile to run experiments with different bot tactics: varying targeting strat
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_10222023'
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_10262023_highwe'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = 'experiments'
 # DATA_PATH = os.path.join(ABS_PATH, "data")
 
-CONFIG_PATH = os.path.join(ABS_PATH, "config")
+CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = "vary_gamma"
 GAMMA='3' #index of gamma (0.1)

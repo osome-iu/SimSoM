@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=full33_phigamma_mphi4_cascade
+#SBATCH --job-name=f33_highwe_phigamma_mphi4_cascade
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running full33_phigamma_mphi4_cascade exps ######'
+echo '###### running f33_highwe_phigamma_mphi4_cascade exps ######'
 snakemake --rerun-incomplete --nolock --rerun-triggers mtime --snakefile workflow/rules/phigamma.smk --cores 57
