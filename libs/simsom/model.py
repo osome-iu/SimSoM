@@ -524,32 +524,31 @@ class SimSom:
         except Exception as e:
             raise Exception(f"Fail to add messages to {target_id}'s feed", e)
 
-    def _rank_newsfeed(self, newsfeed, w_e=1 / 3, w_p=1 / 3, aging_lambda=0.9):
+    def _rank_newsfeed(self, newsfeed, w_e=1 / 3, w_p=1 / 3):
         """
         Calculate probability of being reshared for messages in the newsfeed using the formula:
         $$ P(m) = w_ee_m + w_p\frac{p_m}{\sum^{\alpha}_{j\in M_i}p_j} + w_rr_m $$
         where $e_m, p_m, r_m$ are the engagement, no_shares and recency of a message and $w_e, w_p, w_r$ are their respective weights.
 
-        $r= \lambda^{age}$: is the recency of the message.
+        The recency of a message m follow a stretched exponential distribution estimated empirically by Wu & Huberman
+        https://www.pnas.org/doi/10.1073/pnas.0704916104
+        $r ~ e^{-0.4t^{0.4}}$ where t is the time step
 
         Default values:
         - $w_e = w_p = w_r = 1/3$
-        - $\lambda = 0.9$
 
         Input:
             newsfeed (tuple of np.arrays): (message_ids, no_shares, ages), represents an agent's news feed
         """
         messages, shares, ages = newsfeed
 
-        popularity = shares / np.sum(shares)  # relative no_shares
-
-        lambdas = np.empty(len(ages), dtype=float)
-        lambdas.fill(aging_lambda)
-        recency = lambdas**ages
-
         engagement = np.array(
             [self.all_messages[message].engagement for message in messages]
         )
+        popularity = shares / np.sum(shares)  # relative no_shares
+
+        recency = np.exp(-0.4 * (ages**0.4))
+
         w_r = 1 - (w_e + w_p)
         ranking = np.sum([w_e * engagement, w_p * popularity, w_r * recency], axis=0)
 
