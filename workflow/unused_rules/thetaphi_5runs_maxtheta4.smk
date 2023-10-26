@@ -9,7 +9,7 @@ import simsom.utils as utils
 # import simsom.config_vals as config_vals
 # config_vals.THETA_SWIPE # [1, 2, 4, 8, 16, 32, 64]
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023'
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023_highwe'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = 'experiments'

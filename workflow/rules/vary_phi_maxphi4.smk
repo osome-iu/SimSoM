@@ -11,7 +11,7 @@ import simsom.utils as utils
 # DATA_PATH = os.path.join(ABS_PATH, "data")
 # CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023'
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023_highwe'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
 

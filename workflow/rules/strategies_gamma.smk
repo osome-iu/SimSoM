@@ -5,7 +5,7 @@ Snakefile to run experiments with different bot tactics: varying targeting strat
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023'
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023_highwe'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = 'experiments'

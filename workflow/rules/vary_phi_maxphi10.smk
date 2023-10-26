@@ -7,7 +7,7 @@ Use config & data from main v3.3 full exps
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023'
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023_highwe'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = '/Users/baott/SimSoM/experiments/10142023_v3.3_exps'
