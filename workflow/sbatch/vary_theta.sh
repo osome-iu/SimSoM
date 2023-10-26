@@ -4,11 +4,11 @@
 #SBATCH --mail-user=baotruon@iu.edu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=57
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=baseline_f33huberman
+#SBATCH --job-name=f33huberman_theta
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running baseline_f33huberman exps ######'
-snakemake --nolock --snakefile workflow/rules/baseline.smk --cores 8
+echo '###### running f33huberman_theta exps ######'
+snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules/vary_theta.smk --cores 57

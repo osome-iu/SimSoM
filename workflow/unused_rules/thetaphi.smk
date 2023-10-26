@@ -1,21 +1,19 @@
 """
 Snakefile to run experiments with varying theta and phi values
-(Total 66)
+cascade=True
+maxtheta=4
 """
 
 import json 
 import simsom.utils as utils
 
-# import simsom.config_vals as config_vals
-# config_vals.THETA_SWIPE # [1, 2, 4, 8, 16, 32, 64]
-
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_10222023'
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = 'experiments'
 # DATA_PATH = os.path.join(ABS_PATH, "data")
 
-CONFIG_PATH = os.path.join(ABS_PATH, "config")
+CONFIG_PATH = os.path.join(ABS_PATH, "config_cascade_true")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = 'vary_thetaphi'
@@ -32,11 +30,11 @@ EXP2NET = {
 }
 
 nthreads= 7
-sim_num = 5
+sim_num = 1
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_5runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_5runs')
-# CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
+RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}')
+CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}')
 
 rule all:
     input: 
@@ -49,10 +47,10 @@ rule run_simulation:
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
-        # reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
+        reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -r {output.reshare} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:

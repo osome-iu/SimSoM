@@ -4,13 +4,13 @@ Snakefile to run experiments with varying mu values (using a network with no bot
 
 import json 
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_10222023'
+ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = 'experiments'
 # DATA_PATH = os.path.join(ABS_PATH, "data")
 
-CONFIG_PATH = os.path.join(ABS_PATH, "config")
+CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = "vary_mu"
