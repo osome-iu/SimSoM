@@ -80,7 +80,11 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-        print("SimSomV3.3 all agents activated (bug fixed)")
+        self.w_e = 1 / 3
+        self.w_p = 1 / 3
+        print(
+            f"SimSomV3.3 all agents activated (bug fixed); w_e={self.w_e}, w_p={self.w_p}"
+        )
         # graph object
         self.graph_gml = graph_gml
 
@@ -353,7 +357,9 @@ class SimSom:
             if len(newsfeed[0]) > 0 and random.random() > self.mu:
                 # retweet a message from feed selected based on its ranking (engagement, popularity and recency)
                 # Note: random.choices() weights input doesn't have to be normalized
-                r_messages, ranking = self._rank_newsfeed(newsfeed)
+                r_messages, ranking = self._rank_newsfeed(
+                    newsfeed, w_e=self.w_e, w_p=self.w_p
+                )
 
                 # make sure ranking order is correct
                 # assert (r_messages == messages).all()
