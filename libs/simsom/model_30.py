@@ -82,7 +82,9 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-        print("SimSoM V3.0")
+        self.model_name = "SimSom 3.0"
+        print(f"{self.model_name}")
+
         # graph object
         self.graph_gml = graph_gml
 
@@ -184,6 +186,7 @@ class SimSom:
                 "quality": self.quality,
                 "diversity": self.measure_diversity(),
                 "discriminative_pow": self.measure_kendall_tau(),
+                "model": self.model_name,
             }
 
             if self.save_message_info is True:

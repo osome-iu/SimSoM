@@ -82,9 +82,8 @@ class SimSom:
     ):
         self.w_e = 1 / 3
         self.w_p = 1 / 3
-        print(
-            f"SimSomV3.3 all agents activated (linear combo for ranking, huberman decay); w_e={self.w_e}, w_p={self.w_p}"
-        )
+        self.model_name = f"SimSomV3.3 all agents activated (linear combo for ranking, huberman decay); w_e={self.w_e}, w_p={self.w_p}"
+        print(f"{self.model_name}")
         # graph object
         self.graph_gml = graph_gml
 
@@ -199,6 +198,7 @@ class SimSom:
                 "quality": self.quality,
                 "diversity": self.measure_diversity(),
                 "discriminative_pow": self.measure_kendall_tau(),
+                "model": self.model_name,
             }
 
             if self.save_message_info is True:

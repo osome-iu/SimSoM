@@ -36,12 +36,12 @@ class Message:
         # engagement value of a "normal" message by humans
         human_engagement = 1 - (1 - u) ** (1 / exponent)
 
-        if self.is_by_bot == 1:
+        if self.is_by_bot:
             engagement = 1 if u < self.phi else human_engagement
         else:
             engagement = human_engagement
 
-        if self.is_by_bot == 1:
+        if self.is_by_bot:
             quality = 0
         else:
             quality = engagement
