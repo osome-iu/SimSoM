@@ -18,7 +18,7 @@ def multiple_simulations(
 ):
     # baseline:  mu=0.5, alpha=15, beta=0.01, gamma=0.001, phi=1, theta=1
     # cascade data file name has format: f"{basedir}{exp_name}__{cascade_type}_{run_no}.csv"
-    metrics = ["quality", "diversity", "discriminative_pow"]
+    metrics = ["quality", "diversity", "discriminative_pow", "model"]
     n_measures = defaultdict(lambda: [])
 
     print(f"Run simulation {times} times..")
