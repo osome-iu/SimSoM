@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running extreme_f30 exps ######'
-snakemake --nolock --snakefile workflow/rules_30/extreme.smk --cores 21
+snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile workflow/rules_30/extreme.smk --cores 21

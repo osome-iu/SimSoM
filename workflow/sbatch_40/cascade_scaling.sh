@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running cascade_scaling_f40 exps ######'
-snakemake --nolock --snakefile workflow/rules_40/cascade_scaling.smk --cores 57
+snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile workflow/rules_40/cascade_scaling.smk --cores 57
