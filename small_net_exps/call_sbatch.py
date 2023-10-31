@@ -12,7 +12,7 @@ ABS_PATH = "/N/u/baotruon/BigRed200/simsom"
 SBATCH_FOLDERS = ["sbatch_30", "sbatch_33", "sbatch_40", "sbatch_41"]
 
 for folder in SBATCH_FOLDERS:
-    sbatch_dir = f"{ABS_PATH}/workflow/{folder}"
+    sbatch_dir = f"{ABS_PATH}/small_net_exps/{folder}"
     os.chdir(sbatch_dir)
     print(f"current dir: {os.getcwd()}")
     print(f"Add execution permission to all files")
@@ -20,7 +20,7 @@ for folder in SBATCH_FOLDERS:
 
     fpaths = glob.glob(f"{sbatch_dir}/*.sh")
     print(fpaths)
-    output_dir = f"{ABS_PATH}/big_net_exps/output_{folder}"
+    output_dir = f"{ABS_PATH}/small_net_exps/output_{folder}"
     os.makedirs(output_dir, exist_ok=True)
     os.chdir(output_dir)
     print(f"Changed to output dir: {os.getcwd()}")
