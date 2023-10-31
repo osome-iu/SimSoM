@@ -48,10 +48,7 @@ def multiple_simulations(
 
             # Save verbose results
             if verboseout is not None:
-                if time > 0:
-                    prefix = f"_{time}.json.gz"
-                else:
-                    prefix = f".json.gz"
+                prefix = f"_{time}.json.gz"
 
                 verboseout_path = verboseout.replace(".json.gz", prefix)
                 specs = copy.deepcopy(infosys_specs)
