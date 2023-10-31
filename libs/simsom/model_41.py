@@ -51,7 +51,7 @@ Outputs:
             - agent2 (str): uid of the agent resharing the message
 """
 
-from simsom.message_40 import Message
+from simsom.message_40 import Message40
 import simsom.utils as utils
 import igraph as ig
 import csv
@@ -367,7 +367,7 @@ class SimSom:
             else:
                 # new message
                 self.num_message_unique += 1
-                message = Message(
+                message = Message40(
                     id=self.num_message_unique,
                     is_by_bot=agent["bot"],
                     phi=self.phi,

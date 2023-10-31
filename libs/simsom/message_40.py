@@ -5,7 +5,7 @@ import random
 import numpy as np
 
 
-class Message:
+class Message40:
     def __init__(self, id, is_by_bot=0, phi=0):
         """
         Initializes an instance for a message.
