@@ -2,6 +2,7 @@
 Class modeling a message. 
 """
 import random
+import numpy as np
 
 
 class Message:
@@ -23,6 +24,18 @@ class Message:
         self.quality = quality
         self.engagement = engagement  # referred to as "engagement" in the paper
 
+    def expon_quality(self, quality_lambda=0.06):
+        """
+        Return bounded value for quality based on an exponential distribution.
+        quality range: [0,1]
+        """
+        # generate a number following an exponential distribution using inverse transform sampling
+        y = random.random()
+        x = -np.log(y) / quality_lambda
+        # transform x so that most values are around 100 and quality in range [0,1]
+        quality = (100 - x) / 100 if x >= 0 else 0
+        return quality
+
     def get_values(self):
         """
         Returns (quality, engagement) values of a message based on lowq_prob and phi
@@ -36,14 +49,14 @@ class Message:
         # engagement value of a "normal" message by humans
         human_engagement = 1 - (1 - u) ** (1 / exponent)
 
-        if self.is_by_bot == 1:
+        if self.is_by_bot:
             engagement = 1 if u < self.phi else human_engagement
         else:
             engagement = human_engagement
 
-        if self.is_by_bot == 1:
+        if self.is_by_bot:
             quality = 0
         else:
-            quality = engagement
+            quality = self.expon_quality()
 
         return quality, engagement

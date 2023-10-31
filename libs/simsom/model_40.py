@@ -51,7 +51,7 @@ Outputs:
             - agent2 (str): uid of the agent resharing the message
 """
 
-from simsom import Message
+from simsom.message_40 import Message
 import simsom.utils as utils
 import igraph as ig
 import csv
@@ -82,9 +82,8 @@ class SimSom:
     ):
         self.w_e = 1 / 3
         self.w_p = 1 / 3
-        print(
-            f"SimSomV3.3 all agents activated (bug fixed); w_e={self.w_e}, w_p={self.w_p}"
-        )
+        self.model_name = f"SimSomV4.0 all agents activated (bug fixed); message 4.0; ranking linear;  w_e={self.w_e}, w_p={self.w_p}"
+        print(f"{self.model_name}")
         # graph object
         self.graph_gml = graph_gml
 
@@ -199,6 +198,7 @@ class SimSom:
                 "quality": self.quality,
                 "diversity": self.measure_diversity(),
                 "discriminative_pow": self.measure_kendall_tau(),
+                "model": self.model_name,
             }
 
             if self.save_message_info is True:
