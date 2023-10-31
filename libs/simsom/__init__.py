@@ -1,4 +1,4 @@
 from .message import *
-from .model import *
+from .model_30 import *
 from .graphutils import *
 from .utils import *
