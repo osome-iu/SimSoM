@@ -29,6 +29,6 @@ for folder in SBATCH_FOLDERS:
         subprocess.run(
             [
                 "sbatch",
-                "{fpath}",
+                f"{fpath}",
             ]
         )
