@@ -1,6 +1,6 @@
 """ Script to run simulations """
 
-from simsom.model_2 import SimSom
+from simsom.model_21 import SimSom
 import simsom.utils as utils
 
 import gzip

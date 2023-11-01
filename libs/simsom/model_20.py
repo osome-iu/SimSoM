@@ -77,7 +77,8 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-        print("SimSoM V.2")
+        self.model_name = "SimSom 2.0 differential activity (an agent is activated multiple times per step)"
+        print(f"{self.model_name}")
         self.graph_gml = graph_gml
         self.verbose = verbose
         self.tracktimestep = tracktimestep
@@ -156,11 +157,11 @@ class SimSom:
             if self.tracktimestep is True:
                 self.quality_timestep += [self.quality]
 
+            self.num_memes = sum(
+                [len(f) for f in self.agent_feeds.values() if len(f) > 0]
+            )
             for _ in range(self.n_agents):
                 # simulation
-                self.num_memes = sum(
-                    [len(f) for f in self.agent_feeds.values() if len(f) > 0]
-                )
                 self.simulation_step()
 
             self.update_quality()
@@ -173,6 +174,7 @@ class SimSom:
             "quality": self.quality,
             "diversity": self.measure_diversity(),
             "discriminative_pow": self.measure_kendall_tau(),
+            "model": self.model_name,
         }
 
         if self.save_memeinfo is True:

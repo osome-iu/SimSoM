@@ -1,28 +1,30 @@
 """
-Snakefile to run experiments using extreme values for the bot subnetwork 
+Snakefile to run experiments with different bot tactics: varying targeting strategies and gamma values
 """
-import simsom.utils as utils
-import json 
 
-ABS_PATH = '/N/project/simsom/simsom_v3/new_small/v2_10302023'
+import json 
+import simsom.utils as utils
+
+ABS_PATH = '/N/project/simsom/simsom_v3/new_small/v2.1_10302023'
 DATA_PATH = "/N/project/simsom/simsom_v3/10242023_v3.3/data"
 CONFIG_PATH = "/N/project/simsom/simsom_v3/10242023_v3.3/config"
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
-exp_type = "extreme"
+exp_type = "vary_gamma"
+GAMMA='3' #index of gamma (0.1)
 # get network names corresponding to the strategy
-EXPS = json.load(open(config_fname,'r'))[exp_type]
-EXP_NOS = list(EXPS.keys())
+EXPS = json.load(open(config_fname, "r"))[exp_type]
+
+EXP_NOS = [exp for exp in EXPS.keys() if str(GAMMA) in exp]
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
-    for exp_name, net_cf in EXPS.items()
-}
+    for exp_name, net_cf in EXPS.items() if exp_name in EXP_NOS}
 
-sim_num = 5
 nthreads = 7
+sim_num = 5
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}')
+RES_DIR = os.path.join(ABS_PATH,'results', f'strategies_5runs')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'strategies_5runs')
 
 rule all:
     input: 
@@ -36,7 +38,7 @@ rule run_simulation:
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
     shell: """
-        python3 -m workflow.scripts.driver_20 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
+        python3 -m workflow.scripts.driver_21 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
     """
 
 rule init_net:

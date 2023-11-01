@@ -1,25 +1,31 @@
 """
-Snakefile to run experiments using extreme values for the bot subnetwork 
+Run exps with default bot and gamma value 
+strategy='None', gamma=0.01, phi=PHISWIPE, theta=1
+Use config & data from main v3.3 full exps 
 """
-import simsom.utils as utils
-import json 
 
-ABS_PATH = '/N/project/simsom/simsom_v3/new_small/v2_10302023'
+import json 
+import simsom.utils as utils
+
+ABS_PATH = '/N/project/simsom/simsom_v3/new_small/v2.1_10302023'
 DATA_PATH = "/N/project/simsom/simsom_v3/10242023_v3.3/data"
 CONFIG_PATH = "/N/project/simsom/simsom_v3/10242023_v3.3/config"
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
-exp_type = "extreme"
+exp_type = "vary_phigamma"
+GAMMA='2' #index of gamma (0.01)
+
 # get network names corresponding to the strategy
-EXPS = json.load(open(config_fname,'r'))[exp_type]
-EXP_NOS = list(EXPS.keys())
+EXPS = json.load(open(config_fname, "r"))[exp_type]
+MAXPHI_IDX = 4  # 0.4
+EXP_NOS = [exp for exp in EXPS.keys() if (exp[1]==GAMMA) and (int(exp[0]) > MAXPHI_IDX)]
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
-    for exp_name, net_cf in EXPS.items()
-}
+    for exp_name, net_cf in EXPS.items() if exp_name in EXP_NOS}
 
-sim_num = 5
 nthreads = 7
+sim_num = 5
+
 
 RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}')
 TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}')
@@ -31,12 +37,12 @@ rule all:
 rule run_simulation:
     input: 
         network = ancient(lambda wildcards: os.path.join(DATA_PATH, 'vary_network', f"network_{EXP2NET[wildcards.exp_no]}.gml")),
-        configfile = ancient(os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json"))
+        configfile = os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json")
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
-        tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
+        tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
     shell: """
-        python3 -m workflow.scripts.driver_20 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
+        python3 -m workflow.scripts.driver_21 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
     """
 
 rule init_net:

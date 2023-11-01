@@ -1,15 +1,15 @@
 """
-Snakefile to run experiments with varying mu values (using a network with no bots)
+Snakefile to run experiments with varying alpha values (using a network with no bots)
 """
 
 import json 
 
-ABS_PATH = '/N/project/simsom/simsom_v3/new_small/v2_10302023'
+ABS_PATH = '/N/project/simsom/simsom_v3/new_small/v2.1_10302023'
 DATA_PATH = "/N/project/simsom/simsom_v3/10242023_v3.3/data"
 CONFIG_PATH = "/N/project/simsom/simsom_v3/10242023_v3.3/config"
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
-exp_type = "vary_mu"
+exp_type = "vary_alpha"
 # get network names corresponding to the strategy
 EXPS = json.load(open(config_fname,'r'))[exp_type]
 
@@ -33,7 +33,7 @@ rule run_simulation:
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
     shell: """
-        python3 -m workflow.scripts.driver_20 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
+        python3 -m workflow.scripts.driver_21 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num}
     """
 
 # rule init_net:
