@@ -4,6 +4,7 @@ from .message_2 import *
 from .model_21 import *
 from .model_20 import *
 from .model_30 import *
+from .model_31 import *
 from .model_33 import *
 from .model_40 import *
 from .model_41 import *
