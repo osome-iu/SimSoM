@@ -1,5 +1,7 @@
 from .message import *
 from .message_40 import *
+from .message_2 import *
+from .model_2 import *
 from .model_30 import *
 from .model_33 import *
 from .model_40 import *
