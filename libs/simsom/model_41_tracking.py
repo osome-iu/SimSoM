@@ -82,7 +82,7 @@ class SimSom:
     ):
         self.w_e = 1 / 3
         self.w_p = 1 / 3
-        self.model_name = f"SimSomV4.1 all agents activated (bug fixed); message 4.0; scaled ranking;  w_e={self.w_e}, w_p={self.w_p}"
+        self.model_name = f"SimSomV4.1_tracking; message 4.0; scaled ranking;  w_e={self.w_e}, w_p={self.w_p}"
         print(f"{self.model_name}")
         # graph object
         self.graph_gml = graph_gml
@@ -117,6 +117,10 @@ class SimSom:
         self.all_messages = {}  # dict of message_id - message objects
         self.message_metadata = {}
         self.agent_feeds = {}  # dict of agent_uid - [message_ids]
+
+        # each item is a 2d numpy array of message info
+        # each column is a message, each row is the information: messages, engagement, popularity, recency, ages, ranking, is_chosen
+        self.reshare_tracking = []
 
         self.exposure_timestep = []  # list of exposure to bot messages at each timestep
 
@@ -201,12 +205,35 @@ class SimSom:
                 "model": self.model_name,
             }
 
+            # convert message tracking info into a big np array
+            all_reshare_tracking = np.hstack(self.reshare_tracking)
+            reshared_message_dict = dict()
+            # messages, engagement, popularity, recency, ages, ranking, is_chosen
+            tracking_keys = [
+                "messages",
+                "engagement",
+                "popularity",
+                "recency",
+                "ages",
+                "ranking",
+                "is_chosen",
+            ]
+            for idx, key in enumerate(tracking_keys):
+                reshared_message_dict[key] = all_reshare_tracking[idx].tolist()
+            # reshared_message_dict["message_id"] = all_reshare_tracking[0]
+            # reshared_message_dict["engagement"] = all_reshare_tracking[1]
+            # reshared_message_dict["popularity"] = all_reshare_tracking[2]
+            # reshared_message_dict["recency"] = all_reshare_tracking[3]
+            # reshared_message_dict["age"] = all_reshare_tracking[4]
+            # reshared_message_dict["ranking"] = all_reshare_tracking[5]
+            # reshared_message_dict["is_chosen"] = all_reshare_tracking[6]
             if self.save_message_info is True:
                 # Save agents' newsfeed info & message popularity
                 measurements["quality_timestep"] = self.quality_timestep
                 measurements["exposure_timestep"] = self.exposure_timestep
                 measurements["age_timestep"] = self.age_timestep
                 measurements["all_messages"] = self.message_dict
+                measurements["reshared_messages"] = reshared_message_dict
                 # convert np arrays to list to JSON serialize
                 # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
                 # Only save data for agents whose feeds are not empty
@@ -351,19 +378,25 @@ class SimSom:
         try:
             newsfeed = self.agent_feeds[agent["uid"]]
 
-            messages, _, _ = newsfeed
+            messages, no_shares, ages = newsfeed
 
             # return messages created by the agent via resharing or posting
             if len(newsfeed[0]) > 0 and random.random() > self.mu:
                 # retweet a message from feed selected based on its ranking (engagement, popularity and recency)
                 # Note: random.choices() weights input doesn't have to be normalized
-                r_messages, ranking = self._rank_newsfeed(
+                # message info: 2d np array where each column is a message,
+                # each row is the information: messages, engagement, popularity, recency, ages, ranking
+                message_info, ranking = self._rank_newsfeed(
                     newsfeed, w_e=self.w_e, w_p=self.w_p
                 )
 
                 # make sure ranking order is correct
-                # assert (r_messages == messages).all()
+                # assert (message_info[0] == messages).all()
                 (message_id,) = random.choices(messages, weights=ranking, k=1)
+                is_chosen = np.zeros(len(messages))
+                is_chosen[np.where(messages == message_id)] = 1
+                message_info = np.vstack([message_info, is_chosen])
+                self.reshare_tracking.append(message_info)
             else:
                 # new message
                 self.num_message_unique += 1
@@ -378,6 +411,7 @@ class SimSom:
         except Exception as e:
             print(e)
             raise ValueError("Failed to create a new message.")
+
         return message_id
 
     def update_quality(self):
@@ -554,8 +588,11 @@ class SimSom:
         assert len(popularity) == len(engagement) == len(recency) == len(ranking)
         # # normalize
         # ranking = utils.normalize(ranking)
-
-        return messages, ranking
+        ## tracking
+        message_info = np.vstack(
+            [messages, engagement, popularity, recency, ages, ranking]
+        )
+        return message_info, ranking
 
     def _update_feed_handle_overlap(self, target_feed, incoming_ids, incoming_shares):
         """
