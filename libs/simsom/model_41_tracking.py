@@ -208,25 +208,20 @@ class SimSom:
             # convert message tracking info into a big np array
             all_reshare_tracking = np.hstack(self.reshare_tracking)
             reshared_message_dict = dict()
-            # messages, engagement, popularity, recency, ages, ranking, is_chosen
+            # messages, engagement, popularity, shares, recency, ages, ranking
             tracking_keys = [
                 "messages",
                 "engagement",
                 "popularity",
+                "no_shares",
                 "recency",
                 "ages",
                 "ranking",
                 "is_chosen",
             ]
+
             for idx, key in enumerate(tracking_keys):
                 reshared_message_dict[key] = all_reshare_tracking[idx].tolist()
-            # reshared_message_dict["message_id"] = all_reshare_tracking[0]
-            # reshared_message_dict["engagement"] = all_reshare_tracking[1]
-            # reshared_message_dict["popularity"] = all_reshare_tracking[2]
-            # reshared_message_dict["recency"] = all_reshare_tracking[3]
-            # reshared_message_dict["age"] = all_reshare_tracking[4]
-            # reshared_message_dict["ranking"] = all_reshare_tracking[5]
-            # reshared_message_dict["is_chosen"] = all_reshare_tracking[6]
             if self.save_message_info is True:
                 # Save agents' newsfeed info & message popularity
                 measurements["quality_timestep"] = self.quality_timestep
@@ -590,7 +585,7 @@ class SimSom:
         # ranking = utils.normalize(ranking)
         ## tracking
         message_info = np.vstack(
-            [messages, engagement, popularity, recency, ages, ranking]
+            [messages, engagement, popularity, shares, recency, ages, ranking]
         )
         return message_info, ranking
 

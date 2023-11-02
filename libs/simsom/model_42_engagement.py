@@ -209,11 +209,12 @@ class SimSom:
             # convert message tracking info into a big np array
             all_reshare_tracking = np.hstack(self.reshare_tracking)
             reshared_message_dict = dict()
-            # messages, engagement, popularity, recency, ages, ranking, is_chosen
+            # messages, engagement, popularity, shares, recency, ages, ranking
             tracking_keys = [
                 "messages",
                 "engagement",
                 "popularity",
+                "no_shares",
                 "recency",
                 "ages",
                 "ranking",
@@ -585,7 +586,7 @@ class SimSom:
         # ranking = utils.normalize(ranking)
         ## tracking
         message_info = np.vstack(
-            [messages, engagement, popularity, recency, ages, ranking]
+            [messages, engagement, popularity, shares, recency, ages, ranking]
         )
         return message_info, ranking
 
