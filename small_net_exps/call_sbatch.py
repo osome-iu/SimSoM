@@ -24,6 +24,8 @@ for folder in SBATCH_FOLDERS:
     os.chdir(output_dir)
     print(f"Changed to output dir: {os.getcwd()}")
     for fpath in fpaths:
+        if "cascade_scaling" in fpath:
+            continue
         print(f"\t Running {fpath}")
         subprocess.run(
             [
