@@ -81,9 +81,7 @@ class SimSom:
         theta=1,
     ):
         self.w_e = 0.5
-        self.model_name = (
-            f"SimSomV4.3; message 4.0; no recency; w_e={self.w_e}; no age reset"
-        )
+        self.model_name = f"SimSomV4.3y (asynchronous); message 4.0; no recency; w_e={self.w_e}; no age reset"
         print(f"{self.model_name}")
         # graph object
         self.graph_gml = graph_gml
@@ -143,6 +141,9 @@ class SimSom:
             self.is_human_only = (
                 True if len(self.human_uids) == self.n_agents else False
             )
+            self.n_chunks = self.n_agents // (10 * self.n_threads)
+            self.model_name += f"; no.groups: {self.n_chunks}"
+
             # init an empty feed for all agents
             # self.agent_feeds = {agent["uid"]: ([], []) for agent in self.network.vs}
             self.agent_feeds = defaultdict(lambda: ([], [], []))
@@ -189,8 +190,22 @@ class SimSom:
                 self.quality_timestep += [self.quality]
                 self.exposure_timestep += [self.measure_exposure()]
 
+            def chunks(lst, n):
+                """Yield successive n-sized chunks from lst."""
+                for i in range(0, len(lst), n):
+                    yield lst[i : i + n]
+
             # Propagate messages
-            self.simulation_step()
+            # create 10 groups of non-overlapping agents
+            # TODO: choose a smarter number than 10
+            order = np.random.permutation(range(self.n_agents))
+            idx_groups = chunks(order, self.n_chunks)
+            agent_groups = [
+                [self.network.vs[idx] for idx in group] for group in idx_groups
+            ]
+
+            for group in agent_groups:
+                self.simulation_step(group)
 
             self.update_quality()
 
@@ -249,14 +264,15 @@ class SimSom:
 
         return measurements
 
-    def simulation_step(self):
+    def simulation_step(self, agent_group):
         """
         During each simulation step, agents reshare or post new messages (in parallel).
         After `n` agents have done their actions and return requests to modify their follower feeds, messages are not yet propagated in the network.
         This step aggregates popularity of the messages (if multiple agents reshare the same message) and distributes messages to newsfeeds.
+        Inputs:
+        - agent_group (list of Graph vertex): list of activated agents
         """
 
-        all_agents = self.network.vs  # list of all agent ids
         q = queue.Queue()
 
         def post_message(agent):
@@ -267,17 +283,17 @@ class SimSom:
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.n_threads
         ) as executor:
-            if self.time_step == 1:
+            if (self.time_step == 1) and (self.num_message_unique < len(agent_group)):
                 print(
                     f" - Simulation running on {executor._max_workers} threads",
                     flush=True,
                 )
-            for _ in executor.map(post_message, all_agents):
+            for _ in executor.map(post_message, agent_group):
                 try:
                     pass
                 except Exception as e:
-                    print(e, flush=True)
-                    sys.exit("Propagation (post_message) failed.")
+                    print("Propagation step failed:", e, flush=True)
+                    sys.exit(1)
 
         update_list = defaultdict(list)
 
@@ -642,8 +658,9 @@ class SimSom:
             no_shares = np.insert(no_shares, 0, incoming_shares[~mask_y])
             messages = np.insert(messages, 0, incoming_ids[~mask_y])
             ages = np.insert(ages, 0, np.zeros(len(incoming_shares[~mask_y])))
-            if (ages != np.zeros(len(ages))).all():
-                print("")
+            # debugging
+            # if (ages != np.zeros(len(ages))).all():
+            #     print("")
             if self.verbose:
                 print(
                     f"   updated: messages: {messages}, shares: {no_shares}, ages: {ages}"
