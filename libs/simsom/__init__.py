@@ -11,5 +11,8 @@ from .model_41 import *
 from .model_41_tracking import *
 from .model_42_engagement import *
 from .model_42_popularity import *
+from .model_43 import *
+from .model_43_engagement import *
+from .model_43_popularity import *
 from .graphutils import *
 from .utils import *

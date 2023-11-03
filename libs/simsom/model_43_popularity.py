@@ -80,7 +80,7 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-        self.w_e = 0.5
+        self.w_e = 0
         self.model_name = (
             f"SimSomV4.3; message 4.0; no recency; w_e={self.w_e}; no age reset"
         )
