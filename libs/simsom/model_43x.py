@@ -81,7 +81,9 @@ class SimSom:
         theta=1,
     ):
         self.w_e = 0.5
-        self.model_name = f"SimSomV4.2; message 4.0; remove recency;  w_e={self.w_e}"
+        self.model_name = (
+            f"SimSomV4.3; message 4.0; no recency; w_e={self.w_e}; no age reset"
+        )
         print(f"{self.model_name}")
         # graph object
         self.graph_gml = graph_gml
@@ -627,10 +629,10 @@ class SimSom:
             # update no_shares and age of existing messages
             no_shares[mask_x] += incoming_shares[mask_y]
 
-            # add age to all other messages
+            # add age to all existing messages
             ages += np.ones(len(ages), dtype=int)
-            # reset age existing messages
-            ages[mask_x] = np.zeros(len(y_ind))
+            # # reset age overlapping messages
+            # ages[mask_x] = np.zeros(len(y_ind))
 
             if self.verbose:
                 print(
