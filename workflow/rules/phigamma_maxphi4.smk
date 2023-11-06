@@ -11,9 +11,6 @@ ABS_PATH = '/N/project/simsom/simsom_v3/v4.3z_11062023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
 
-
-CONFIG_PATH = os.path.join(ABS_PATH, "config")
-
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = 'vary_phigamma'
 
