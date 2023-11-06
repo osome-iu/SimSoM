@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=f33huberman_phigamma_mphi10
+#SBATCH --job-name=full43z_thetaphi_mtheta32
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running f33huberman_phigamma_mphi10 exps ######'
-snakemake --nolock --snakefile workflow/rules/phigamma_5runs_maxphi10.smk --cores 57
+echo '###### running full43z_thetaphi_mtheta32 exps ######'
+snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules/thetaphi_maxtheta32.smk --cores 57

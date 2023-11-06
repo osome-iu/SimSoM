@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=cascade_scaling_f33huberman
+#SBATCH --job-name=alpha_full43z
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running cascade_scaling_f33huberman exps ######'
-snakemake --nolock --snakefile workflow/rules/cascade_scaling.smk --cores 57
+echo '###### running alpha_full43z exps ######'
+snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile workflow/rules/vary_alpha.smk --cores 57

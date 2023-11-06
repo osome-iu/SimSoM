@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running phi_maxphi4_f33huberman exps ######'
+echo '###### running phi_maxphi4_full43z exps ######'
 snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile workflow/rules/vary_phi_maxphi4.smk --cores 21

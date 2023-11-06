@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=shuffle_f33huberman
+#SBATCH --job-name=shuffle_full43z
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running shuffle_f33huberman exps ######'
+echo '###### running shuffle_full43z exps ######'
 snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile workflow/rules/shuffle.smk --cores 57

@@ -6,7 +6,7 @@ import simsom.config_vals as configs
 
 import json 
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v3.3_huberman_10262023'
+ABS_PATH = '/N/project/simsom/simsom_v3/v4.3z_11062023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = 'experiments'
@@ -46,7 +46,7 @@ rule run_simulation:
         reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} -r {output.reshare} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver_43z -i {input.network} -o {output.measurements} -v {output.tracking} -r {output.reshare} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:
