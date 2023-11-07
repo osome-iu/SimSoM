@@ -80,8 +80,7 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-        self.w_e = 0.5
-        self.model_name = f"SimSomV4.5 (synchronous - permutate agent order); message 4.0;  (recency * en + pop); w_e={self.w_e}; no age reset"
+        self.model_name = f"SimSomV4.6 (synchronous - permutate agent order); message 4.0;  normalized (recency * en * no_shares); no age reset"
         print(f"{self.model_name}")
         # graph object
         self.graph_gml = graph_gml
@@ -206,11 +205,10 @@ class SimSom:
             # convert message tracking info into a big np array
             all_reshare_tracking = np.hstack(self.reshare_tracking)
             reshared_message_dict = dict()
-            # messages, engagement, popularity, shares, recency, ages, ranking
+            # messages, engagement, shares, recency, ages, ranking
             tracking_keys = [
                 "messages",
                 "engagement",
-                "popularity",
                 "no_shares",
                 "recency",
                 "ages",
@@ -382,7 +380,7 @@ class SimSom:
                 # Note: random.choices() weights input doesn't have to be normalized
                 # message info: 2d np array where each column is a message,
                 # each row is the information: messages, engagement, popularity, recency, ages, ranking
-                message_info, ranking = self._rank_newsfeed(newsfeed, w_e=self.w_e)
+                message_info, ranking = self._rank_newsfeed(newsfeed)
 
                 # make sure ranking order is correct
                 # assert (message_info[0] == messages).all()
@@ -552,7 +550,7 @@ class SimSom:
         except Exception as e:
             raise Exception(f"Fail to add messages to {target_id}'s feed", e)
 
-    def _rank_newsfeed(self, newsfeed, w_e=0.5):
+    def _rank_newsfeed(self, newsfeed):
         """
         Calculate probability of being reshared for messages in the newsfeed using the formula:
         $$ P(m) = w_ee_m + w_p\frac{p_m}{\sum^{\alpha}_{j\in M_i}p_j} + w_rr_m $$
@@ -562,31 +560,22 @@ class SimSom:
         https://www.pnas.org/doi/10.1073/pnas.0704916104
         $r ~ e^{-0.4t^{0.4}}$ where t is the time step
 
-        Default values:
-        - $w_e = w_p = 0.5$
 
         Input:
             newsfeed (tuple of np.arrays): (message_ids, no_shares, ages), represents an agent's news feed
         """
         messages, shares, ages = newsfeed
-        w_p = 1 - w_e
-
         engagement = np.array(
             [self.all_messages[message].engagement for message in messages]
         )
-        popularity = shares / np.sum(shares)  # relative no_shares
-
         recency = np.exp(-0.4 * (ages**0.4))
 
-        ranking = np.sum([w_e * engagement * recency, w_p * popularity], axis=0)
+        ranking = engagement * shares * recency / np.sum(engagement * shares * recency)
 
         # assert len(popularity) == len(engagement) == len(ranking)
-        # # normalize
-        # ranking = utils.normalize(ranking)
+
         ## tracking
-        message_info = np.vstack(
-            [messages, engagement, popularity, shares, recency, ages, ranking]
-        )
+        message_info = np.vstack([messages, engagement, shares, recency, ages, ranking])
         return message_info, ranking
 
     def _update_feed_handle_overlap(self, target_feed, incoming_ids, incoming_shares):
