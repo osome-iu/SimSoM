@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running full46z_thetagamma exps ######'
-snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules_46z/thetagamma.smk --cores 57
+snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules_46z/cascade/thetagamma.smk --cores 57
