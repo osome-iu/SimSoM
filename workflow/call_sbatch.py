@@ -9,7 +9,7 @@ import glob
 
 # change permission of the script before running: chmod +x workflow.get_subreddit_data
 ABS_PATH = "/N/u/baotruon/BigRed200/simsom"
-SBATCH_FOLDERS = ["sbatch"]
+SBATCH_FOLDERS = ["sbatch_46z"]
 
 for folder in SBATCH_FOLDERS:
     sbatch_dir = f"{ABS_PATH}/workflow/{folder}"
@@ -24,8 +24,8 @@ for folder in SBATCH_FOLDERS:
     os.chdir(output_dir)
     print(f"Changed to output dir: {os.getcwd()}")
     for fpath in fpaths:
-        if "cascade_scaling" in fpath:
-            continue
+        # if "cascade_scaling" in fpath:
+        #     continue
         print(f"\t Running {fpath}")
         subprocess.run(
             [
