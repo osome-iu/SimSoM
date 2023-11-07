@@ -17,7 +17,7 @@ EXPS = json.load(open(config_fname,'r'))[exp_type]
 EXP_NOS = [
         exp_name
         for exp_name in EXPS.keys()
-        if 'None' in exp_name and exp_name.endswith(configs.GAMMA.index(configs.DEFAULT_GAMMA))
+        if 'None' in exp_name and exp_name.endswith(str(configs.GAMMA.index(configs.DEFAULT_GAMMA)))
     ]
 EXP2NET = {exp_name: utils.netconfig2netname(config_fname, net_cf) for exp_name, net_cf in EXPS.items() if exp_name in EXP_NOS}
 
