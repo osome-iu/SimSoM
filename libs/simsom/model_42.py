@@ -640,8 +640,9 @@ class SimSom:
             no_shares = np.insert(no_shares, 0, incoming_shares[~mask_y])
             messages = np.insert(messages, 0, incoming_ids[~mask_y])
             ages = np.insert(ages, 0, np.zeros(len(incoming_shares[~mask_y])))
-            if (ages != np.zeros(len(ages))).all():
-                print("")
+            # # debugging
+            # if (ages != np.zeros(len(ages))).all():
+            #     print("")
             if self.verbose:
                 print(
                     f"   updated: messages: {messages}, shares: {no_shares}, ages: {ages}"

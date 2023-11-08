@@ -62,6 +62,7 @@ import concurrent.futures
 import queue
 from copy import deepcopy
 import sys
+import warnings
 
 
 class SimSom:
@@ -81,9 +82,7 @@ class SimSom:
         theta=1,
     ):
         self.w_e = 0.5
-        self.model_name = (
-            f"SimSomV4.3; message 4.0; no recency; w_e={self.w_e}; no age reset"
-        )
+        self.model_name = f"SimSomV4.3x; message 4.0; no recency; w_e={self.w_e}; no age reset, activity levels"
         print(f"{self.model_name}")
         # graph object
         self.graph_gml = graph_gml
@@ -143,8 +142,13 @@ class SimSom:
             self.is_human_only = (
                 True if len(self.human_uids) == self.n_agents else False
             )
+            # activity differential
+            self.activity_available = "postperday" in self.network.vs.attributes()
+            if not self.activity_available:
+                warnings.warn(
+                    "User activity data not available. Defaulting to user posting once per day."
+                )
             # init an empty feed for all agents
-            # self.agent_feeds = {agent["uid"]: ([], []) for agent in self.network.vs}
             self.agent_feeds = defaultdict(lambda: ([], [], []))
             if verbose is True:
                 # sanity check: calculate number of followers
@@ -642,8 +646,9 @@ class SimSom:
             no_shares = np.insert(no_shares, 0, incoming_shares[~mask_y])
             messages = np.insert(messages, 0, incoming_ids[~mask_y])
             ages = np.insert(ages, 0, np.zeros(len(incoming_shares[~mask_y])))
-            if (ages != np.zeros(len(ages))).all():
-                print("")
+            # # debugging
+            # if (ages != np.zeros(len(ages))).all():
+            #     print("")
             if self.verbose:
                 print(
                     f"   updated: messages: {messages}, shares: {no_shares}, ages: {ages}"

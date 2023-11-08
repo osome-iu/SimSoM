@@ -111,7 +111,8 @@ class SimSom:
         # number of unique messages across all human feeds
         self.num_human_messages_unique = 0
         #### debugging
-
+        # track the order of agents propagating stuffs to feeds to see if there's a biased order
+        self.update_order = []
         self.quality_timestep = []  # list of overall quality at each timestep
 
         self.message_dict = []  # list of all message objects
@@ -229,6 +230,8 @@ class SimSom:
                 measurements["age_timestep"] = self.age_timestep
                 measurements["all_messages"] = self.message_dict
                 measurements["reshared_messages"] = reshared_message_dict
+                # debug track order
+                measurements["update_order"] = self.update_order
                 # convert np arrays to list to JSON serialize
                 # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
                 # Only save data for agents whose feeds are not empty
@@ -262,7 +265,8 @@ class SimSom:
         def post_message(agent):
             modify_requests = self.user_step(agent)
             if len(modify_requests) > 0:
-                q.put(modify_requests)
+                # debugging: tracking the originator of the modify request
+                q.put((modify_requests, agent.index))
 
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.n_threads
@@ -287,7 +291,7 @@ class SimSom:
         # or item= [(follower1, [mess1]*theta), (follower2, [mess1]*theta), .. ] if the agent is a bot
         # iterates over all agent update requests, if exists overlap update popularity
         for item in q.queue:
-            for agent_id, message_ids in item:
+            for agent_id, message_ids in item[0]:
                 update_list[agent_id] += message_ids
         # eg:
         # {'a1': defaultdict(int, {'1': 4, '2': 1, '3': 1, '6': 1, '7': 1}),
@@ -298,6 +302,7 @@ class SimSom:
         # update_list: {agent_id: {message_id: popularity}}
 
         ages = []
+        self.update_order += [list(update_list.keys())]
         for agent_id, message_list in update_list.items():
             message_counts = Counter(message_list)
             message_ids = list(message_counts.keys())
@@ -642,8 +647,9 @@ class SimSom:
             no_shares = np.insert(no_shares, 0, incoming_shares[~mask_y])
             messages = np.insert(messages, 0, incoming_ids[~mask_y])
             ages = np.insert(ages, 0, np.zeros(len(incoming_shares[~mask_y])))
-            if (ages != np.zeros(len(ages))).all():
-                print("")
+            # # debugging
+            # if (ages != np.zeros(len(ages))).all():
+            #     print("")
             if self.verbose:
                 print(
                     f"   updated: messages: {messages}, shares: {no_shares}, ages: {ages}"
