@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=full46z_thetaphi_t32
+#SBATCH --job-name=full46z_thetaphi_t32_cascade
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh

@@ -3,7 +3,7 @@ Snakefile to run experiments with 2 gamma values (0.001, 0.01) while saving casc
 """
 
 import simsom.config_vals as configs
-
+import simsom.utils as utils
 import json 
 
 ABS_PATH = '/N/project/simsom/simsom_v3/v4.6z_11062023'
