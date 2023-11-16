@@ -4,11 +4,11 @@
 #SBATCH --mail-user=baotruon@iu.edu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=57
+#SBATCH --cpus-per-task=21
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=full46z_thetagamma_cascade
+#SBATCH --job-name=phi_maxphi4_sm46z1
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running full46z_thetagamma exps ######'
-snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules_46z/cascade/thetagamma.smk --cores 57
+echo '###### running phi_maxphi4_sm46z1 exps ######'
+snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile sm_new_exps/rules_46z1/phi_maxphi4.smk --cores 21

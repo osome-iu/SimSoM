@@ -5,7 +5,7 @@ import random
 import numpy as np
 
 
-class Message40:
+class Message46:
     def __init__(self, id, is_by_bot=0, phi=0):
         """
         Initializes an instance for a message.
@@ -45,7 +45,7 @@ class Message40:
         """
 
         u = random.random()
-        exponent = 2
+        exponent = 10
         # engagement value of a "normal" message by humans
         human_engagement = 1 - (1 - u) ** (1 / exponent)
 
