@@ -51,7 +51,7 @@ Outputs:
             - agent2 (str): uid of the agent resharing the message
 """
 
-from simsom.message_4l4 import Message4l4
+from simsom.message_4l10 import Message4l10
 import simsom.utils as utils
 import igraph as ig
 import csv
@@ -80,7 +80,7 @@ class SimSom:
         alpha=15,
         theta=1,
     ):
-        self.model_name = f"SimSomV4.6zl4 (synchronous - permutate agent order); Message4l4 (expon quality, linear appeal exp=4);  normalized (recency * en * no_shares); no age reset"
+        self.model_name = f"SimSomV4.6zl10 (synchronous - permutate agent order); Message4l10 (expon quality, linear appeal exp=10);  normalized (recency * en * no_shares); no age reset"
         print(f"{self.model_name}")
         # graph object
         self.graph_gml = graph_gml
@@ -392,7 +392,7 @@ class SimSom:
             else:
                 # new message
                 self.num_message_unique += 1
-                message = Message4l4(
+                message = Message4l10(
                     id=self.num_message_unique,
                     is_by_bot=agent["bot"],
                     phi=self.phi,
