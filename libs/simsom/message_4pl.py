@@ -35,16 +35,17 @@ class Message4pl:
         x = random.random()
         return np.log(1 - x + x * np.e ** (-1 * lambda_quality)) / (-1 * lambda_quality)
 
-    def pl_appeal(self, appeal_gamma=-2):
+    def pl_appeal(self, appeal_gamma=2):
         """
         Return an appeal value x following a bounded powerlaw x ~ x^-(appeal_gamma), 0<=x<=1
         http://up-rs-esp.github.io/bpl/
         """
         x = random.random()
-        xmin = 0
+        xmin = 0.0001  # function is undefined at xmin=0
         xmax = 1
         # generate power law distributed on (xmin, inf)
-        # xmin * x ** (-1 / (appeal_gamma- 1))
+        # xmin=10
+        # return xmin * (1-x)**(-1 / (appeal_gamma- 1))
         a = xmin ** (1 - appeal_gamma)
         b = xmax ** (1 - appeal_gamma) - a
         return (a + b * x) ** (1 / (1 - appeal_gamma))
