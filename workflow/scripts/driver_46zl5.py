@@ -31,7 +31,11 @@ def multiple_simulations(
             # Tracking cascade info
             if infosys_specs["output_cascades"] is True:
                 #  make a reshare.csv file no matter what. Save to other files according to number of (multiple) runs.
-                prefix = f"_{time}.csv"
+                if time > 0:
+                    prefix = f"_{time}.csv"
+                else:
+                    prefix = f".csv"
+
                 measurements = follower_sys.simulation(
                     reshare_fpath=reshare_fpath.replace(".csv", prefix)
                 )

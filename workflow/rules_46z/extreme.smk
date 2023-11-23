@@ -4,7 +4,7 @@ Snakefile to run experiments using extreme values for the bot subnetwork
 import simsom.utils as utils
 import json 
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v4.6z_11062023'
+ABS_PATH = '/N/project/simsom/simsom_v3/v4.6zl5_11222023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = 'experiments'
@@ -41,7 +41,7 @@ rule run_simulation:
         tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver_46z -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver_46zl5 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:
