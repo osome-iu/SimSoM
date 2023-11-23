@@ -9,7 +9,7 @@ import glob
 
 # change permission of the script before running: chmod +x workflow.get_subreddit_data
 ABS_PATH = "/N/u/baotruon/BigRed200/simsom"
-SBATCH_FOLDERS = ["sbatch_46z"]
+SBATCH_FOLDERS = ["sbatch_46z", "sbatch_46zl8"]
 
 for folder in SBATCH_FOLDERS:
     sbatch_dir = f"{ABS_PATH}/workflow/{folder}"
