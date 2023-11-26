@@ -19,7 +19,7 @@ for folder in SBATCH_FOLDERS:
     subprocess.run(["chmod", "-R", "+x", "."])
 
     fpaths = glob.glob(f"{sbatch_dir}/*.sh")
-    output_dir = f"{ABS_PATH}/sm_new_exps/output_{folder}"
+    output_dir = f"{ABS_PATH}/sm_nov25/output_{folder}"
     os.makedirs(output_dir, exist_ok=True)
     os.chdir(output_dir)
     print(f"Changed to output dir: {os.getcwd()}")
