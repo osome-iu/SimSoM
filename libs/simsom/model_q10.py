@@ -229,15 +229,16 @@ class SimSom:
                 # convert np arrays to list to JSON serialize
                 # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
                 # Only save data for agents whose feeds are not empty
+                measurements["feeds_message_ids"] = {}
+                measurements["feeds_shares"] = {}
+                measurements["feeds_ages"] = {}
                 for agent_id, feed_tuple in self.agent_feeds.items():
                     if len(feed_tuple[0]) > 0:
-                        measurements["feeds_message_ids"] = {
-                            agent_id: feed_tuple[0].tolist()
-                        }
-                        measurements["feeds_shares"] = {
-                            agent_id: feed_tuple[1].tolist()
-                        }
-                        measurements["feeds_ages"] = {agent_id: feed_tuple[2].tolist()}
+                        measurements["feeds_message_ids"][agent_id] = feed_tuple[
+                            0
+                        ].tolist()
+                        measurements["feeds_shares"][agent_id] = feed_tuple[1].tolist()
+                        measurements["feeds_ages"][agent_id] = feed_tuple[2].tolist()
         except Exception as e:
             raise Exception(
                 'Failed to output a measurement, e.g,["quality", "diversity", "discriminative_pow"] or save message info.',
