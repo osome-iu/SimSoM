@@ -42,8 +42,8 @@ rule run_simulation:
         configfile = ancient(os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json"))
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
-        tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
-        reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
+        tracking = os.path.join(TRACKING_DIR, '{exp_no}_0.json.gz'),
+        reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare_0.csv')
     threads: nthreads
     shell: """
         python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -r {output.reshare} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}

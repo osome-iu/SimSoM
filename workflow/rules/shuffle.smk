@@ -5,7 +5,7 @@ Snakefile to run experiments using different shuffled version of the default net
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v4.3z_11062023'
+ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 
 # ABS_PATH = 'experiments'
@@ -43,7 +43,7 @@ rule run_simulation:
         tracking = os.path.join(TRACKING_DIR, '{shuffle}_shuffle__{strategy}{gamma}.json.gz')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver_43z -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 

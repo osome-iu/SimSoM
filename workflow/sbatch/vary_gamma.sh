@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=gamma_full43z
+#SBATCH --job-name=gamma_fzl5
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running gamma_full43z exps ######'
-snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile workflow/rules/vary_gamma.smk --cores 57
+echo '###### running gamma_fzl5 exps ######'
+snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile workflow/rules_zl5/vary_gamma.smk --cores 57

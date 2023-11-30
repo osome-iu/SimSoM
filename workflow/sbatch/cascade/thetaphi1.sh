@@ -8,7 +8,7 @@
 #SBATCH --time=3-23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
-#SBATCH --job-name=full43z_thetaphi_t32
+#SBATCH --job-name=fzl5_thetaphi_t32_cascade
 
 ######  Module commands #####
 source /N/u/baotruon/BigRed200/conda/etc/profile.d/conda.sh
@@ -17,5 +17,5 @@ conda activate simsommodel
 
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
-echo '###### running full43z_thetaphi_t32 exps ######'
-snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules/thetaphi1.smk --cores 57
+echo '###### running fzl5_thetaphi_t32 exps ######'
+snakemake --nolock --rerun-triggers mtime --snakefile workflow/rules_zl5/cascade/thetaphi1.smk --cores 57

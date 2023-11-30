@@ -7,7 +7,7 @@ Use network_*0.gml, where wildcards=[0,1,2,3] (for varying Gamma and None strate
 import simsom.utils as utils
 import json 
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v4.3z_11062023'
+ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
 
@@ -45,11 +45,11 @@ rule run_simulation:
         configfile = ancient(os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json")) #data/vary_thetabeta/004.json
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
-        tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
-        # reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
+        tracking = os.path.join(TRACKING_DIR, '{exp_no}_0.json.gz'),
+        # reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare_0.csv')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver_43z -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:

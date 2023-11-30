@@ -1,26 +1,25 @@
 """
-Snakefile to run experiments with varying phi and gamma values (except for gamma=0.01)
-(Total 30 jobs)
-Use network_*0.gml, where wildcards=[0,1,2,3] (for varying Gamma and None strategy)
+Snakefile to run experiments with varying phi and gamma values
+cascade=True
+maxphi=4
 """
 
-import simsom.utils as utils
 import json 
+import simsom.utils as utils
 
 ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
-CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
+CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true"
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = 'vary_phigamma'
 
 # get names for exp_config and network
-GAMMA='2' #index of gamma (0.01)
 EXPS = json.load(open(config_fname,'r'))[exp_type]
 
 MAXPHI_IDX = 4  # 0.4
 
-EXP_NOS = [exp for exp in EXPS.keys() if (exp[1]!=GAMMA) and (int(exp[0]) > MAXPHI_IDX)]
+EXP_NOS = [exp for exp in EXPS.keys() if int(exp[0]) <= MAXPHI_IDX]
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
     for exp_name, net_cf in EXPS.items()
@@ -28,12 +27,11 @@ EXP2NET = {
 }
 
 nthreads=7
-sim_num = 5
-mode='igraph'
+sim_num = 1
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_')
-# CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}_')
+RES_DIR = os.path.join(ABS_PATH,'results', f'{exp_type}_cascade')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'{exp_type}_cascade')
+CASCADE_DIR = os.path.join(ABS_PATH,'results_cascade', f'{exp_type}_cascade')
 
 rule all:
     input: 
@@ -45,11 +43,11 @@ rule run_simulation:
         configfile = ancient(os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json")) #data/vary_thetabeta/004.json
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
-        tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
-        # reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare.csv')
+        tracking = os.path.join(TRACKING_DIR, '{exp_no}_0.json.gz'),
+        reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare_0.csv')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -r {output.reshare} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:

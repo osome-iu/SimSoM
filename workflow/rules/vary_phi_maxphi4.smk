@@ -11,7 +11,7 @@ import simsom.utils as utils
 # DATA_PATH = os.path.join(ABS_PATH, "data")
 # CONFIG_PATH = os.path.join(ABS_PATH, "config")
 
-ABS_PATH = '/N/project/simsom/simsom_v3/v4.3z_11062023'
+ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
 CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
 
@@ -44,10 +44,10 @@ rule run_simulation:
         configfile = os.path.join(CONFIG_PATH, exp_type, "{exp_no}.json")
     output: 
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
-        tracking = os.path.join(TRACKING_DIR, '{exp_no}.json.gz'),
+        tracking = os.path.join(TRACKING_DIR, '{exp_no}_0.json.gz'),
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver_43z -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:
