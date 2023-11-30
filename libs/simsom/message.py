@@ -1,14 +1,15 @@
 """
 Class modeling a message. 
-Quality: Exponential 
-Appeal: Linear
+A message has 2 intrinsic, independent attributes:
+- Quality following an exponential distribution (estimated using empirical data)
+- Appeal, following a right-skewed distribution
 """
 import random
 import numpy as np
 
 
 class Message:
-    def __init__(self, id, is_by_bot=0, phi=0, appeal_exp=2):
+    def __init__(self, id, is_by_bot=0, phi=0, appeal_exp=5):
         """
         Initializes an instance for a message.
         Quality and appeal values are decided by the parameter phi.
@@ -16,6 +17,7 @@ class Message:
             - id (int): unique identifier for this message
             - is_by_bot (int): 1 if the message is by bot, else 0
             - phi (float): range [0,1].
+            - appeal_exp (int): exponent alpha characterizes the rarity of high appeal values are
             If phi=0, there is no appeal advantage to messages by bot. Meaning appeal of bot and human messages drawn from the same distribution
         """
 
@@ -25,39 +27,36 @@ class Message:
         self.appeal_exp = appeal_exp
         quality, appeal = self.get_values()
         self.quality = quality
-        self.appeal = appeal  # referred to as "appeal" in the paper
+        self.appeal = appeal
 
     def expon_quality(self, lambda_quality=-5):
         """
-        Return a quality value x, $f(x) \sim Ce^{-\lambda x}$, 0<=x<=1
+        Return a quality value x via inverse transform sampling
+        Pdf of quality: $f(x) \sim Ce^{-\lambda x}$, 0<=x<=1
         $C = \frac{\lambda}{1-e^{-\lambda}}$
         """
-        # inverse transform sampling
         x = random.random()
         return np.log(1 - x + x * np.e ** (-1 * lambda_quality)) / (-1 * lambda_quality)
 
-    def linear_appeal(self, exponent=2):
+    def appeal_func(self, exponent=5):
         """
-        Return an appeal value x following a right-skewed distribution
-        $P(x) = (1+\phi)(1-x)^{\phi}$, the larger phi, the more skewed the distribution is
-        Default: P(x) = 2-2x
+        Return an appeal value a following a right-skewed distribution via inverse transform sampling
+        Pdf of appeal: $P(a) = (1+\alpha)(1-a)^{\alpha}$, the larger alpha, the more skewed the distribution is
+        exponent = alpha+1
         """
-        # inverse transform sampling
         if self.id == 1:
-            print(f"Created message using appeal exp={self.appeal_exp}")
+            print(f"Created message using appeal exp alpha={self.appeal_exp}")
         u = random.random()
         return 1 - (1 - u) ** (1 / exponent)
 
     def get_values(self):
         """
-        Returns (quality, appeal) values of a message based on lowq_prob and phi
+        Returns (quality, appeal) values for messages based on phi
         Use inverse transform sampling to draw values from a distribution https://en.wikipedia.org/wiki/Inverse_transform_sampling
-        Note that the 2 random numbers generated below may or may not include 1, see https://docs.python.org/3/library/random.html#random.uniform.
-            For systems with bots, bot message is fixed to lowq_prob=1, so we don't need to worry about it.
         """
 
         # appeal value of a "normal" message by humans
-        human_appeal = self.linear_appeal(exponent=self.appeal_exp)
+        human_appeal = self.appeal_func(exponent=self.appeal_exp)
 
         u = random.random()
         if self.is_by_bot:
