@@ -13,7 +13,7 @@ Inputs:
     - epsilon (float): threshold of quality difference between 2 consecutive timesteps to decide convergence. Default: 0.0001
     - rho (float): weight of the previous timestep's quality in calculating new quality. Default: 0.8
     - mu (float): probability that an agent create new messages. Default: 0.5
-    - phi (float): phi in range [0,1] is the probability that a bot message's engagement (engagment) equals 1. Default: 0
+    - phi (float): phi in range [0,1] is the probability that a bot message's appeal equals 1. Default: 0
     - alpha (int): agent's newsfeed size. Default: 15
     - theta (int): number of copies bots make when creating messages. Default: 1
 Important note: 
@@ -34,7 +34,7 @@ Outputs:
             - is_by_bot (int): 0 if message is by human, 1 if by bot
             - phi (float): same as phi specified in InfoSys
             - quality (float): quality
-            - engagement (float): engagement 
+            - appeal (float): appeal 
             - human_shares (int): number of shares by humans
             - bot_shares (int): number of shares by bots
             - spread_via_agents (list): uids of agents who reshared this message
@@ -118,7 +118,7 @@ class SimSom:
         self.agent_feeds = {}  # dict of agent_uid - [message_ids]
 
         # each item is a 2d numpy array of message info
-        # each column is a message, each row is the information: messages, engagement, popularity, recency, ages, ranking, is_chosen
+        # each column is a message, each row is the information: messages, appeal, popularity, recency, ages, ranking, is_chosen
         self.reshare_tracking = []
 
         self.exposure_timestep = []  # list of exposure to bot messages at each timestep
@@ -207,10 +207,10 @@ class SimSom:
             # convert message tracking info into a big np array
             all_reshare_tracking = np.hstack(self.reshare_tracking)
             reshared_message_dict = dict()
-            # messages, engagement, shares, recency, ages, ranking
+            # messages, appeal, shares, recency, ages, ranking
             tracking_keys = [
                 "messages",
-                "engagement",
+                "appeal",
                 "no_shares",
                 "recency",
                 "ages",
@@ -380,10 +380,10 @@ class SimSom:
 
             # return messages created by the agent via resharing or posting
             if len(newsfeed[0]) > 0 and random.random() > self.mu:
-                # retweet a message from feed selected based on its ranking (engagement, popularity and recency)
+                # retweet a message from feed selected based on its ranking (appeal, popularity and recency)
                 # Note: random.choices() weights input doesn't have to be normalized
                 # message info: 2d np array where each column is a message,
-                # each row is the information: messages, engagement, popularity, recency, ages, ranking
+                # each row is the information: messages, appeal, popularity, recency, ages, ranking
                 message_info, ranking = self._rank_newsfeed(newsfeed)
 
                 # make sure ranking order is correct
@@ -559,7 +559,7 @@ class SimSom:
         """
         Calculate probability of being reshared for messages in the newsfeed using the formula:
         $$ P(m) = w_ee_m + w_p\frac{p_m}{\sum^{\alpha}_{j\in M_i}p_j} + w_rr_m $$
-        where $e_m, p_m, r_m$ are the engagement, no_shares and recency of a message and $w_e, w_p, w_r$ are their respective weights.
+        where $e_m, p_m, r_m$ are the appeal, no_shares and recency of a message and $w_e, w_p, w_r$ are their respective weights.
 
         The recency of a message m follow a stretched exponential distribution estimated empirically by Wu & Huberman
         https://www.pnas.org/doi/10.1073/pnas.0704916104
@@ -570,17 +570,15 @@ class SimSom:
             newsfeed (tuple of np.arrays): (message_ids, no_shares, ages), represents an agent's news feed
         """
         messages, shares, ages = newsfeed
-        engagement = np.array(
-            [self.all_messages[message].engagement for message in messages]
-        )
+        appeal = np.array([self.all_messages[message].appeal for message in messages])
         recency = np.exp(-0.4 * (ages**0.4))
 
-        ranking = engagement * shares * recency / np.sum(engagement * shares * recency)
+        ranking = appeal * shares * recency / np.sum(appeal * shares * recency)
 
-        # assert len(popularity) == len(engagement) == len(ranking)
+        # assert len(popularity) == len(appeal) == len(ranking)
 
         ## tracking
-        message_info = np.vstack([messages, engagement, shares, recency, ages, ranking])
+        message_info = np.vstack([messages, appeal, shares, recency, ages, ranking])
         return message_info, ranking
 
     def _update_feed_handle_overlap(self, target_feed, incoming_ids, incoming_shares):
@@ -676,7 +674,7 @@ class SimSom:
 
     def _return_all_message_info(self):
         """
-        Combine message attributes (quality, engagement) with popularity data (spread_via_agents, seen_by_agents, etc.)
+        Combine message attributes (quality, appeal) with popularity data (spread_via_agents, seen_by_agents, etc.)
         Return a list of dict, where each dict contains message metadata
         """
         # for message in self.all_messages.values():

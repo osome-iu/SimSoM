@@ -11,21 +11,21 @@ class Message:
     def __init__(self, id, is_by_bot=0, phi=0, appeal_exp=2):
         """
         Initializes an instance for a message.
-        Quality and engagement values are decided by the parameter phi.
+        Quality and appeal values are decided by the parameter phi.
         Parameters:
             - id (int): unique identifier for this message
             - is_by_bot (int): 1 if the message is by bot, else 0
             - phi (float): range [0,1].
-            If phi=0, there is no engagement advantage to messages by bot. Meaning engagement of bot and human messages drawn from the same distribution
+            If phi=0, there is no appeal advantage to messages by bot. Meaning appeal of bot and human messages drawn from the same distribution
         """
 
         self.id = id
         self.is_by_bot = is_by_bot
         self.phi = phi
         self.appeal_exp = appeal_exp
-        quality, engagement = self.get_values()
+        quality, appeal = self.get_values()
         self.quality = quality
-        self.engagement = engagement  # referred to as "engagement" in the paper
+        self.appeal = appeal  # referred to as "appeal" in the paper
 
     def expon_quality(self, lambda_quality=-5):
         """
@@ -50,24 +50,24 @@ class Message:
 
     def get_values(self):
         """
-        Returns (quality, engagement) values of a message based on lowq_prob and phi
+        Returns (quality, appeal) values of a message based on lowq_prob and phi
         Use inverse transform sampling to draw values from a distribution https://en.wikipedia.org/wiki/Inverse_transform_sampling
         Note that the 2 random numbers generated below may or may not include 1, see https://docs.python.org/3/library/random.html#random.uniform.
             For systems with bots, bot message is fixed to lowq_prob=1, so we don't need to worry about it.
         """
 
-        # engagement value of a "normal" message by humans
-        human_engagement = self.linear_appeal(exponent=self.appeal_exp)
+        # appeal value of a "normal" message by humans
+        human_appeal = self.linear_appeal(exponent=self.appeal_exp)
 
         u = random.random()
         if self.is_by_bot:
-            engagement = 1 if u < self.phi else human_engagement
+            appeal = 1 if u < self.phi else human_appeal
         else:
-            engagement = human_engagement
+            appeal = human_appeal
 
         if self.is_by_bot:
             quality = 0
         else:
             quality = self.expon_quality()
 
-        return quality, engagement
+        return quality, appeal

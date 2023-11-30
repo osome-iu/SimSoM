@@ -11,7 +11,7 @@
     - Targeting strategies
         - Default values, only change targeting 
 
-    config["output_cascades"]=False
+    Default config["output_cascades"]=False. To build reshare/exposure network, set to True
 """
 import simsom.utils as utils
 import simsom.config_vals as configs
