@@ -1,9 +1,13 @@
-""" Script to run simulations (Appeal exponent =5, quality=-10)"""
+""" Script to run simulation(s)
+    Parse command-line arguments specifying simulation parameters and output file paths 
+    Run simulation(s)
+
+    Reshare output file (.csv) and verbose tracking file (.json.gz) names are always suffixed by number of runs 
+    e.g: if no_run=1, reshare_fpath="reshares_0.csv" and verboseout="verboseout_0.json.gz"
+"""
 
 from simsom import SimSom
 import simsom.utils as utils
-
-import gzip
 import sys
 import argparse
 import json
@@ -30,40 +34,30 @@ def multiple_simulations(
             print("Start simulation ..")
             # Tracking cascade info
             if infosys_specs["output_cascades"] is True:
-                #  make a reshare.csv file no matter what. Save to other files according to number of (multiple) runs.
-                if time > 0:
-                    prefix = f"_{time}.csv"
-                else:
-                    prefix = f".csv"
-
-                measurements = follower_sys.simulation(
-                    reshare_fpath=reshare_fpath.replace(".csv", prefix)
-                )
-            else:
-                measurements = follower_sys.simulation()
+                reshare_fpath = reshare_fpath.replace(
+                    ".csv", f"_{time}.csv"
+                )  # named by no.run
+            measurements = follower_sys.simulation(reshare_fpath=reshare_fpath)
 
         except Exception as e:
             raise Exception("Failed to run simulations.", e)
 
         try:
-            # Update results over multiple simulations
-            for metric in metrics:
-                n_measures[metric] += [measurements[metric]]
-
             # Save verbose results
             if verboseout is not None:
-                if time > 0:
-                    prefix = f"_{time}.json.gz"
-                else:
-                    prefix = f".json.gz"
-
-                verboseout_path = verboseout.replace(".json.gz", prefix)
+                verboseout_path = verboseout.replace(
+                    ".json.gz", f"_{time}.json.gz"
+                )  # named by no.run
                 specs = copy.deepcopy(infosys_specs)
                 specs.update(measurements)
                 utils.write_json_compressed(verboseout_path, specs)
 
         except Exception as e:
             raise ("Error saving verbose results", e)
+
+        # Update results over multiple simulations for summary statistics
+        for metric in metrics:
+            n_measures[metric] += [measurements[metric]]
 
     print(
         f"average quality for follower network: {np.mean(np.array(n_measures['quality']))} pm {np.std(np.array(n_measures['quality']))}"
@@ -78,15 +72,12 @@ def run_simulation(infosys_specs, reshare_fpath="reshares.csv"):
     print("Create SimSom instance..")
     follower_sys = SimSom(**infosys_specs)
     print(f"Start simulation..")
-    dir = os.path.dirname(reshare_fpath)
-    exp_name = os.path.basename(reshare_fpath).split("__")[0]
     measurements = follower_sys.simulation(reshare_fpath=reshare_fpath)
     print("average quality for follower network:", measurements["quality"])
     return measurements
 
 
 def main(args):
-    # TODO: remove mode
     parser = argparse.ArgumentParser(
         description="run simulation on an igraph instance of SimSom",
     )
@@ -136,14 +127,6 @@ def main(args):
         help="path to all configs file",
     )
     parser.add_argument(
-        "--mode",
-        action="store",
-        dest="mode",
-        type=str,
-        required=False,
-        help="mode of implementation ['igraph', 'nx', 'infosys']",
-    )
-    parser.add_argument(
         "--times",
         action="store",
         dest="times",
@@ -172,7 +155,6 @@ def main(args):
 
     infosys_spec = json.load(open(configfile, "r"))
     infosys_spec["graph_gml"] = infile
-    infosys_spec["mode"] = args.mode if args.mode is not None else "igraph"
     if args.nthreads is not None:
         infosys_spec["n_threads"] = int(args.nthreads)
 
