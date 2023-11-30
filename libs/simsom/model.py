@@ -14,7 +14,7 @@ Inputs:
     - rho (float): weight of the previous timestep's quality in calculating new quality. Default: 0.8
     - mu (float): probability that an agent create new messages. Default: 0.5
     - phi (float): phi in range [0,1] is the probability that a bot message's appeal equals 1. Default: 0
-    - alpha (int): agent's newsfeed size. Default: 15
+    - sigma (int): agent's newsfeed size. Default: 15
     - theta (int): number of copies bots make when creating messages. Default: 1
 Important note: 
     - graph_gml: link direction is following (follower -> friend), opposite of info spread!
@@ -77,9 +77,9 @@ class SimSom:
         rho=0.8,  # Don't change this value, check note above
         mu=0.5,
         phi=0,
-        alpha=15,
+        sigma=15,
         theta=1,
-        appeal_exp=2,
+        appeal_exp=5,
     ):
         self.model_name = f"SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp={appeal_exp});  normalized (recency * en * no_shares); no age reset"
         print(f"{self.model_name}")
@@ -91,7 +91,7 @@ class SimSom:
         self.rho = rho
         self.mu = mu
         self.phi = phi
-        self.alpha = alpha
+        self.sigma = sigma
         self.theta = theta
         self.appeal_exp = appeal_exp
 
@@ -506,7 +506,7 @@ class SimSom:
 
     def _bulk_add_messages_to_feed(self, target_id, incoming_ids, incoming_shares):
         """
-        Add message to agent's feed in bulk, forget the oldest if feed size exceeds self.alpha (first in first out)
+        Add message to agent's feed in bulk, forget the oldest if feed size exceeds self.sigma (first in first out)
         If a message to be added is already in the feed, update its popularity and move to beginning of feed (youngest)
         Inputs:
         - target_id (str): uid of agent resharing the message -- whose feed we're adding the message to
@@ -540,8 +540,8 @@ class SimSom:
 
                 updated_feed = (messages, no_shares, ages)
 
-            # clip the agent's feed if exceeds alpha
-            if len(updated_feed[0]) > self.alpha:
+            # clip the agent's feed if exceeds sigma
+            if len(updated_feed[0]) > self.sigma:
                 updated_feed = self._handle_oversized_feed(updated_feed)
 
             # rank messages
@@ -558,7 +558,7 @@ class SimSom:
     def _rank_newsfeed(self, newsfeed):
         """
         Calculate probability of being reshared for messages in the newsfeed using the formula:
-        $$ P(m) = w_ee_m + w_p\frac{p_m}{\sum^{\alpha}_{j\in M_i}p_j} + w_rr_m $$
+        $$ P(m) = w_ee_m + w_p\frac{p_m}{\sum^{\sigma}_{j\in M_i}p_j} + w_rr_m $$
         where $e_m, p_m, r_m$ are the appeal, no_shares and recency of a message and $w_e, w_p, w_r$ are their respective weights.
 
         The recency of a message m follow a stretched exponential distribution estimated empirically by Wu & Huberman
@@ -662,12 +662,12 @@ class SimSom:
         ]
 
         updated_feed = (
-            sorted_messages[: self.alpha],
-            sorted_shares[: self.alpha],
-            sorted_ages[: self.alpha],
+            sorted_messages[: self.sigma],
+            sorted_shares[: self.sigma],
+            sorted_ages[: self.sigma],
         )
 
-        assert len(updated_feed[0]) <= self.alpha
+        assert len(updated_feed[0]) <= self.sigma
         # for i in updated_feed:
         #     assert isinstance(i, np.ndarray)
         return updated_feed
@@ -776,7 +776,7 @@ class SimSom:
                 f" - rho:     {self.rho}",
                 f"Propagation parameters:",
                 f" - mu (posting rate): {self.mu}",
-                f" - alpha (feedsize):  {self.alpha}",
+                f" - sigma (feedsize):  {self.sigma}",
                 f"Network contains one type of agents (no bots): {self.is_human_only}",
                 f"{bot_params}",
             ]
