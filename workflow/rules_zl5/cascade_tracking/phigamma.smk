@@ -8,6 +8,7 @@ To plot reshare cascade size
 import json 
 import simsom.utils as utils
 import simsom.config_vals as configs
+import numpy as np
 
 ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
@@ -23,7 +24,8 @@ EXPS = json.load(open(config_fname, "r"))[exp_type]
 PHI = [np.round(i,1) for i in configs.PHI_SWIPE]
 phi_vals = [0, 0.4, 0.7, 1.0]
 PHI_IDXS = [PHI.index(phi) for phi in phi_vals]
-EXP_NOS = [exp for exp in EXPS.keys() if (exp[1]==GAMMA) and (int(exp[0]) in PHI_IDXS)]
+# for phi=1.0, exp name is not 2-character
+EXP_NOS = [exp for exp in EXPS.keys() if (exp[-1]==GAMMA) and ((int(exp[0]) in PHI_IDXS) or ('10' in exp))]
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
     for exp_name, net_cf in EXPS.items() if exp_name in EXP_NOS}
