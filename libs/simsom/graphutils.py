@@ -308,9 +308,11 @@ def rewire_preserve_community(graph, iterations=5):
 
 def _delete_unused_attributes(net, desire_attribs=["uid", "party", "misinfo"]):
     # delete unused attribs or artifact of igraph to maintain consistency
-    network_attribs = net.vs.attributes()
-    if len(set(desire_attribs) & set(network_attribs)) < len(desire_attribs):
-        raise ValueError(f"one of the desire attribs {desire_attribs} not in network")
+    # NOTE: Commented out to work with synthetic networks (no user metadata, random targeting)
+    # For experiments where bots get humans to follow non-randomly (via partisanship, misinformation, etc.), uncomment the following
+    # network_attribs = net.vs.attributes()
+    # if len(set(desire_attribs) & set(network_attribs)) < len(desire_attribs):
+    #     raise ValueError(f"one of the desire attribs {desire_attribs} not in network")
     for attrib in net.vs.attributes():
         if attrib not in desire_attribs:
             del net.vs[attrib]
