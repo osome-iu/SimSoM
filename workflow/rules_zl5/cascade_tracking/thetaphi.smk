@@ -7,6 +7,7 @@ To plot reshare cascade size
 
 import json 
 import simsom.utils as utils
+import simsom.config_vals as configs
 
 ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
 DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
