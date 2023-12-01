@@ -45,7 +45,7 @@ class Message:
         exponent = alpha+1
         """
         if self.id == 1:
-            print(f"Created message using appeal exp alpha={self.appeal_exp}")
+            print(f"\t Created message using appeal exp alpha={self.appeal_exp}")
         u = random.random()
         return 1 - (1 - u) ** (1 / exponent)
 

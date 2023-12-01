@@ -81,8 +81,6 @@ class SimSom:
         theta=1,
         appeal_exp=5,
     ):
-        self.model_name = f"SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp={appeal_exp});  normalized (recency * en * no_shares); no age reset"
-        print(f"{self.model_name}")
         # graph object
         self.graph_gml = graph_gml
 
@@ -201,7 +199,6 @@ class SimSom:
                 "quality": self.quality,
                 "diversity": self.measure_diversity(),
                 "discriminative_pow": self.measure_kendall_tau(),
-                "model": self.model_name,
             }
 
             # convert message tracking info into a big np array
