@@ -1,28 +1,33 @@
 """
 Snakefile to run experiments with varying theta and phi values
 cascade=True
-maxtheta=4
+theta_vals = [1,4, 16, 64]
+To plot reshare cascade size
 """
 
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
-DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
-CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true"
+ABS_PATH = 'experiments'
+DATA_PATH = os.path.join(ABS_PATH, "data")
+CONFIG_PATH = os.path.join(ABS_PATH, "config_cascade_true")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = 'vary_thetaphi'
+PHI='0' #index of phi=0
 
 # get names for exp_config and network
 EXPS = json.load(open(config_fname,'r'))[exp_type]
 
-MAXTHETA_IDX = 2  # 2^5 = 32
-EXP_NOS = [exp for exp in EXPS.keys() if int(exp[0]) <= MAXTHETA_IDX]
+THETA = configs.THETA_SWIPE
+theta_vals = [1,4, 16, 64]
+THETA_IDXS =[THETA.index(theta) for theta in theta_vals]
+
+EXP_NOS = [exp for exp in EXPS.keys() if (exp[1]==PHI) and (int(exp[0]) in THETA_IDXS)]
+
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
     for exp_name, net_cf in EXPS.items()
-    if exp_name in EXP_NOS
 }
 
 nthreads= 7
@@ -46,7 +51,7 @@ rule run_simulation:
         reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare_0.csv')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -r {output.reshare} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -r {output.reshare} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:

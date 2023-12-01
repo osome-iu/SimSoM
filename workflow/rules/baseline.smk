@@ -3,14 +3,10 @@ Snakefile to run baseline experiments where there's no bot in the system
 """
 import json 
 
-ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
-DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
+ABS_PATH = 'experiments'
+DATA_PATH = os.path.join(ABS_PATH, "data")
 
-# ABS_PATH = 'experiments'
-# DATA_PATH = os.path.join(ABS_PATH, "data")
-
-CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
-
+CONFIG_PATH = os.path.join(ABS_PATH, "config")
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = "baseline"
 # get network names corresponding to the strategy
@@ -35,7 +31,7 @@ rule run_simulation:
         measurements = os.path.join(RES_DIR, '{exp_no}.json'),
         tracking = os.path.join(TRACKING_DIR, '{exp_no}_0.json.gz')
     shell: """
-        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:

@@ -6,9 +6,9 @@ import simsom.config_vals as configs
 import simsom.utils as utils
 import json 
 
-ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
-DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
-CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true"
+ABS_PATH = 'experiments'
+DATA_PATH = os.path.join(ABS_PATH, "data")
+CONFIG_PATH = os.path.join(ABS_PATH, "config_cascade_true")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = "vary_gamma"
@@ -42,7 +42,7 @@ rule run_simulation:
         reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare_0.csv')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -v {output.tracking} -r {output.reshare} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} -r {output.reshare} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:

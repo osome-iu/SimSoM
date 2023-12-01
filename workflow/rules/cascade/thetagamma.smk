@@ -1,21 +1,24 @@
 """
 Snakefile to run experiments with varying theta and gamma values
 cascade=True
+default theta, 4 values of gamma
 """
 
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
-DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
-CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true"
+ABS_PATH = 'experiments'
+DATA_PATH = os.path.join(ABS_PATH, "data")
+CONFIG_PATH = os.path.join(ABS_PATH, "config_cascade_true")
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = 'vary_thetagamma'
+THETA='0' #index of theta=1
 
 # get names for exp_config and network
 EXPS = json.load(open(config_fname,'r'))[exp_type]
-EXP_NOS = list(EXPS.keys())
+EXP_NOS = [exp for exp in EXPS.keys() if (exp[0]==THETA)]
+
 EXP2NET = {
     exp_name: utils.netconfig2netname(config_fname, net_cf)
     for exp_name, net_cf in EXPS.items()
@@ -42,7 +45,7 @@ rule run_simulation:
         reshare =  os.path.join(CASCADE_DIR, '{exp_no}__reshare_0.csv')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -r {output.reshare} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -r {output.reshare} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:

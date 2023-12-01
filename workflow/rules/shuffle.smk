@@ -5,14 +5,11 @@ Snakefile to run experiments using different shuffled version of the default net
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
-DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
-
-# ABS_PATH = 'experiments'
-# DATA_PATH = os.path.join(ABS_PATH, "data")
+ABS_PATH = 'experiments'
+DATA_PATH = os.path.join(ABS_PATH, "data")
 
 # `shuffle` uses .json configs copied from vary_gamma/*{[0,1,2,3]}.json (where gamma=0.0001, 0.001, 0.01 and 0.1)
-CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
+CONFIG_PATH = os.path.join(ABS_PATH, "config")
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 
 # EXP_NOS = ['conservative', 'liberal', 'hubs', 'None']
@@ -26,8 +23,8 @@ nthreads = 7
 mode='igraph'
 sim_num=5
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'shuffle_5runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'shuffle_5runs')
+RES_DIR = os.path.join(ABS_PATH,'results', f'shuffle')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'shuffle')
 
 rule all:
     input: 
@@ -43,7 +40,7 @@ rule run_simulation:
         tracking = os.path.join(TRACKING_DIR, '{shuffle}_shuffle__{strategy}{gamma}.json.gz')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 

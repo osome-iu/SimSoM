@@ -5,10 +5,10 @@ Snakefile to run experiments with different bot tactics: varying targeting strat
 import json 
 import simsom.utils as utils
 
-ABS_PATH = '/N/project/simsom/simsom_v3/zl5_11252023'
-DATA_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/data"
-CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config"
+ABS_PATH = 'experiments'
+DATA_PATH = os.path.join(ABS_PATH, "data")
 
+CONFIG_PATH = os.path.join(ABS_PATH, "config")
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = "vary_gamma"
 GAMMA='3' #index of gamma (0.1)
@@ -23,8 +23,8 @@ EXP2NET = {
 nthreads = 7
 sim_num = 5
 
-RES_DIR = os.path.join(ABS_PATH,'results', f'strategies_5runs')
-TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'strategies_5runs')
+RES_DIR = os.path.join(ABS_PATH,'results', f'strategies')
+TRACKING_DIR = os.path.join(ABS_PATH,'results_verbose', f'strategies')
 
 rule all:
     input: 
@@ -39,7 +39,7 @@ rule run_simulation:
         tracking = os.path.join(TRACKING_DIR, '{exp_no}_0.json.gz')
     threads: nthreads
     shell: """
-        python3 -m workflow.scripts.driver_zl5 -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
+        python3 -m workflow.scripts.driver -i {input.network} -o {output.measurements} -v {output.tracking} --config {input.configfile} --times {sim_num} --nthreads {nthreads}
     """
 
 rule init_net:
