@@ -1,1 +1,1 @@
-{"verbose": false, "tracktimestep": true, "save_memeinfo": true, "output_cascades": true, "epsilon": 0.0001, "mu": 0.5, "phi": 1, "alpha": 15, "quality": [0.2845117927077505, 0.26690116380196327]}
+{"verbose": false, "tracktimestep": true, "save_message_info": true, "output_cascades": true, "mu": 0.5, "phi": 1, "sigma": 15, "quality": [0.5728080306860214, 0.5492616394487974]}
