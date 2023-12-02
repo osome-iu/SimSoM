@@ -12,9 +12,9 @@ Inputs:
     - verbose (bool): if True, print messages 
     - epsilon (float): threshold of quality difference between 2 consecutive timesteps to decide convergence. Default: 0.0001
     - rho (float): weight of the previous timestep's quality in calculating new quality. Default: 0.8
+    - sigma (int): agent's newsfeed size. Default: 15
     - mu (float): probability that an agent create new messages. Default: 0.5
     - phi (float): phi in range [0,1] is the probability that a bot message's appeal equals 1. Default: 0
-    - sigma (int): agent's newsfeed size. Default: 15
     - theta (int): number of copies bots make when creating messages. Default: 1
 Important note: 
     - graph_gml: link direction is following (follower -> friend), opposite of info spread!
@@ -72,12 +72,13 @@ class SimSom:
         save_message_info=True,
         output_cascades=False,
         verbose=False,
+        debug=False,
         n_threads=7,
         epsilon=0.0001,  # Don't change this value
         rho=0.8,  # Don't change this value, check note above
+        sigma=15,
         mu=0.5,
         phi=0,
-        sigma=15,
         theta=1,
         appeal_exp=5,
     ):
@@ -87,20 +88,20 @@ class SimSom:
         # params
         self.epsilon = epsilon
         self.rho = rho
+        self.sigma = sigma
         self.mu = mu
         self.phi = phi
-        self.sigma = sigma
         self.theta = theta
         self.appeal_exp = appeal_exp
 
         # simulation options
         self.n_threads = n_threads
         self.verbose = verbose
+        self.debug = debug
         self.tracktimestep = tracktimestep
         self.save_message_info = save_message_info
         self.output_cascades = output_cascades
 
-        # bookkeeping
         #### debugging
         # number of unique messages ever created (including extincted ones)
         self.num_message_unique = 0
@@ -108,8 +109,9 @@ class SimSom:
         # number of unique messages across all human feeds
         self.num_human_messages_unique = 0
         #### debugging
-        self.quality_timestep = []  # list of overall quality at each timestep
 
+        # bookkeeping
+        self.quality_timestep = []  # list of overall quality at each timestep
         self.message_dict = []  # list of all message objects
         self.all_messages = {}  # dict of message_id - message objects
         self.message_metadata = {}
@@ -131,7 +133,7 @@ class SimSom:
         self.exposure = 0
         try:
             self.network = ig.Graph.Read_GML(self.graph_gml)
-            if verbose is True:
+            if verbose:
                 print(self.network.summary(), flush=True)
 
             self.n_agents = self.network.vcount()
@@ -142,7 +144,7 @@ class SimSom:
             # init an empty feed for all agents
             # self.agent_feeds = {agent["uid"]: ([], []) for agent in self.network.vs}
             self.agent_feeds = defaultdict(lambda: ([], [], []))
-            if verbose is True:
+            if verbose:
                 # sanity check: calculate number of followers
                 in_deg = [self.network.degree(n, mode="in") for n in self.network.vs]
                 print(
@@ -190,9 +192,10 @@ class SimSom:
 
             self.update_quality()
 
-        # return feeds, self.message_metadata, self.quality
-        # Call this before calculating tau and diversity!!
+        ## Simulation finished - saving data
         try:
+            # return feeds, self.message_metadata, self.quality
+            # Call this before calculating tau and diversity!!
             self.message_dict = self._return_all_message_info()
 
             measurements = {
@@ -201,22 +204,23 @@ class SimSom:
                 "discriminative_pow": self.measure_kendall_tau(),
             }
 
-            # convert message tracking info into a big np array
-            all_reshare_tracking = np.hstack(self.reshare_tracking)
-            reshared_message_dict = dict()
-            # messages, appeal, shares, recency, ages, ranking
-            tracking_keys = [
-                "messages",
-                "appeal",
-                "no_shares",
-                "recency",
-                "ages",
-                "ranking",
-                "is_chosen",
-            ]
-            for idx, key in enumerate(tracking_keys):
-                reshared_message_dict[key] = all_reshare_tracking[idx].tolist()
             if self.save_message_info is True:
+                # convert message tracking info into a big np array
+                all_reshare_tracking = np.hstack(self.reshare_tracking)
+                reshared_message_dict = dict()
+                # messages, appeal, shares, recency, ages, ranking
+                tracking_keys = [
+                    "messages",
+                    "appeal",
+                    "no_shares",
+                    "recency",
+                    "ages",
+                    "ranking",
+                    "is_chosen",
+                ]
+                for idx, key in enumerate(tracking_keys):
+                    reshared_message_dict[key] = all_reshare_tracking[idx].tolist()
+
                 # Save agents' newsfeed info & message popularity
                 measurements["quality_timestep"] = self.quality_timestep
                 measurements["exposure_timestep"] = self.exposure_timestep
@@ -521,7 +525,7 @@ class SimSom:
                     np.zeros(len(incoming_ids), dtype=int),
                 )
             elif len(set(messages) & set(incoming_ids)) > 0:
-                if self.verbose:
+                if self.debug:
                     print(f"  ids   : {incoming_ids} -> {messages}")
                     print(f"  shares: {incoming_shares} -> {no_shares}")
                 updated_feed = self._update_feed_handle_overlap(
@@ -593,7 +597,7 @@ class SimSom:
                 messages, incoming_ids, return_indices=True
             )
             # print(new_messages, new_shares, new_ages)
-            if self.verbose:
+            if self.debug:
                 # print(f"incoming ids : {incoming_ids} --> feed: {messages}")
                 # print(f"no_shares : {incoming_shares} --> feed: {no_shares}")
                 print(
@@ -622,7 +626,7 @@ class SimSom:
             # # reset age overlapping messages
             # ages[mask_x] = np.zeros(len(y_ind))
 
-            if self.verbose:
+            if self.debug:
                 print(
                     f"   after:  messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
@@ -633,7 +637,7 @@ class SimSom:
             # # debugging
             # if (ages != np.zeros(len(ages))).all():
             #     print("")
-            if self.verbose:
+            if self.debug:
                 print(
                     f"   updated: messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
@@ -674,8 +678,6 @@ class SimSom:
         Combine message attributes (quality, appeal) with popularity data (spread_via_agents, seen_by_agents, etc.)
         Return a list of dict, where each dict contains message metadata
         """
-        # for message in self.all_messages.values():
-        #     assert isinstance(message, Message)
         # Be careful: convert to dict to avoid infinite recursion
         messages = [message.__dict__ for message in self.all_messages.values()]
         for message_dict in messages:
