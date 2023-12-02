@@ -25,9 +25,7 @@ class Message:
         self.is_by_bot = is_by_bot
         self.phi = phi
         self.appeal_exp = appeal_exp
-        quality, appeal = self.get_values()
-        self.quality = quality
-        self.appeal = appeal
+        self.quality, self.appeal = self.get_values()
 
     def expon_quality(self, lambda_quality=-5):
         """
@@ -61,12 +59,9 @@ class Message:
         u = random.random()
         if self.is_by_bot:
             appeal = 1 if u < self.phi else human_appeal
-        else:
-            appeal = human_appeal
-
-        if self.is_by_bot:
             quality = 0
         else:
+            appeal = human_appeal
             quality = self.expon_quality()
 
         return quality, appeal
