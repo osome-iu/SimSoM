@@ -492,18 +492,20 @@ class SimSom:
 
     def measure_exposure(self):
         """
-        Calculate number of exposures to low-quality/illegal messages
+        Calculate exposure to bad actor messages
+        Using Facebook's definition for prevalence of problematic content: = No. Views for that content / Estimated total content view
         """
         # TODO: Measure exposure before or after removal? (If after, we have to ignore those that have been removed)
-        illegal_messages = [
-            mid for mid, m in self.all_messages.items() if m.quality == 0
-        ]
-        exposure = 0
-        for message_id in illegal_messages:
-            exposure += len(self.message_metadata[message_id]["seen_by_agents"])
+        total_exposure = 0
+        bad_exposure = 0
 
-        self.exposure = exposure
-        return exposure
+        for message_id, message in self.all_messages.items():
+            if message.quality == 0:
+                bad_exposure += len(self.message_metadata[message_id]["seen_by_agents"])
+            total_exposure += len(self.message_metadata[message_id]["seen_by_agents"])
+
+        self.exposure = bad_exposure / total_exposure if total_exposure > 0 else 0
+        return self.exposure
 
     def _bulk_add_messages_to_feed(self, target_id, incoming_ids, incoming_shares):
         """
@@ -714,15 +716,6 @@ class SimSom:
             self.message_metadata[message_id]["seen_by_agent_timestep"] += [
                 self.time_step
             ]
-
-        # TODO: Track popularity at each timestep. Is this the same as infeed of agents?
-        # Previously:
-        # seen = []
-        # for message in feed:
-        #     if message.id not in seen:
-        #         self.message_metadata[message.id]["seen_by_agents"] += [agent["uid"]]
-        #     self.message_metadata[message.id]["infeed_of_agents"] += [agent["uid"]]
-        #     seen += [message.id]
 
         return
 
