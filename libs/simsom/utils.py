@@ -8,18 +8,26 @@ import logging
 import os
 import json
 import gzip
-import datetime as dt
+import datetime
 import inspect
 import scipy.stats as stats
 import simsom.config_vals as configs
 
+
 ### I/O
-def write_json_compressed(fout, data):
+def write_json_compressed(fpath, data):
     # write compressed json for hpc - pass file handle instead of filename so we can flush
     try:
+        fout = gzip.open(fpath, "w")
         fout.write(json.dumps(data).encode("utf-8"))
+        # force writing out the changes
+        fout.flush()
+        fout.close()
+        print(f"Successfully wrote to {fpath}")
+        return True
     except Exception as e:
-        print(e)
+        print("Fail to write json compressed", e)
+        return e
 
 
 def read_json_compressed(fpath):
@@ -29,9 +37,11 @@ def read_json_compressed(fpath):
         json_bytes = fin.read()
         json_str = json_bytes.decode("utf-8")
         data = json.loads(json_str)
+        fin.close()
+        return data
     except Exception as e:
         print(e)
-    return data
+        return e
 
 
 ### EXP CONFIGS
@@ -85,7 +95,7 @@ def remove_illegal_kwargs(adict, amethod):
 
 def get_now():
     # return timestamp
-    return int(dt.datetime.now().timestamp())
+    return int(datetime.datetime.now().timestamp())
 
 
 def get_logger(name):
@@ -140,8 +150,8 @@ def get_file_logger(log_dir=".log", also_print=False):
 
 
 def safe_open(path, mode="w"):
-    """ Open "path" for writing or reading, creating any parent directories as needed.
-        mode =[w, wb, r, rb]
+    """Open "path" for writing or reading, creating any parent directories as needed.
+    mode =[w, wb, r, rb]
     """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     return open(path, mode)
@@ -159,3 +169,10 @@ def entropy(x):
     # x: list of proportion
     entropy = np.sum(x * np.log(x))
     return entropy
+
+
+def normalize(v):
+    norm = np.linalg.norm(v, ord=1)
+    if norm == 0:
+        return v
+    return v / norm
