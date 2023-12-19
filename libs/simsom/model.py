@@ -618,7 +618,7 @@ class SimSom:
             mask_x, mask_y = np.zeros(len(messages), bool), np.zeros(
                 len(incoming_ids), bool
             )
-            mask_x[[x_ind]], mask_y[[y_ind]] = True, True
+            mask_x[x_ind], mask_y[y_ind] = True, True
 
             # update no_shares and age of existing messages
             no_shares[mask_x] += incoming_shares[mask_y]
