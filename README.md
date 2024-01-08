@@ -1,13 +1,13 @@
 # SimSoM: A <ins>Sim</ins>ulator of <ins>So</ins>cial <ins>M</ins>edia
 
-This repository contains code to reproduce the results in the paper [*Vulnerabilities of the Online Public Square to Manipulation*](https://arxiv.org/abs/1907.06130) by [Bao Tran Truong](https://btrantruong.github.io/), Xiaodan Lou, [Alessandro Flammini](https://cnets.indiana.edu/aflammin/), and [Filippo Menczer](https://cnets.indiana.edu/fil/).
+This repository contains code to reproduce the results in the paper [*Quantifying the Vulnerabilities of the Online Public Square to Adversarial Manipulation Tactics*](https://arxiv.org/abs/1907.06130) by [Bao Tran Truong](https://btrantruong.github.io/), Xiaodan Lou, [Alessandro Flammini](https://cnets.indiana.edu/aflammin/), and [Filippo Menczer](https://cnets.indiana.edu/fil/).
 
 ## Overview of the repo
 1. `data`: contains raw & derived datasets
 2. `example`: contains a minimal example to start using the SimSoM model
-3. `simsom`: the package for the SimSoM model that can be imported into scripts
-4. `experiments`: experiment results and .ipynb noteboooks to produce figures reported in the paper
-5. `workflow`: workflow files (Snakemake rules) and scripts
+3. `libs`: contains the SimSoM model package that can be imported into scripts
+4. `report_figures`: experiment results, supplementary data and .ipynb noteboooks to produce figures reported in the paper
+5. `workflow`: scripts to run simulation and Snakemake rules to run sets of experiments
 
 ## Install 
 
@@ -45,7 +45,7 @@ Check out `example` to get started.
 2. Create config files specifying parameters for simulations: `workflow/scripts/make_finalconfig.py`
     - See `example/data/config.json` for example of a config file
 3. Run a Snakemake rule corresponding to the simulations of interest. 
-    - e.g.: `workflow/rules/shuffle_network.smk` runs simulations on different shuffled version of the empirical network
+    - e.g.: `workflow/rules/shuffle_network.smk` runs simulations on different shuffled versions of the empirical network
 
 ### Notes
 The results in the paper are based on averages across multiple simulation runs. To reproduce those results, we suggest running the simulations in parallel, for example on a cluster, since they will need a lot of memory and CPU time.
