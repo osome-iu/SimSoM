@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running fzl5m_thetagamma exps ######'
-snakemake --nolock --rerun-triggers mtime --snakefile workflow/more_runs/rules_zl5/thetagamma.smk --cores 57
+snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile workflow/more_runs/rules_zl5/thetagamma.smk --cores 57

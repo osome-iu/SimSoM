@@ -11,3 +11,6 @@ experiments/10142023_v3.3_exps/results*
 
 example/
 data/
+.snakemake/
+*exps*/
+*.out

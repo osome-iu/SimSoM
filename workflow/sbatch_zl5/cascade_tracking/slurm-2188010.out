@@ -1,0 +1,122 @@
+###### running fzl5_phigamma_mphi4_cascade_tracking exps ######
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 57
+Rules claiming more threads will be scaled down.
+Job stats:
+job               count
+--------------  -------
+all                   1
+run_simulation        4
+total                 5
+
+Select jobs to execute...
+
+[Thu Nov 30 21:14:17 2023]
+rule run_simulation:
+    input: /N/project/simsom/simsom_v3/v3.3_10222023/data/vary_network/network_20.gml, /N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true/vary_phigamma/72.json
+    output: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/72.json, /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_phigamma_cascade_/72.json.gz, /N/project/simsom/simsom_v3/zl5_11252023/results_cascade/vary_phigamma_cascade_/72__reshare.csv
+    jobid: 4
+    reason: Missing output files: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/72.json
+    wildcards: exp_no=72
+    threads: 7
+    resources: tmpdir=/tmp
+
+
+[Thu Nov 30 21:14:17 2023]
+rule run_simulation:
+    input: /N/project/simsom/simsom_v3/v3.3_10222023/data/vary_network/network_20.gml, /N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true/vary_phigamma/102.json
+    output: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/102.json, /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_phigamma_cascade_/102.json.gz, /N/project/simsom/simsom_v3/zl5_11252023/results_cascade/vary_phigamma_cascade_/102__reshare.csv
+    jobid: 5
+    reason: Missing output files: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/102.json
+    wildcards: exp_no=102
+    threads: 7
+    resources: tmpdir=/tmp
+
+
+[Thu Nov 30 21:14:17 2023]
+rule run_simulation:
+    input: /N/project/simsom/simsom_v3/v3.3_10222023/data/vary_network/network_20.gml, /N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true/vary_phigamma/02.json
+    output: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/02.json, /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_phigamma_cascade_/02.json.gz, /N/project/simsom/simsom_v3/zl5_11252023/results_cascade/vary_phigamma_cascade_/02__reshare.csv
+    jobid: 1
+    reason: Missing output files: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/02.json
+    wildcards: exp_no=02
+    threads: 7
+    resources: tmpdir=/tmp
+
+
+[Thu Nov 30 21:14:17 2023]
+rule run_simulation:
+    input: /N/project/simsom/simsom_v3/v3.3_10222023/data/vary_network/network_20.gml, /N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true/vary_phigamma/42.json
+    output: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/42.json, /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_phigamma_cascade_/42.json.gz, /N/project/simsom/simsom_v3/zl5_11252023/results_cascade/vary_phigamma_cascade_/42__reshare.csv
+    jobid: 3
+    reason: Missing output files: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/42.json
+    wildcards: exp_no=42
+    threads: 7
+    resources: tmpdir=/tmp
+
+Run simulation 1 times..
+**1/1**
+Create SimSom instance..
+SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp=5, quality exp q=10);  normalized (recency * en * no_shares); no age reset
+Start simulation ..
+ - Simulation running on 7 threads
+Run simulation 1 times..
+**1/1**
+Create SimSom instance..
+SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp=5, quality exp q=10);  normalized (recency * en * no_shares); no age reset
+Start simulation ..
+ - Simulation running on 7 threads
+Run simulation 1 times..
+**1/1**
+Create SimSom instance..
+SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp=5, quality exp q=10);  normalized (recency * en * no_shares); no age reset
+Start simulation ..
+ - Simulation running on 7 threads
+Run simulation 1 times..
+**1/1**
+Create SimSom instance..
+SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp=5, quality exp q=10);  normalized (recency * en * no_shares); no age reset
+Start simulation ..
+ - Simulation running on 7 threads
+Created message using appeal exp=5
+Created message using quality exp=-10
+Successfully wrote to /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_phigamma_cascade_/02.json.gz
+average quality for follower network: 0.7727571485821674 pm 0.0
+[Thu Nov 30 23:37:25 2023]
+Finished job 1.
+1 of 5 steps (20%) done
+Created message using appeal exp=5
+Created message using quality exp=-10
+Successfully wrote to /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_phigamma_cascade_/72.json.gz
+average quality for follower network: 0.6571939724740364 pm 0.0
+[Fri Dec  1 00:33:11 2023]
+Finished job 4.
+2 of 5 steps (40%) done
+Created message using appeal exp=5
+Created message using quality exp=-10
+Successfully wrote to /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_phigamma_cascade_/42.json.gz
+average quality for follower network: 0.6426789081914801 pm 0.0
+[Fri Dec  1 03:11:42 2023]
+Finished job 3.
+3 of 5 steps (60%) done
+Created message using appeal exp=5
+Created message using quality exp=-10
+Successfully wrote to /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_phigamma_cascade_/102.json.gz
+average quality for follower network: 0.6395624664643842 pm 0.0
+[Fri Dec  1 04:56:04 2023]
+Finished job 5.
+4 of 5 steps (80%) done
+Select jobs to execute...
+
+[Fri Dec  1 04:56:04 2023]
+localrule all:
+    input: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/02.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/42.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/72.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/102.json
+    jobid: 0
+    reason: Input files updated by another job: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/42.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/72.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/02.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_phigamma_cascade_/102.json
+    resources: tmpdir=/tmp
+
+[Fri Dec  1 04:56:04 2023]
+Finished job 0.
+5 of 5 steps (100%) done
+Complete log: .snakemake/log/2023-11-30T211354.986516.snakemake.log

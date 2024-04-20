@@ -1,0 +1,170 @@
+###### running fzl5_thetagamma exps ######
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 57
+Rules claiming more threads will be scaled down.
+Job stats:
+job               count
+--------------  -------
+all                   1
+run_simulation        6
+total                 7
+
+Select jobs to execute...
+
+[Fri Dec  1 17:04:50 2023]
+rule run_simulation:
+    input: /N/project/simsom/simsom_v3/v3.3_10222023/data/vary_network/network_20.gml, /N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true/vary_thetagamma/22.json
+    output: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/22.json, /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/22.json.gz, /N/project/simsom/simsom_v3/zl5_11252023/results_cascade/vary_thetagamma_cascade_/22__reshare.csv
+    jobid: 6
+    reason: Missing output files: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/22.json
+    wildcards: exp_no=22
+    threads: 7
+    resources: tmpdir=/tmp
+
+
+[Fri Dec  1 17:04:50 2023]
+rule run_simulation:
+    input: /N/project/simsom/simsom_v3/v3.3_10222023/data/vary_network/network_20.gml, /N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true/vary_thetagamma/42.json
+    output: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/42.json, /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/42.json.gz, /N/project/simsom/simsom_v3/zl5_11252023/results_cascade/vary_thetagamma_cascade_/42__reshare.csv
+    jobid: 8
+    reason: Missing output files: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/42.json
+    wildcards: exp_no=42
+    threads: 7
+    resources: tmpdir=/tmp
+
+
+[Fri Dec  1 17:04:50 2023]
+rule run_simulation:
+    input: /N/project/simsom/simsom_v3/v3.3_10222023/data/vary_network/network_20.gml, /N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true/vary_thetagamma/62.json
+    output: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/62.json, /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/62.json.gz, /N/project/simsom/simsom_v3/zl5_11252023/results_cascade/vary_thetagamma_cascade_/62__reshare.csv
+    jobid: 10
+    reason: Missing output files: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/62.json
+    wildcards: exp_no=62
+    threads: 7
+    resources: tmpdir=/tmp
+
+
+[Fri Dec  1 17:04:50 2023]
+rule run_simulation:
+    input: /N/project/simsom/simsom_v3/v3.3_10222023/data/vary_network/network_10.gml, /N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true/vary_thetagamma/21.json
+    output: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/21.json, /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/21.json.gz, /N/project/simsom/simsom_v3/zl5_11252023/results_cascade/vary_thetagamma_cascade_/21__reshare.csv
+    jobid: 5
+    reason: Missing output files: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/21.json
+    wildcards: exp_no=21
+    threads: 7
+    resources: tmpdir=/tmp
+
+
+[Fri Dec  1 17:04:50 2023]
+rule run_simulation:
+    input: /N/project/simsom/simsom_v3/v3.3_10222023/data/vary_network/network_10.gml, /N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true/vary_thetagamma/41.json
+    output: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/41.json, /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/41.json.gz, /N/project/simsom/simsom_v3/zl5_11252023/results_cascade/vary_thetagamma_cascade_/41__reshare.csv
+    jobid: 7
+    reason: Missing output files: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/41.json
+    wildcards: exp_no=41
+    threads: 7
+    resources: tmpdir=/tmp
+
+
+[Fri Dec  1 17:04:51 2023]
+rule run_simulation:
+    input: /N/project/simsom/simsom_v3/v3.3_10222023/data/vary_network/network_10.gml, /N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true/vary_thetagamma/61.json
+    output: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/61.json, /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/61.json.gz, /N/project/simsom/simsom_v3/zl5_11252023/results_cascade/vary_thetagamma_cascade_/61__reshare.csv
+    jobid: 9
+    reason: Missing output files: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/61.json
+    wildcards: exp_no=61
+    threads: 7
+    resources: tmpdir=/tmp
+
+Run simulation 1 times..
+**1/1**
+Create SimSom instance..
+SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp=5, quality exp q=10);  normalized (recency * en * no_shares); no age reset
+Start simulation ..
+ - Simulation running on 7 threads
+Run simulation 1 times..
+**1/1**
+Create SimSom instance..
+SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp=5, quality exp q=10);  normalized (recency * en * no_shares); no age reset
+Start simulation ..
+ - Simulation running on 7 threads
+Run simulation 1 times..
+**1/1**
+Create SimSom instance..
+SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp=5, quality exp q=10);  normalized (recency * en * no_shares); no age reset
+Start simulation ..
+ - Simulation running on 7 threads
+Run simulation 1 times..
+**1/1**
+Create SimSom instance..
+SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp=5, quality exp q=10);  normalized (recency * en * no_shares); no age reset
+Start simulation ..
+ - Simulation running on 7 threads
+Run simulation 1 times..
+**1/1**
+Create SimSom instance..
+SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp=5, quality exp q=10);  normalized (recency * en * no_shares); no age reset
+Start simulation ..
+ - Simulation running on 7 threads
+Run simulation 1 times..
+**1/1**
+Create SimSom instance..
+SimSomV4.6zl (synchronous - permutate agent order); Message (expon quality, linear appeal exp=5, quality exp q=10);  normalized (recency * en * no_shares); no age reset
+Start simulation ..
+ - Simulation running on 7 threads
+Created message using appeal exp=5
+Created message using quality exp=-10
+Successfully wrote to /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/61.json.gz
+average quality for follower network: 0.8317592667520927 pm 0.0
+[Fri Dec  1 19:32:08 2023]
+Finished job 9.
+1 of 7 steps (14%) done
+Created message using appeal exp=5
+Created message using quality exp=-10
+Successfully wrote to /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/21.json.gz
+average quality for follower network: 0.8669472976178958 pm 0.0
+[Fri Dec  1 21:47:01 2023]
+Finished job 5.
+2 of 7 steps (29%) done
+Created message using appeal exp=5
+Created message using quality exp=-10
+Successfully wrote to /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/42.json.gz
+average quality for follower network: 0.6599269415435624 pm 0.0
+[Fri Dec  1 22:49:09 2023]
+Finished job 8.
+3 of 7 steps (43%) done
+Created message using appeal exp=5
+Created message using quality exp=-10
+Successfully wrote to /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/41.json.gz
+average quality for follower network: 0.8597583192022966 pm 0.0
+[Fri Dec  1 23:29:34 2023]
+Finished job 7.
+4 of 7 steps (57%) done
+Created message using appeal exp=5
+Created message using quality exp=-10
+Successfully wrote to /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/22.json.gz
+average quality for follower network: 0.700259817727782 pm 0.0
+[Sat Dec  2 01:50:55 2023]
+Finished job 6.
+5 of 7 steps (71%) done
+Created message using appeal exp=5
+Created message using quality exp=-10
+Successfully wrote to /N/project/simsom/simsom_v3/zl5_11252023/results_verbose/vary_thetagamma_cascade_/62.json.gz
+average quality for follower network: 0.5955793776278375 pm 0.0
+[Sat Dec  2 06:07:45 2023]
+Finished job 10.
+6 of 7 steps (86%) done
+Select jobs to execute...
+
+[Sat Dec  2 06:07:46 2023]
+localrule all:
+    input: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/01.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/02.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/21.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/22.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/41.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/42.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/61.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/62.json
+    jobid: 0
+    reason: Input files updated by another job: /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/22.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/21.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/62.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/42.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/61.json, /N/project/simsom/simsom_v3/zl5_11252023/results/vary_thetagamma_cascade_/41.json
+    resources: tmpdir=/tmp
+
+[Sat Dec  2 06:07:46 2023]
+Finished job 0.
+7 of 7 steps (100%) done
+Complete log: .snakemake/log/2023-12-01T170446.832155.snakemake.log

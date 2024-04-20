@@ -16,7 +16,7 @@ CONFIG_PATH = "/N/project/simsom/simsom_v3/v3.3_10222023/config_cascade_true"
 
 config_fname = os.path.join(CONFIG_PATH, 'all_configs.json')
 exp_type = "vary_phigamma"
-GAMMA='2' #index of gamma (0.01)
+GAMMA=['1', '2'] #index of gamma (0.001, 0.01)
 
 # get network names corresponding to the strategy
 EXPS = json.load(open(config_fname, "r"))[exp_type]
