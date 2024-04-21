@@ -63,6 +63,7 @@ import queue
 from copy import deepcopy
 import sys
 import warnings
+import os
 
 
 class SimSom:
@@ -74,6 +75,7 @@ class SimSom:
         save_newsfeed_message_info=False,
         output_cascades=False,
         verbose=False,
+        logger=None,
         debug=False,
         n_threads=7,
         epsilon=0.0001,  # Don't change this value
@@ -101,6 +103,7 @@ class SimSom:
         # simulation options
         self.n_threads = n_threads
         self.verbose = verbose
+        self.logger = logger
         self.debug = debug
         self.tracktimestep = tracktimestep
         self.save_message_info = save_message_info
@@ -145,8 +148,14 @@ class SimSom:
         self.exposure = 0
         try:
             self.network = ig.Graph.Read_GML(self.graph_gml)
+            if self.logger is None:
+                self.logger = utils.get_file_logger(
+                    log_dir="logs",
+                    full_log_path=os.path.join("logs", f"simulation.log"),
+                    also_print=True,
+                )
             if verbose:
-                print(self.network.summary(), flush=True)
+                self.logger.info(self.network.summary())
 
             self.n_agents = self.network.vcount()
             self.human_uids = [n["uid"] for n in self.network.vs if n["bot"] == 0]
@@ -159,8 +168,8 @@ class SimSom:
             if verbose:
                 # sanity check: calculate number of followers
                 in_deg = [self.network.degree(n, mode="in") for n in self.network.vs]
-                print(
-                    "Graph Avg in deg", round(sum(in_deg) / len(in_deg), 2), flush=True
+                self.logger.info(
+                    "Graph Avg in deg", round(sum(in_deg) / len(in_deg), 2)
                 )
 
         except Exception as e:
@@ -189,11 +198,10 @@ class SimSom:
         while eval(self.converge_condition):
             num_messages = sum([len(feed) for feed, _, _ in self.agent_feeds.values()])
             if self.verbose:
-                print(
-                    f"- time_step = {self.time_step}, q = {np.round(self.quality, 6)}, diff = {np.round(self.quality_diff, 6)}, existing human/all messages: {self.num_human_messages}/{num_messages}, unique human messages: {self.num_human_messages_unique}, total created: {self.num_message_unique}",
-                    flush=True,
+                self.logger.info(
+                    f"- time_step = {self.time_step}, q = {np.round(self.quality, 6)}, diff = {np.round(self.quality_diff, 6)}, existing human/all messages: {self.num_human_messages}/{num_messages}, unique human messages: {self.num_human_messages_unique}, total created: {self.num_message_unique}"
                 )
-                print("  exposure to harmful content: ", self.exposure, flush=True)
+                self.logger.info("  exposure to harmful content: ", self.exposure)
 
             self.time_step += 1
             if self.tracktimestep is True:
@@ -298,15 +306,14 @@ class SimSom:
             max_workers=self.n_threads
         ) as executor:
             if self.time_step == 1:
-                print(
-                    f" - Simulation running on {executor._max_workers} threads",
-                    flush=True,
+                self.logger.info(
+                    f" - Simulation running on {executor._max_workers} threads"
                 )
             for _ in executor.map(post_message, all_agents):
                 try:
                     pass
                 except Exception as e:
-                    print(e, flush=True)
+                    self.logger.error(e)
                     sys.exit("Propagation (post_message) failed.")
 
         update_list = defaultdict(list)
@@ -322,7 +329,7 @@ class SimSom:
         # eg:
         # {'a1': defaultdict(int, {'1': 4, '2': 1, '3': 1, '6': 1, '7': 1}),
         # 'a2': defaultdict(int, {'2': 1, '1': 1, '4': 1})}
-        # print("Update list:", update_list, flush=True)
+        # print("Update list:", update_list)
 
         ### Distribute posts to newsfeeds
         # update_list: {agent_id: {message_id: popularity}}
@@ -333,13 +340,11 @@ class SimSom:
             no_shares = list(message_counts.values())
             try:
                 agent_message_ages = self.agent_feeds[agent_id][2]
-                if len(agent_message_ages) > 0:
-                    ages += agent_message_ages.tolist()
                 self._bulk_add_messages_to_feed(
                     agent_id, np.array(message_ids), np.array(no_shares)
                 )
             except Exception as e:
-                print(e, flush=True)
+                self.logger.error(e)
                 sys.exit("Propagation (bulk_add_messages_to_feed) failed.")
         return
 
@@ -430,7 +435,7 @@ class SimSom:
                 self.all_messages[message.id] = message
                 message_id = message.id
         except Exception as e:
-            print(e)
+            self.logger.error(e)
             raise ValueError("Failed to create a new message.")
 
         return message_id
@@ -551,8 +556,8 @@ class SimSom:
                 )
             elif len(set(messages) & set(incoming_ids)) > 0:
                 if self.debug:
-                    print(f"  ids   : {incoming_ids} -> {messages}")
-                    print(f"  shares: {incoming_shares} -> {no_shares}")
+                    self.logger.info(f"  ids   : {incoming_ids} -> {messages}")
+                    self.logger.debug(f"  shares: {incoming_shares} -> {no_shares}")
                 updated_feed = self._update_feed_handle_overlap(
                     newsfeed, incoming_ids, incoming_shares
                 )
@@ -621,19 +626,20 @@ class SimSom:
             overlap, x_ind, y_ind = np.intersect1d(
                 messages, incoming_ids, return_indices=True
             )
-            # print(new_messages, new_shares, new_ages)
             if self.debug:
-                # print(f"incoming ids : {incoming_ids} --> feed: {messages}")
-                # print(f"no_shares : {incoming_shares} --> feed: {no_shares}")
-                print(
+                # self.logger.debug(f"incoming ids : {incoming_ids} --> feed: {messages}")
+                # self.logger.debug(f"no_shares : {incoming_shares} --> feed: {no_shares}")
+                self.logger.debug(
                     f"  incoming age : {np.zeros(len(incoming_ids))} --> feed: {ages}"
                 )
 
-                print(
+                self.logger.debug(
                     f"   overlap message between {messages} and {incoming_ids} are: {overlap}"
                 )
-                print("   update no_share and age of overlapping messages.. ")
-                print(
+                self.logger.debug(
+                    "   update no_share and age of overlapping messages.. "
+                )
+                self.logger.debug(
                     f"   before:  messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
 
@@ -652,18 +658,15 @@ class SimSom:
             # ages[mask_x] = np.zeros(len(y_ind))
 
             if self.debug:
-                print(
+                self.logger.debug(
                     f"   after:  messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
             # push new messages into the feed (only the non-overlapping messages)
             no_shares = np.insert(no_shares, 0, incoming_shares[~mask_y])
             messages = np.insert(messages, 0, incoming_ids[~mask_y])
             ages = np.insert(ages, 0, np.zeros(len(incoming_shares[~mask_y])))
-            # # debugging
-            # if (ages != np.zeros(len(ages))).all():
-            #     print("")
             if self.debug:
-                print(
+                self.logger.debug(
                     f"   updated: messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
             updated_feed = messages, no_shares, ages
@@ -789,7 +792,8 @@ class SimSom:
                 f"Simulation controls:",
                 f" - epsilon: {self.epsilon}",
                 f" - rho:     {self.rho}",
-                f"Propagation parameters:",
+                f" - converge_by: {self.converge_by} - keep running while: {self.converge_condition} - max_steps:{self.max_steps}"
+                f"\nPropagation parameters:",
                 f" - mu (posting rate): {self.mu}",
                 f" - sigma (feedsize):  {self.sigma}",
                 f"Network contains one type of agents (no bots): {self.is_human_only}",
