@@ -141,8 +141,6 @@ class SimSom:
         self.quality_diff = 1
         self.quality = 1
         self.time_step = 0
-        # list of lists. Each element is the age of all messages in that timestep
-        self.age_timestep = []
         # stats
         self.exposure = 0
         try:
@@ -226,12 +224,13 @@ class SimSom:
                 # Save system measurements and message metadata
                 measurements["quality_timestep"] = self.quality_timestep
                 measurements["exposure_timestep"] = self.exposure_timestep
-                measurements["age_timestep"] = self.age_timestep
+
                 measurements["converged_rhoepsilon_timestep"] = (
                     self.converged_rhoepsilon_timestep
                 )
 
             if self.save_message_info:
+
                 measurements["all_messages"] = self.message_dict
 
                 ## Save agents' newsfeed info at the end of simulation (used to determine which messages are obsolete)
@@ -328,7 +327,6 @@ class SimSom:
         ### Distribute posts to newsfeeds
         # update_list: {agent_id: {message_id: popularity}}
 
-        ages = []
         for agent_id, message_list in update_list.items():
             message_counts = Counter(message_list)
             message_ids = list(message_counts.keys())
@@ -343,9 +341,6 @@ class SimSom:
             except Exception as e:
                 print(e, flush=True)
                 sys.exit("Propagation (bulk_add_messages_to_feed) failed.")
-        # print("Agent feeds after updating:", self.agent_feeds, flush=True)
-
-        self.age_timestep += [ages]
         return
 
     def user_step(self, agent):
