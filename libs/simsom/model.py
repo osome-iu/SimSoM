@@ -62,6 +62,7 @@ import concurrent.futures
 import queue
 from copy import deepcopy
 import sys
+import warnings
 
 
 class SimSom:
@@ -70,6 +71,7 @@ class SimSom:
         graph_gml,
         tracktimestep=True,
         save_message_info=True,
+        save_newsfeed_message_info=False,
         output_cascades=False,
         verbose=False,
         debug=False,
@@ -81,6 +83,8 @@ class SimSom:
         phi=0,
         theta=1,
         appeal_exp=5,
+        converge_by="quality",  # ['steps', 'quality']
+        max_steps=100,
     ):
         # graph object
         self.graph_gml = graph_gml
@@ -100,6 +104,9 @@ class SimSom:
         self.debug = debug
         self.tracktimestep = tracktimestep
         self.save_message_info = save_message_info
+        # Track message information relative to each feed at each timestep
+        ## !! Memory intensive !!!
+        self.save_newsfeed_message_info = save_newsfeed_message_info
         self.output_cascades = output_cascades
 
         #### debugging
@@ -124,6 +131,13 @@ class SimSom:
         self.exposure_timestep = []  # list of exposure to bot messages at each timestep
 
         # convergence check
+        self.converge_by = converge_by
+        self.max_steps = max_steps
+        if self.converge_by == "quality":
+            self.converge_condition = "self.quality_diff > self.epsilon"
+        else:
+            self.converge_condition = "self.time_step < self.max_steps"
+
         self.quality_diff = 1
         self.quality = 1
         self.time_step = 0
@@ -173,7 +187,8 @@ class SimSom:
                 writer = csv.writer(f, delimiter=",")
                 writer.writerow(reshare_fields)
 
-        while self.quality_diff > self.epsilon:
+        # Run simulation until convergence condition is met
+        while eval(self.converge_condition):
             num_messages = sum([len(feed) for feed, _, _ in self.agent_feeds.values()])
             if self.verbose:
                 print(
@@ -186,6 +201,9 @@ class SimSom:
             if self.tracktimestep is True:
                 self.quality_timestep += [self.quality]
                 self.exposure_timestep += [self.measure_exposure()]
+                # record the timestep at which simulation would end with (rho; epsilon)
+                if self.quality_diff < self.epsilon:
+                    self.converged_rhoepsilon_timestep = self.time_step
 
             # Propagate messages
             self.simulation_step()
@@ -204,7 +222,35 @@ class SimSom:
                 "discriminative_pow": self.measure_kendall_tau(),
             }
 
-            if self.save_message_info is True:
+            if self.tracktimestep:
+                # Save system measurements and message metadata
+                measurements["quality_timestep"] = self.quality_timestep
+                measurements["exposure_timestep"] = self.exposure_timestep
+                measurements["age_timestep"] = self.age_timestep
+                measurements["converged_rhoepsilon_timestep"] = (
+                    self.converged_rhoepsilon_timestep
+                )
+
+            if self.save_message_info:
+                measurements["all_messages"] = self.message_dict
+
+                ## Save agents' newsfeed info at the end of simulation (used to determine which messages are obsolete)
+                # convert np arrays to list to JSON serialize
+                # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
+                # Only save data for agents whose feeds are not empty
+                measurements["feeds_message_ids"] = {}
+                measurements["feeds_shares"] = {}
+                measurements["feeds_ages"] = {}
+                for agent_id, feed_tuple in self.agent_feeds.items():
+                    if len(feed_tuple[0]) > 0:
+                        measurements["feeds_message_ids"][agent_id] = feed_tuple[
+                            0
+                        ].tolist()
+                        measurements["feeds_shares"][agent_id] = feed_tuple[1].tolist()
+                        measurements["feeds_ages"][agent_id] = feed_tuple[2].tolist()
+
+            if self.save_newsfeed_message_info:
+                # Save message info relative to each newsfeed
                 # convert message tracking info into a big np array
                 all_reshare_tracking = np.hstack(self.reshare_tracking)
                 reshared_message_dict = dict()
@@ -221,26 +267,7 @@ class SimSom:
                 for idx, key in enumerate(tracking_keys):
                     reshared_message_dict[key] = all_reshare_tracking[idx].tolist()
 
-                # Save agents' newsfeed info & message popularity
-                measurements["quality_timestep"] = self.quality_timestep
-                measurements["exposure_timestep"] = self.exposure_timestep
-                measurements["age_timestep"] = self.age_timestep
-                measurements["all_messages"] = self.message_dict
                 measurements["reshared_messages"] = reshared_message_dict
-
-                # convert np arrays to list to JSON serialize
-                # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
-                # Only save data for agents whose feeds are not empty
-                measurements["feeds_message_ids"] = {}
-                measurements["feeds_shares"] = {}
-                measurements["feeds_ages"] = {}
-                for agent_id, feed_tuple in self.agent_feeds.items():
-                    if len(feed_tuple[0]) > 0:
-                        measurements["feeds_message_ids"][agent_id] = feed_tuple[
-                            0
-                        ].tolist()
-                        measurements["feeds_shares"][agent_id] = feed_tuple[1].tolist()
-                        measurements["feeds_ages"][agent_id] = feed_tuple[2].tolist()
         except Exception as e:
             raise Exception(
                 'Failed to output a measurement, e.g,["quality", "diversity", "discriminative_pow"] or save message info.',
@@ -390,10 +417,11 @@ class SimSom:
                 # make sure ranking order is correct
                 # assert (message_info[0] == messages).all()
                 (message_id,) = random.choices(messages, weights=ranking, k=1)
-                is_chosen = np.zeros(len(messages))
-                is_chosen[np.where(messages == message_id)] = 1
-                message_info = np.vstack([message_info, is_chosen])
-                self.reshare_tracking.append(message_info)
+                if self.save_newsfeed_message_info:
+                    is_chosen = np.zeros(len(messages))
+                    is_chosen[np.where(messages == message_id)] = 1
+                    message_info = np.vstack([message_info, is_chosen])
+                    self.reshare_tracking.append(message_info)
             else:
                 # new message
                 self.num_message_unique += 1
