@@ -138,8 +138,10 @@ class SimSom:
         self.max_steps = max_steps
         if self.converge_by == "quality":
             self.converge_condition = "self.quality_diff > self.epsilon"
-        else:
+        elif self.converge_by == "steps":
             self.converge_condition = "self.time_step < self.max_steps"
+        else:
+            self.converge_condition = "(self.time_step < self.max_steps) or (self.quality_diff > self.epsilon)"
 
         self.quality_diff = 1
         self.quality = 1
@@ -194,7 +196,7 @@ class SimSom:
                 writer = csv.writer(f, delimiter=",")
                 writer.writerow(reshare_fields)
 
-        # Run simulation until convergence condition is met
+        # Run simulation until either or both convergence condition is met
         while eval(self.converge_condition):
             num_messages = sum([len(feed) for feed, _, _ in self.agent_feeds.values()])
             if self.verbose:
