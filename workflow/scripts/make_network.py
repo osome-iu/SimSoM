@@ -1,6 +1,6 @@
 """ Create the empirical follower network as input to simulations.
-    1. Reconstruct the follower network for data files provided in doi.org/10.7910/DVN/6CZHH5
-    2. Further filter to make the network more manageable 
+    1. Reconstruct the follower network for the data files provided in doi.org/10.7910/DVN/6CZHH5
+    2. Further filter to make the network more manageable: k-core decomposition and edge filtering
 """
 
 import networkx as nx
@@ -12,8 +12,8 @@ import os
 
 def make_network(path, files):
     """
-        Make directed network follower -> friend
-        Get a subgraph of partisan users
+    Make directed network follower -> friend
+    Get a subgraph of partisan users
     """
 
     stats = pd.read_csv(os.path.join(path, files["user_info"]), sep="\t")
@@ -52,8 +52,10 @@ def make_network(path, files):
 
 def filter_graph(G, nodes_to_filter):
     """
-        - Reduce the size of network by retaining a k-core=94
-        - Reduce density by delete a random sample of edges 
+    - Reduce the size of network by retaining a k-core for k=94 (approx. 10k nodes in core)
+    - Reduce density by deleting a random sample of edges:
+        a randomly sampled number E of edges such that the average in-degree and out-degree are the same as in the original network
+        (E = <k>N, where <k> is the average in/out-degree and N is the number of nodes).
     """
 
     average_friends = G.number_of_edges() / G.number_of_nodes()
