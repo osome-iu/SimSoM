@@ -34,8 +34,8 @@ def multiple_simulations(
     for time in range(times):
         logger.info(f"**{time+1}/{times}**")
         try:
-            logger.info("Create SimSom instance..")
-            follower_sys = SimSom(**infosys_specs, logger=logger)
+            logger.info("Create SimSomA1 instance..")
+            follower_sys = SimSomA1(**infosys_specs, logger=logger)
             logger.info("Start simulation ..")
             # Tracking cascade info, files named by no.run
             if infosys_specs["output_cascades"] is True:
@@ -83,7 +83,7 @@ def multiple_simulations(
 def run_simulation(infosys_specs, logger, reshare_fpath="reshares.csv"):
     # baseline:  mu=0.5, sigma=15, beta=0.01, gamma=0.001, phi=1, theta=1
     logger.info("Create SimSom instance..")
-    follower_sys = SimSom(**infosys_specs)
+    follower_sys = SimSomA1(**infosys_specs)
     logger.info(f"Start simulation..")
     measurements = follower_sys.simulation(reshare_fpath=reshare_fpath)
     logger.info("average quality for follower network:", measurements["quality"])
@@ -189,7 +189,7 @@ def main(args):
         also_print=True,
     )
     # avoid passing undefined keyword to InfoSys
-    legal_specs = utils.remove_illegal_kwargs(infosys_spec, SimSom.__init__)
+    legal_specs = utils.remove_illegal_kwargs(infosys_spec, SimSomA1.__init__)
 
     logger.info("Finished parsing arguments. Running simulation.. ")
 

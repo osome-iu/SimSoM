@@ -370,23 +370,23 @@ class SimSomA1:
         Output:
             selected_ids (list): ids of messages to reshare
         """
-        if self.debug:
-            self.logger.info(
-                f"\tSelecting inventory, in-network size: {len(innet_ids)}, out-network size: {len(outnet_ids)}"
-            )
-        if len(innet_ids) > self.sigma or len(outnet_ids) > self.sigma:
-            if self.debug:
-                self.logger.info(
-                    f"\t  either in- or out-network inventory exceeds feed size, sampling.."
-                )
-            if len(innet_ids) < len(outnet_ids):
-                sample = random.sample(outnet_ids, k=len(innet_ids))
-                selected_ids = innet_ids + sample
-            else:  # outnet_ids is smaller
-                sample = random.sample(innet_ids, k=len(outnet_ids))
-                selected_ids = outnet_ids + sample
-        else:
-            selected_ids = innet_ids + outnet_ids
+        # self.logger.info(
+        #     f"\tSelecting inventory, in-network size: {len(innet_ids)}, out-network size: {len(outnet_ids)}"
+        # )
+        # if len(innet_ids) > self.sigma:
+        #     self.logger.info(f"\t  sampling sigma posts from in-network..")
+        #     innet_ids = random.sample(innet_ids, k=self.sigma)
+        # if len(outnet_ids) > self.sigma:
+        #     self.logger.info(f"\t   sampling sigma posts from out-network..")
+        #     outnet_ids = random.sample(outnet_ids, k=self.sigma)
+
+        if len(innet_ids) < len(outnet_ids):
+            outnet_sample = random.sample(outnet_ids, k=len(innet_ids))
+            selected_ids = innet_ids + outnet_sample
+        else:  # outnet_ids is smaller
+            innet_sample = random.sample(innet_ids, k=len(outnet_ids))
+            selected_ids = innet_sample + outnet_ids
+
         random.shuffle(selected_ids)
         return selected_ids
 
