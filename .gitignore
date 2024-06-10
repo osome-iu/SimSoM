@@ -13,3 +13,4 @@ data/
 *.out
 experiments/*
 example/*v*
+logs/
