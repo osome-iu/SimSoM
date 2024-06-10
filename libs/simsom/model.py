@@ -272,7 +272,7 @@ class SimSom:
 
         return measurements
 
-    def simulation_step(self):
+    def simulation_step(self) -> None:
         """
         During each simulation step, agents reshare or post new messages (in parallel).
         After `n` agents have done their actions and return requests to modify their follower feeds, messages are not yet propagated in the network.
@@ -284,44 +284,38 @@ class SimSom:
         all_agents = [self.network.vs[idx] for idx in order]
 
         q = queue.Queue()
-        outnet_q = queue.Queue()
 
-        def post_message(agent):
-            innet_requests, outnet_requests = self.user_step(agent)
-            if len(innet_requests) > 0:
-                # debugging: tracking the originator of the modify request
-                q.put(innet_requests)
-                outnet_q.put(outnet_requests)
+        def post_message(agent: ig.Vertex) -> None:
+            modify_requests = self.user_step(agent)
+            if len(modify_requests) > 0:
+                q.put(modify_requests)
 
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.n_threads
         ) as executor:
             if self.time_step == 1:
                 self.logger.info(
-                    f" - Simulation running on {executor._max_workers} threads"
+                    f"- Simulation running on {executor._max_workers} threads"
                 )
-            for _ in executor.map(post_message, all_agents):
+            for _ in executor.map(post_message, active_agents):
                 try:
                     pass
                 except Exception as e:
-                    self.logger.info(e)
+                    self.logger.error(
+                        f"Exception in concurrent block: {str(e)}",
+                    )
                     sys.exit("Propagation (post_message) failed.")
+
+        update_list = defaultdict(list)
 
         ### Aggregate message popularity
         # each item in queue is a list of requests from an agent to modify its follower feeds
         # e.g.: item= [(follower1, [mess1]), (follower2, [mess1]), .. ]
         # or item= [(follower1, [mess1]*theta), (follower2, [mess1]*theta), .. ] if the agent is a bot
         # iterates over all agent update requests, if exists overlap update popularity
-
-        update_list = defaultdict(list)
         for item in q.queue:
             for agent_id, message_ids in item:
                 update_list[agent_id] += message_ids
-
-        outnet_list = defaultdict(list)
-        for item in outnet_q.queue:
-            for agent_id, message_ids in item:
-                outnet_list[agent_id] += message_ids
         # eg:
         # {'a1': defaultdict(int, {'1': 4, '2': 1, '3': 1, '6': 1, '7': 1}),
         # 'a2': defaultdict(int, {'2': 1, '1': 1, '4': 1})}
@@ -332,18 +326,9 @@ class SimSom:
 
         ages = []
         for agent_id, message_list in update_list.items():
-            # in-net: get list of (message_id, no_shares) tuples
-            innet_messages = Counter(message_list).items()
-
-            # out-net
-            outnet_messages = Counter(outnet_list[agent_id]).items()
-
-            inventory = self.select_inventory(
-                list(innet_messages), list(outnet_messages), ratio=0.5
-            )  # list of tuples of (message_id, no_shares)
-            message_ids = [m[0] for m in inventory]
-            no_shares = [m[1] for m in inventory]
-            # make sure half the messages are from out-network
+            message_counts = Counter(message_list)
+            message_ids = list(message_counts.keys())
+            no_shares = list(message_counts.values())
             try:
                 agent_message_ages = self.agent_feeds[agent_id][2]
                 if len(agent_message_ages) > 0:
@@ -352,7 +337,7 @@ class SimSom:
                     agent_id, np.array(message_ids), np.array(no_shares)
                 )
             except Exception as e:
-                self.logger.info(e)
+                self.logger.error(f"Exception in simulation_step: {str(e)}")
                 sys.exit("Propagation (bulk_add_messages_to_feed) failed.")
         # self.logger.info("Agent feeds after updating:", self.agent_feeds)
 
@@ -399,7 +384,7 @@ class SimSom:
         Input:
             agent (igraph.Vertex): node representing an agent
         Output:
-            innet_requests, outnet_requests (list of tuples): list of requests from `agent` to modify their follower feeds.
+            modify_requests (list of tuples): list of requests from `agent` to modify their follower feeds.
             A tuple represents (follower, [list of message_ids])
         """
         try:
@@ -419,46 +404,21 @@ class SimSom:
             follower_uids = [
                 n["uid"] for n in self.network.vs if n.index in follower_idxs
             ]
-            if self.debug:
-                self.logger.info(f"\t user_step: {len(follower_uids)} followers")
-            nonfollower_uids = [
-                n["uid"] for n in self.network.vs if n.index not in follower_idxs
-            ]
-            nonfollowers_to_update = random.choices(
-                nonfollower_uids, k=round(self.mean_follower_count * 0.5)
-            )  # update a subset of non-followers, k= mean_follower_count/2
 
-            follower_uids.extend(nonfollowers_to_update)
-            if self.debug:
-                self.logger.info(
-                    f"\t final {len(follower_uids)} users (including out-network)"
-                )
+            modify_requests = []
 
-            # update followers' & non-followers' feeds
-            innet_requests = []
-            outnet_requests = []
             for follower in follower_uids:
                 if self.output_cascades is True:
                     self._update_reshares(message_id, agent_id, follower)
 
-                # Choose the list to update based on the condition
-                target_list = (
-                    innet_requests
-                    if follower not in nonfollowers_to_update
-                    else outnet_requests
-                )
-
-                # Determine the message list based on whether the agent is a bot
-                new_messages = (
-                    [message_id] * self.theta if agent["bot"] else [message_id]
-                )
-
-                # Append to the chosen list
-                target_list.append((follower, new_messages))
+                if agent["bot"] == True:
+                    modify_requests.append((follower, [message_id] * self.theta))
+                else:
+                    modify_requests.append((follower, [message_id]))
         except Exception as e:
             raise Exception("Error in user_step: ", e)
 
-        return innet_requests, outnet_requests
+        return modify_requests
 
     def _create_post(self, agent):
         """
