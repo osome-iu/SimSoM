@@ -197,7 +197,7 @@ class SimSom:
                 self.logger.info(
                     f"- time_step = {self.time_step}, q = {np.round(self.quality, 6)}, diff = {np.round(self.quality_diff, 6)}, existing human/all messages: {self.num_human_messages}/{num_messages}, unique human messages: {self.num_human_messages_unique}, total created: {self.num_message_unique}"
                 )
-                self.logger.info("  exposure to harmful content: ", self.exposure)
+                self.logger.info("\texposure to harmful content: ", self.exposure)
 
             self.time_step += 1
             if self.tracktimestep:
@@ -332,14 +332,14 @@ class SimSom:
 
         ages = []
         for agent_id, message_list in update_list.items():
-            # in-net
-            message_counts = Counter(message_list)  # k,v = message_id, no_shares
+            # in-net: get list of (message_id, no_shares) tuples
+            innet_messages = Counter(message_list).items()
 
             # out-net
-            outnet_message_counts = Counter(outnet_list)
+            outnet_messages = Counter(outnet_list[agent_id]).items()
 
             inventory = self.select_inventory(
-                message_counts, outnet_message_counts, ratio=0.5
+                list(innet_messages), list(outnet_messages), ratio=0.5
             )  # list of tuples of (message_id, no_shares)
             message_ids = [m[0] for m in inventory]
             no_shares = [m[1] for m in inventory]
@@ -361,7 +361,8 @@ class SimSom:
 
     def select_inventory(self, innet_ids, outnet_ids, ratio=0.5):
         """
-        Select messages from in-network and out-network and return an inventory
+        Select messages from in-network and out-network and return an inventory.
+        Note: outnet_ids is often much larger than innet_ids, 10:1 ratio is common
         Inputs:
             innet_ids (list): ids of messages from in-network
             outnet_ids (list): ids of messages from out-network
@@ -369,10 +370,23 @@ class SimSom:
         Output:
             selected_ids (list): ids of messages to reshare
         """
-        new_list_size = len(innet_ids) + len(outnet_ids)
-        # select messages from in-network
-        selected_ids = random.sample(innet_ids, k=round(new_list_size * ratio))
-        selected_ids += random.sample(outnet_ids, k=round(new_list_size * (1 - ratio)))
+        if self.debug:
+            self.logger.info(
+                f"\tSelecting inventory, in-network size: {len(innet_ids)}, out-network size: {len(outnet_ids)}"
+            )
+        if len(innet_ids) > self.sigma or len(outnet_ids) > self.sigma:
+            if self.debug:
+                self.logger.info(
+                    f"\t  either in- or out-network inventory exceeds feed size, sampling.."
+                )
+            if len(innet_ids) < len(outnet_ids):
+                sample = random.sample(outnet_ids, k=len(innet_ids))
+                selected_ids = innet_ids + sample
+            else:  # outnet_ids is smaller
+                sample = random.sample(innet_ids, k=len(outnet_ids))
+                selected_ids = outnet_ids + sample
+        else:
+            selected_ids = innet_ids + outnet_ids
         random.shuffle(selected_ids)
         return selected_ids
 
@@ -405,7 +419,8 @@ class SimSom:
             follower_uids = [
                 n["uid"] for n in self.network.vs if n.index in follower_idxs
             ]
-            self.logger.info(f"updating {len(follower_uids)} followers")
+            if self.debug:
+                self.logger.info(f"\t user_step: {len(follower_uids)} followers")
             nonfollower_uids = [
                 n["uid"] for n in self.network.vs if n.index not in follower_idxs
             ]
@@ -414,9 +429,10 @@ class SimSom:
             )  # update a subset of non-followers, k= mean_follower_count/2
 
             follower_uids.extend(nonfollowers_to_update)
-            self.logger.info(
-                f"updating {len(follower_uids)} users (including out-network)"
-            )
+            if self.debug:
+                self.logger.info(
+                    f"\t final {len(follower_uids)} users (including out-network)"
+                )
 
             # update followers' & non-followers' feeds
             innet_requests = []
@@ -606,8 +622,8 @@ class SimSom:
                 )
             elif len(set(messages) & set(incoming_ids)) > 0:
                 if self.debug:
-                    self.logger.info(f"  ids   : {incoming_ids} -> {messages}")
-                    self.logger.info(f"  shares: {incoming_shares} -> {no_shares}")
+                    self.logger.info(f"\tids   : {incoming_ids} -> {messages}")
+                    self.logger.info(f"\tshares: {incoming_shares} -> {no_shares}")
                 updated_feed = self._update_feed_handle_overlap(
                     newsfeed, incoming_ids, incoming_shares
                 )
@@ -681,17 +697,17 @@ class SimSom:
                 # self.logger.info(f"incoming ids : {incoming_ids} --> feed: {messages}")
                 # self.logger.info(f"no_shares : {incoming_shares} --> feed: {no_shares}")
                 self.logger.info(
-                    f"  incoming age : {np.zeros(len(incoming_ids))} --> feed: {ages}"
+                    f"\tincoming age : {np.zeros(len(incoming_ids))} --> feed: {ages}"
                 )
 
                 self.logger.info(
-                    f"   overlap message between {messages} and {incoming_ids} are: {overlap}"
+                    f"\t overlap message between {messages} and {incoming_ids} are: {overlap}"
                 )
                 self.logger.info(
-                    "   update no_share and age of overlapping messages.. "
+                    "\t update no_share and age of overlapping messages.. "
                 )
                 self.logger.info(
-                    f"   before:  messages: {messages}, shares: {no_shares}, ages: {ages}"
+                    f"\t before:  messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
 
             # index the overlap message from 2 arrays
@@ -710,7 +726,7 @@ class SimSom:
 
             if self.debug:
                 self.logger.info(
-                    f"   after:  messages: {messages}, shares: {no_shares}, ages: {ages}"
+                    f"\t after:  messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
             # push new messages into the feed (only the non-overlapping messages)
             no_shares = np.insert(no_shares, 0, incoming_shares[~mask_y])
@@ -721,7 +737,7 @@ class SimSom:
             #     self.logger.info("")
             if self.debug:
                 self.logger.info(
-                    f"   updated: messages: {messages}, shares: {no_shares}, ages: {ages}"
+                    f"\t updated: messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
             updated_feed = messages, no_shares, ages
         except Exception as e:
