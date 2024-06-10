@@ -4,7 +4,7 @@
 #SBATCH --mail-user=baotruon@iu.edu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=15
+#SBATCH --cpus-per-task=29
 #SBATCH --time=23:59:00
 #SBATCH --mem=58gb
 #SBATCH --mail-type=FAIL,BEGIN,END
@@ -18,4 +18,4 @@ conda activate simsommodel
 ######  Job commands go below this line #####
 cd /N/u/baotruon/BigRed200/simsom
 echo '###### running algo_exps exps ######'
-snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile /N/u/baotruon/BigRed200/simsom/tests/20240610_new_algo/strategies_gamma.smk --cores 15
+snakemake --nolock --rerun-triggers mtime --rerun-incomplete --snakefile /N/u/baotruon/BigRed200/simsom/tests/20240610_new_algo/strategies_gamma_moreruns.smk --cores 29
