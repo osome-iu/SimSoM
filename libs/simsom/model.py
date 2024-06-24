@@ -281,7 +281,7 @@ class SimSom:
 
         # all_agents = self.network.vs  # list of all agent ids
         order = np.random.permutation(range(self.n_agents))
-        all_agents = [self.network.vs[idx] for idx in order]
+        active_agents = [self.network.vs[idx] for idx in order]
 
         q = queue.Queue()
 
