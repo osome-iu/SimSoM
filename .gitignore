@@ -16,3 +16,8 @@ example/*v*
 logs/
 *.json.gz
 *.json
+
+tests/*
+!tests/20240610_new_algo/
+tests/20240610_new_algo/*
+!tests/20240610_new_algo/og/
