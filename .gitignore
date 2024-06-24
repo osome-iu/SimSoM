@@ -14,3 +14,5 @@ data/
 experiments/*
 example/*v*
 logs/
+*.json.gz
+*.json
