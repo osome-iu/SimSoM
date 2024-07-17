@@ -114,7 +114,7 @@ def get_logger(name):
     return logger
 
 
-def get_file_logger(log_dir=".log", also_print=False):
+def get_file_logger(log_dir, full_log_path, also_print=False, tqdm=False):
     """Create logger."""
 
     # Create log_dir if it doesn't exist already
@@ -132,14 +132,15 @@ def get_file_logger(log_dir=".log", also_print=False):
         fmt="%(asctime)s-%(name)s-%(levelname)s-%(message)s",
         datefmt="%Y-%m-%d_%H:%M:%S",
     )
-    log_fpath = os.path.join(log_dir, f"{__name__}_{get_now()}")
-    fh = logging.FileHandler(log_fpath)
+    fh = logging.FileHandler(f"{full_log_path}")
     fh.setFormatter(formatter)
     fh.setLevel(level=logging.INFO)
-    # Add handlers to logger
     logger.addHandler(fh)
 
-    # If true, also print the output to the console in addition to sending it to the log file
+    # if tqdm:
+    #     logger.addHandler(TqdmLoggingHandler())
+    # If also_print is true, the logger will also print the output to the
+    # console in addition to sending it to the log file
     if also_print:
         ch = logging.StreamHandler(sys.stdout)
         ch.setFormatter(formatter)

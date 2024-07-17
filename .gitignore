@@ -7,3 +7,12 @@ simsom.egg-info/
 unused_experiments/*
 example/results/
 data/
+
+.snakemake/
+*exps*/
+*.out
+experiments/*
+example/*v*
+
+logs/
+tests/

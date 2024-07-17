@@ -62,6 +62,8 @@ import concurrent.futures
 import queue
 from copy import deepcopy
 import sys
+import warnings
+import os
 
 
 class SimSom:
@@ -70,8 +72,10 @@ class SimSom:
         graph_gml,
         tracktimestep=True,
         save_message_info=True,
+        save_newsfeed_message_info=False,
         output_cascades=False,
         verbose=False,
+        logger=None,
         debug=False,
         n_threads=7,
         epsilon=0.0001,  # Don't change this value
@@ -81,6 +85,8 @@ class SimSom:
         phi=0,
         theta=1,
         appeal_exp=5,
+        converge_by="quality",  # ['steps', 'quality']
+        max_steps=100,
     ):
         # graph object
         self.graph_gml = graph_gml
@@ -97,9 +103,13 @@ class SimSom:
         # simulation options
         self.n_threads = n_threads
         self.verbose = verbose
+        self.logger = logger
         self.debug = debug
         self.tracktimestep = tracktimestep
         self.save_message_info = save_message_info
+        # Track message information relative to each feed at each timestep
+        ## !! Memory intensive !!!
+        self.save_newsfeed_message_info = save_newsfeed_message_info
         self.output_cascades = output_cascades
 
         #### debugging
@@ -124,17 +134,30 @@ class SimSom:
         self.exposure_timestep = []  # list of exposure to bot messages at each timestep
 
         # convergence check
+        self.converge_by = converge_by
+        self.max_steps = max_steps
+        if self.converge_by == "quality":
+            self.converge_condition = "self.quality_diff > self.epsilon"
+        elif self.converge_by == "steps":
+            self.converge_condition = "self.time_step < self.max_steps"
+        else:
+            self.converge_condition = "(self.time_step < self.max_steps) or (self.quality_diff > self.epsilon)"
+
         self.quality_diff = 1
         self.quality = 1
         self.time_step = 0
-        # list of lists. Each element is the age of all messages in that timestep
-        self.age_timestep = []
         # stats
         self.exposure = 0
         try:
             self.network = ig.Graph.Read_GML(self.graph_gml)
+            if self.logger is None:
+                self.logger = utils.get_file_logger(
+                    log_dir="logs",
+                    full_log_path=os.path.join("logs", f"simulation.log"),
+                    also_print=True,
+                )
             if verbose:
-                print(self.network.summary(), flush=True)
+                self.logger.info(self.network.summary())
 
             self.n_agents = self.network.vcount()
             self.human_uids = [n["uid"] for n in self.network.vs if n["bot"] == 0]
@@ -147,8 +170,8 @@ class SimSom:
             if verbose:
                 # sanity check: calculate number of followers
                 in_deg = [self.network.degree(n, mode="in") for n in self.network.vs]
-                print(
-                    "Graph Avg in deg", round(sum(in_deg) / len(in_deg), 2), flush=True
+                self.logger.info(
+                    "Graph Avg in deg", round(sum(in_deg) / len(in_deg), 2)
                 )
 
         except Exception as e:
@@ -173,19 +196,22 @@ class SimSom:
                 writer = csv.writer(f, delimiter=",")
                 writer.writerow(reshare_fields)
 
-        while self.quality_diff > self.epsilon:
+        # Run simulation until either or both convergence condition is met
+        while eval(self.converge_condition):
             num_messages = sum([len(feed) for feed, _, _ in self.agent_feeds.values()])
             if self.verbose:
-                print(
-                    f"- time_step = {self.time_step}, q = {np.round(self.quality, 6)}, diff = {np.round(self.quality_diff, 6)}, existing human/all messages: {self.num_human_messages}/{num_messages}, unique human messages: {self.num_human_messages_unique}, total created: {self.num_message_unique}",
-                    flush=True,
+                self.logger.info(
+                    f"- time_step = {self.time_step}, q = {np.round(self.quality, 6)}, diff = {np.round(self.quality_diff, 6)}, existing human/all messages: {self.num_human_messages}/{num_messages}, unique human messages: {self.num_human_messages_unique}, total created: {self.num_message_unique}"
                 )
-                print("  exposure to harmful content: ", self.exposure, flush=True)
+                self.logger.info("  exposure to harmful content: ", self.exposure)
 
             self.time_step += 1
             if self.tracktimestep is True:
                 self.quality_timestep += [self.quality]
                 self.exposure_timestep += [self.measure_exposure()]
+                # record the timestep at which simulation would end with (rho; epsilon)
+                if self.quality_diff < self.epsilon:
+                    self.converged_rhoepsilon_timestep = self.time_step
 
             # Propagate messages
             self.simulation_step()
@@ -204,7 +230,36 @@ class SimSom:
                 "discriminative_pow": self.measure_kendall_tau(),
             }
 
-            if self.save_message_info is True:
+            if self.tracktimestep:
+                # Save system measurements and message metadata
+                measurements["quality_timestep"] = self.quality_timestep
+                measurements["exposure_timestep"] = self.exposure_timestep
+
+                measurements["converged_rhoepsilon_timestep"] = (
+                    self.converged_rhoepsilon_timestep
+                )
+
+            if self.save_message_info:
+
+                measurements["all_messages"] = self.message_dict
+
+                ## Save agents' newsfeed info at the end of simulation (used to determine which messages are obsolete)
+                # convert np arrays to list to JSON serialize
+                # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
+                # Only save data for agents whose feeds are not empty
+                measurements["feeds_message_ids"] = {}
+                measurements["feeds_shares"] = {}
+                measurements["feeds_ages"] = {}
+                for agent_id, feed_tuple in self.agent_feeds.items():
+                    if len(feed_tuple[0]) > 0:
+                        measurements["feeds_message_ids"][agent_id] = feed_tuple[
+                            0
+                        ].tolist()
+                        measurements["feeds_shares"][agent_id] = feed_tuple[1].tolist()
+                        measurements["feeds_ages"][agent_id] = feed_tuple[2].tolist()
+
+            if self.save_newsfeed_message_info:
+                # Save message info relative to each newsfeed
                 # convert message tracking info into a big np array
                 all_reshare_tracking = np.hstack(self.reshare_tracking)
                 reshared_message_dict = dict()
@@ -221,26 +276,7 @@ class SimSom:
                 for idx, key in enumerate(tracking_keys):
                     reshared_message_dict[key] = all_reshare_tracking[idx].tolist()
 
-                # Save agents' newsfeed info & message popularity
-                measurements["quality_timestep"] = self.quality_timestep
-                measurements["exposure_timestep"] = self.exposure_timestep
-                measurements["age_timestep"] = self.age_timestep
-                measurements["all_messages"] = self.message_dict
                 measurements["reshared_messages"] = reshared_message_dict
-
-                # convert np arrays to list to JSON serialize
-                # Note: a.tolist() is almost the same as list(a), except that tolist changes numpy scalars to Python scalars
-                # Only save data for agents whose feeds are not empty
-                measurements["feeds_message_ids"] = {}
-                measurements["feeds_shares"] = {}
-                measurements["feeds_ages"] = {}
-                for agent_id, feed_tuple in self.agent_feeds.items():
-                    if len(feed_tuple[0]) > 0:
-                        measurements["feeds_message_ids"][agent_id] = feed_tuple[
-                            0
-                        ].tolist()
-                        measurements["feeds_shares"][agent_id] = feed_tuple[1].tolist()
-                        measurements["feeds_ages"][agent_id] = feed_tuple[2].tolist()
         except Exception as e:
             raise Exception(
                 'Failed to output a measurement, e.g,["quality", "diversity", "discriminative_pow"] or save message info.',
@@ -272,15 +308,14 @@ class SimSom:
             max_workers=self.n_threads
         ) as executor:
             if self.time_step == 1:
-                print(
-                    f" - Simulation running on {executor._max_workers} threads",
-                    flush=True,
+                self.logger.info(
+                    f" - Simulation running on {executor._max_workers} threads"
                 )
             for _ in executor.map(post_message, all_agents):
                 try:
                     pass
                 except Exception as e:
-                    print(e, flush=True)
+                    self.logger.error(e)
                     sys.exit("Propagation (post_message) failed.")
 
         update_list = defaultdict(list)
@@ -296,29 +331,23 @@ class SimSom:
         # eg:
         # {'a1': defaultdict(int, {'1': 4, '2': 1, '3': 1, '6': 1, '7': 1}),
         # 'a2': defaultdict(int, {'2': 1, '1': 1, '4': 1})}
-        # print("Update list:", update_list, flush=True)
+        # print("Update list:", update_list)
 
         ### Distribute posts to newsfeeds
         # update_list: {agent_id: {message_id: popularity}}
 
-        ages = []
         for agent_id, message_list in update_list.items():
             message_counts = Counter(message_list)
             message_ids = list(message_counts.keys())
             no_shares = list(message_counts.values())
             try:
                 agent_message_ages = self.agent_feeds[agent_id][2]
-                if len(agent_message_ages) > 0:
-                    ages += agent_message_ages.tolist()
                 self._bulk_add_messages_to_feed(
                     agent_id, np.array(message_ids), np.array(no_shares)
                 )
             except Exception as e:
-                print(e, flush=True)
+                self.logger.error(e)
                 sys.exit("Propagation (bulk_add_messages_to_feed) failed.")
-        # print("Agent feeds after updating:", self.agent_feeds, flush=True)
-
-        self.age_timestep += [ages]
         return
 
     def user_step(self, agent):
@@ -390,10 +419,11 @@ class SimSom:
                 # make sure ranking order is correct
                 # assert (message_info[0] == messages).all()
                 (message_id,) = random.choices(messages, weights=ranking, k=1)
-                is_chosen = np.zeros(len(messages))
-                is_chosen[np.where(messages == message_id)] = 1
-                message_info = np.vstack([message_info, is_chosen])
-                self.reshare_tracking.append(message_info)
+                if self.save_newsfeed_message_info:
+                    is_chosen = np.zeros(len(messages))
+                    is_chosen[np.where(messages == message_id)] = 1
+                    message_info = np.vstack([message_info, is_chosen])
+                    self.reshare_tracking.append(message_info)
             else:
                 # new message
                 self.num_message_unique += 1
@@ -407,7 +437,7 @@ class SimSom:
                 self.all_messages[message.id] = message
                 message_id = message.id
         except Exception as e:
-            print(e)
+            self.logger.error(e)
             raise ValueError("Failed to create a new message.")
 
         return message_id
@@ -528,8 +558,8 @@ class SimSom:
                 )
             elif len(set(messages) & set(incoming_ids)) > 0:
                 if self.debug:
-                    print(f"  ids   : {incoming_ids} -> {messages}")
-                    print(f"  shares: {incoming_shares} -> {no_shares}")
+                    self.logger.info(f"  ids   : {incoming_ids} -> {messages}")
+                    self.logger.debug(f"  shares: {incoming_shares} -> {no_shares}")
                 updated_feed = self._update_feed_handle_overlap(
                     newsfeed, incoming_ids, incoming_shares
                 )
@@ -598,19 +628,20 @@ class SimSom:
             overlap, x_ind, y_ind = np.intersect1d(
                 messages, incoming_ids, return_indices=True
             )
-            # print(new_messages, new_shares, new_ages)
             if self.debug:
-                # print(f"incoming ids : {incoming_ids} --> feed: {messages}")
-                # print(f"no_shares : {incoming_shares} --> feed: {no_shares}")
-                print(
+                # self.logger.debug(f"incoming ids : {incoming_ids} --> feed: {messages}")
+                # self.logger.debug(f"no_shares : {incoming_shares} --> feed: {no_shares}")
+                self.logger.debug(
                     f"  incoming age : {np.zeros(len(incoming_ids))} --> feed: {ages}"
                 )
 
-                print(
+                self.logger.debug(
                     f"   overlap message between {messages} and {incoming_ids} are: {overlap}"
                 )
-                print("   update no_share and age of overlapping messages.. ")
-                print(
+                self.logger.debug(
+                    "   update no_share and age of overlapping messages.. "
+                )
+                self.logger.debug(
                     f"   before:  messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
 
@@ -629,18 +660,15 @@ class SimSom:
             # ages[mask_x] = np.zeros(len(y_ind))
 
             if self.debug:
-                print(
+                self.logger.debug(
                     f"   after:  messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
             # push new messages into the feed (only the non-overlapping messages)
             no_shares = np.insert(no_shares, 0, incoming_shares[~mask_y])
             messages = np.insert(messages, 0, incoming_ids[~mask_y])
             ages = np.insert(ages, 0, np.zeros(len(incoming_shares[~mask_y])))
-            # # debugging
-            # if (ages != np.zeros(len(ages))).all():
-            #     print("")
             if self.debug:
-                print(
+                self.logger.debug(
                     f"   updated: messages: {messages}, shares: {no_shares}, ages: {ages}"
                 )
             updated_feed = messages, no_shares, ages
@@ -766,7 +794,8 @@ class SimSom:
                 f"Simulation controls:",
                 f" - epsilon: {self.epsilon}",
                 f" - rho:     {self.rho}",
-                f"Propagation parameters:",
+                f" - converge_by: {self.converge_by} - keep running while: {self.converge_condition} - max_steps:{self.max_steps}"
+                f"\nPropagation parameters:",
                 f" - mu (posting rate): {self.mu}",
                 f" - sigma (feedsize):  {self.sigma}",
                 f"Network contains one type of agents (no bots): {self.is_human_only}",
